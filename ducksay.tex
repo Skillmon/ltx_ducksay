@@ -1,8 +1,9 @@
 \documentclass[]{article}
 
 \usepackage{ducksay}
-\newcommand*{\availableAnimal}[1]{\par\vbox{\ducksay[#1]{#1}}\mbox{}\\[1ex]}
+\newcommand*{\availableAnimal}[1]{\par\makebox[0pt][l]{\ducksay[#1]{#1}}\mbox{}\\[1ex]}
 \newcommand*{\anml}{\texttt{<animal>}}
+\newcommand*{\msg}{\texttt{<message>}}
 
 \begin{document}
 \begin{titlepage}%>>>
@@ -37,7 +38,8 @@
 \hspace*{-2em}%
 \verb|\ducksay[<options>]{<message>}|\\
   options might include any of the options described in
-  section~\ref{sec:options}. Prints an \anml\ saying \texttt{<message>}.
+  section~\ref{sec:options}. Prints an \anml\ saying \msg. \msg\ is not
+  verbatim.
 
 \verb|\duckthink[<options>]{<message>}|\\
   not implemented
@@ -71,7 +73,7 @@ The following Options are available to \verb|\ducksay| and \verb|\duckthink|:
 \parskip=1em
 \anml\\
   One of the animals listed in section~\ref{sec:animals} or any of the ones
-  added with \verb|AddAnimal|.
+  added with \verb|\AddAnimal|.
 
 \texttt{bubble=\#1}\\
   use \texttt{\#1} in a group with the bubble (for font switches).
@@ -80,7 +82,7 @@ The following Options are available to \verb|\ducksay| and \verb|\duckthink|:
 \section{Defects}
 \begin{itemize}
   \item no line wrapping
-  \item no duckthink
+  \item no \verb|\duckthink|
 \end{itemize}
 
 \twocolumn
@@ -100,6 +102,16 @@ The following Options are available to \verb|\ducksay| and \verb|\duckthink|:
 \availableAnimal{vader}
 \onecolumn
 \availableAnimal{yoda}
+
+\clearpage
+\thispagestyle{empty}
+\bgroup
+\Huge
+\mbox{}\vfill
+\centering
+\ducksay{Have fun with it!}
+\vfill
+\egroup
 \end{document}
 
 % vim: fdm=marker foldmarker=>>>,<<<
