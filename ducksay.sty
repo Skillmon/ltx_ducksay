@@ -8,32 +8,45 @@
 
 \ExplSyntaxOn
 \int_new:N \l_ducksay_strlen_int
-\NewDocumentCommand{\ducksay}{ O{} m }{%
+\NewDocumentCommand{\ducksay}{ O{} m }{%>>>
   \group_begin:
     \keys_set:nn { ducksay } { default_animal,#1 }
     \exp_args:NNx \tl_set:Nn \l_tmpa_tl { #2 }
     \regex_replace_all:nnN { \s } { \c{space} } \l_tmpa_tl
-    %\exp_args:NNx \int_set:Nn \l_ducksay_strlen_int {
-    %  \exp_args:Nx \tl_count_tokens:n { \l_tmpa_tl } }
     \int_set:Nn \l_ducksay_strlen_int { \tl_count:N \l_tmpa_tl }
     \frenchspacing
-    \par\noindent
-    \texttt{\ __\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{_}}\\\null
-    \texttt{(\ #2\ )}\\[-1ex]\null
-    \texttt{\ --\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{-}}\\\null
-    \texttt{\l_ducksay_animal_tl}
+    \group_begin:
+      \ttfamily
+      \begin{tabular}{@{}l@{}}
+        \ducksay_bubblesize:
+        \begin{tabular}{@{}l@{}}
+          {\ __\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{_}}\\\null
+          {(\ #2\ )}\\[-1ex]\null
+          {\ {-}{-}\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{{-}}}\\
+        \end{tabular}\\\null
+        \begin{tabular}{@{}l@{}}
+          \l_ducksay_animal_tl
+        \end{tabular}
+      \end{tabular}
+    \group_end:
   \group_end:
-}
+}%<<<
 
-\NewDocumentCommand{\duckthink}{ O{} v }{%
-}
+%\NewDocumentCommand{\duckthink}{ O{} v }{%
+%}
 
-\NewDocumentCommand{\DefaultAnimal}{ m }{
-  \keys_define:nn { ducksay } { default_animal .meta:n = {#1} }}
+\cs_set_eq:NN \ducksay_bubblesize: \relax
 
-\NewDocumentCommand{\AddAnimal}{ s m +v }{%
+\keys_define:nn { ducksay } {%>>>
+  ,bubble .code:n = \cs_set_eq:NN \ducksay_bubblesize: #1
+}%<<<
+
+\NewDocumentCommand{\DefaultAnimal}{ m }{%>>>
+  \keys_define:nn { ducksay } { default_animal .meta:n = {#1} }}%<<<
+
+\NewDocumentCommand{\AddAnimal}{ s m +v }{%>>>
   \tl_set:Nn \l_tmpa_tl { \ #3 }
-  \regex_replace_all:nnN { \r } { \c{newline}\c{null} } \l_tmpa_tl
+  \regex_replace_all:nnN { \r } { \c{tabularnewline}\c{null} } \l_tmpa_tl
   \cs_gset_eq:cN { g_ducksay_animal_#2_tl } \l_tmpa_tl
   \keys_define:nn { ducksay } {
     #2 .code:n = \cs_set_eq:Nc \l_ducksay_animal_tl { g_ducksay_animal_#2_tl }
@@ -41,11 +54,15 @@
   \IfBooleanT{#1}{
     \keys_define:nn { ducksay } {
       default_animal .meta:n = {#2} }}
-}
+}%<<<
+
+\ProcessKeysOptions { ducksay }
 
 \ExplSyntaxOff
 
-\AddAnimal*{duck}
+% Animals:>>>
+% some of the below are from http://ascii.co.uk/art/kangaroo
+\AddAnimal*{duck}%>>>
 {  \
     \   __
       >(' )
@@ -53,60 +70,73 @@
        /(
       /  `----/
       \  ~=- /
-    ~^~^~^~^~^~^~^}
-\AddAnimal{small-duck}
+    ~^~^~^~^~^~^~^}%<<<
+\AddAnimal{small-duck}%>>>
 {  \
     \
       >()_
-       (__)__ _}
-\AddAnimal{cow}
+       (__)__ _}%<<<
+\AddAnimal{cow}%>>>
 {  \  ^__^
     \ (oo)\_______
       (__)\       )\/\
           ||----w |
-          ||     ||}
-\AddAnimal{head-in}
+          ||     ||}%<<<
+\AddAnimal{head-in}%>>>
 {  \  
     \ ^__^         /
       (oo)\_______/  ________
       (__)\       )=(  ___|_ \____
           ||----w |  \ \    \____ |
-          ||     ||   ||         ||}
-\AddAnimal{tux}
+          ||     ||   ||         ||}%<<<
+\AddAnimal{tux}%>>>
 {  \
     \  .--. 
       |o_o |
-      |:_/ |
+      |\_/ |
      //   \ \
     (|     | )
    /'\_   _/`\
-   \___)=(___/}
-\AddAnimal{pig}
+   \___)=(___/}%<<<
+\AddAnimal{pig}%>>>
 +  \     _//| .-~~~-.
     \ _/oo  }       }-@
      ('')_  }       |
       `--'| { }--{  }
-           //_/  /_/+
-\AddAnimal{frog}
+           //_/  /_/+%<<<
+\AddAnimal{frog}%>>>
 {   \
      \(.)_(.)
    _ (   _   ) _
   / \/`-----'\/ \
 __\ ( (     ) ) /__
 )   /\ \._./ /\   (
- )_/ /|\   /|\ \_(}
-\AddAnimal{snowman}
+ )_/ /|\   /|\ \_(}%<<<
+\AddAnimal{snowman}%>>>
 {  \
     \_[_]_
       (")
    >-( : )-<
-    (__:__)}
+    (__:__)}%<<<
+\AddAnimal{hedgehog}%>>>
+{  \    .\|//||\||.
+    \  |/\/||/|//|/|
+      /. `|/\\|/||/||
+     o__,_|//|/||\||'}%<<<
+\AddAnimal{kangaroo}%>>>
+{  \
+    \ _,'   ___
+     <__\__/   \
+        \_  /  _\
+          \,\ / \\
+            //   \\
+          ,/'     `\_,}%<<<
 
 % from http://www.ascii-art.de/ascii/s/starwars.txt :
-\AddAnimal{yoda}
-{   \  |
-     \ |           ____
-      \|        _.' :  `._
+\AddAnimal{yoda}%>>>
+{   \
+     \             ____
+      \         _.' :  `._
             .-.'`.  ;   .'`.-.
    __      / : ___\ ;  /___ ; \      __
  ,'_ ""--.:__;".-.";: :".-.":__;.--"" _`,
@@ -139,8 +169,8 @@ __\ ( (     ) ) /__
         \ / .-"   /.     .'.' ;_:'    ;
          :-""-.`./-.'     /    `.___.'
                \ `t  ._  /
-                "-.t-._:'}
-\AddAnimal{r2d2}
+                "-.t-._:'}%<<<
+\AddAnimal{r2d2}%>>>
 {  \
     \ ,-----.
     ,'_/_|_\_`.
@@ -153,8 +183,8 @@ __\ ( (     ) ) /__
   | |_________| |
   | |\_______/| |
  /   \ /   \ /   \
- `---' `---' `---'} 
-\AddAnimal{vader}
+ `---' `---' `---'}%<<<
+\AddAnimal{vader}%>>>
 {  \     _.-'~~~~~~`-._
     \   /      ||      \
        /       ||       \
@@ -168,4 +198,7 @@ __\ ( (     ) ) /__
  /       \  /||||||\  /       \
 /_        \o========o/        _\
   `--...__|`-._  _.-'|__...--'
-          |    `'    |}
+          |    `'    |}%<<<
+%<<<
+
+% vim: fdm=marker foldmarker=>>>,<<<

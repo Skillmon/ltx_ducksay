@@ -5,54 +5,54 @@
 \newcommand*{\anml}{\texttt{<animal>}}
 
 \begin{document}
-\begin{titlepage}
+\begin{titlepage}%>>>
   \makeatletter
-  \mbox{}\vfil
-  \hfil
-  \begin{minipage}[c][][c]{\textwidth}
-    \LARGE
-    \ducksay[duck]{This is ducksay!}
-  \end{minipage}\hfil
-  \vfil
-  \hspace*{\fill}
-  \begin{minipage}{0.5\textwidth}
-    \small
-    \ducksay[small-duck]{But which Version?}
-  \end{minipage}\\[-15mm]
-  \mbox{}\hfil\begin{minipage}[c][][c]{0.5\textwidth}
-    \ducksay[cow]{\ducksay@version}
-  \end{minipage}\hfil
+  \centering
+  %\mbox{}\vfill
+  \Large
+    \ducksay[duck,bubble=\huge]{This is ducksay!}\\
+  \vfill
+  \normalsize
+  \hspace*{-2cm}
+    \ducksay[cow,bubble=\large]{\ducksay@version}\\
+  \small
+  \vspace*{-5cm}\hspace*{5cm}
+    \ducksay[small-duck,bubble=\normalsize]{But which Version?}
+  \mbox{}\hfil
   \vspace{2cm}
-  \vfil
-  \vfil
-  \begin{minipage}[t][0pt][c]{0.5\textwidth}
-    \large
-    \ducksay[r2d2]{by Jonathan P. Spratte}
-  \end{minipage}\hspace{-1cm}
-  \parbox{0.5\textwidth}{
-    \small
-    \ducksay[small-duck]{Today is \ducksay@date}}
+  \vfill
+  \vfill
+  \hspace*{-0cm}
+  \large
+  \smash{%
+    \ducksay[r2d2,bubble=\large]{by Jonathan P. Spratte}}
+  \small
+    \ducksay[hedgehog,bubble=\normalsize]{Today is \ducksay@date}
   \makeatother
-\end{titlepage}
-\section{Commands}
+\end{titlepage}%<<<
+\section{Macros}
 \bgroup
 \parindent=-2em
 \parskip=1em
 \hspace*{-2em}%
-\verb|\ducksay[<animal>]{<message>}|\\ prints an \anml\ saying
-\texttt{<message>}.
+\verb|\ducksay[<options>]{<message>}|\\
+  options might include any of the options described in
+  section~\ref{sec:options}. Prints an \anml\ saying \texttt{<message>}.
 
-\verb|\duckthink[<animal>]{<message>}|\\ not implemented
+\verb|\duckthink[<options>]{<message>}|\\
+  not implemented
 
-\verb|\DefaultAnimal{<animal>}|\\ use the \anml\ if no optional
-argument is given to \verb|\ducksay|. Package default is duck.
+\verb|\DefaultAnimal{<animal>}|\\
+  use the \anml\ if no optional argument is given to \verb|\ducksay|. Package
+  default is duck. You might specify more options than \anml\ with this, but it
+  must contain an \anml, otherwise you have to specify an \anml\ in each call of
+  \verb|\ducksay|.
 
-\verb|\AddAnimal(*){<animal>}<ascii-art>|\\ adds \anml\ to the known
-animals. \texttt{<ascii-art>} is multi-line verbatim and therefore should be
-delimited either by matching braces or by anything that works for
-\verb|\verb|. If the star is given \anml\ is the new default. One
-space is added to the begin of \anml. For example, snowman is added
-with:
+\verb|\AddAnimal(*){<animal>}<ascii-art>|\\
+  adds \anml\ to the known animals. \texttt{<ascii-art>} is multi-line verbatim
+  and therefore should be delimited either by matching braces or by anything
+  that works for \verb|\verb|. If the star is given \anml\ is the new default.
+  One space is added to the begin of \anml. For example, snowman is added with:
 \begin{verbatim}
 \AddAnimal{snowman}
 {  \
@@ -63,15 +63,28 @@ with:
 \end{verbatim}
 \egroup
 
+\section{Options}\label{sec:options}
+The following Options are available to \verb|\ducksay| and \verb|\duckthink|:
+
+\bgroup
+\parindent=-2em
+\parskip=1em
+\anml\\
+  One of the animals listed in section~\ref{sec:animals} or any of the ones
+  added with \verb|AddAnimal|.
+
+\texttt{bubble=\#1}\\
+  use \texttt{\#1} in a group with the bubble (for font switches).
+\egroup
+  
 \section{Defects}
 \begin{itemize}
   \item no line wrapping
   \item no duckthink
-  \item no robust vertical alignment
 \end{itemize}
 
 \twocolumn
-\section{Available Animals}
+\section{Available Animals}\label{sec:animals}
 \small
 \availableAnimal{duck}
 \availableAnimal{small-duck}
@@ -81,8 +94,12 @@ with:
 \availableAnimal{frog}
 \availableAnimal{snowman}
 \availableAnimal{r2d2}
-\availableAnimal{vader}
 \availableAnimal{head-in}
+\availableAnimal{hedgehog}
+\availableAnimal{kangaroo}
+\availableAnimal{vader}
 \onecolumn
 \availableAnimal{yoda}
 \end{document}
+
+% vim: fdm=marker foldmarker=>>>,<<<
