@@ -1,0 +1,88 @@
+\documentclass[]{article}
+
+\usepackage{ducksay}
+\newcommand*{\availableAnimal}[1]{\par\vbox{\ducksay[#1]{#1}}\mbox{}\\[1ex]}
+\newcommand*{\anml}{\texttt{<animal>}}
+
+\begin{document}
+\begin{titlepage}
+  \makeatletter
+  \mbox{}\vfil
+  \hfil
+  \begin{minipage}[c][][c]{\textwidth}
+    \LARGE
+    \ducksay[duck]{This is ducksay!}
+  \end{minipage}\hfil
+  \vfil
+  \hspace*{\fill}
+  \begin{minipage}{0.5\textwidth}
+    \small
+    \ducksay[small-duck]{But which Version?}
+  \end{minipage}\\[-15mm]
+  \mbox{}\hfil\begin{minipage}[c][][c]{0.5\textwidth}
+    \ducksay[cow]{\ducksay@version}
+  \end{minipage}\hfil
+  \vspace{2cm}
+  \vfil
+  \vfil
+  \begin{minipage}[t][0pt][c]{0.5\textwidth}
+    \large
+    \ducksay[r2d2]{by Jonathan P. Spratte}
+  \end{minipage}\hspace{-1cm}
+  \parbox{0.5\textwidth}{
+    \small
+    \ducksay[small-duck]{Today is \ducksay@date}}
+  \makeatother
+\end{titlepage}
+\section{Commands}
+\bgroup
+\parindent=-2em
+\parskip=1em
+\hspace*{-2em}%
+\verb|\ducksay[<animal>]{<message>}|\\ prints an \anml\ saying
+\texttt{<message>}.
+
+\verb|\duckthink[<animal>]{<message>}|\\ not implemented
+
+\verb|\DefaultAnimal{<animal>}|\\ use the \anml\ if no optional
+argument is given to \verb|\ducksay|. Package default is duck.
+
+\verb|\AddAnimal(*){<animal>}<ascii-art>|\\ adds \anml\ to the known
+animals. \texttt{<ascii-art>} is multi-line verbatim and therefore should be
+delimited either by matching braces or by anything that works for
+\verb|\verb|. If the star is given \anml\ is the new default. One
+space is added to the begin of \anml. For example, snowman is added
+with:
+\begin{verbatim}
+\AddAnimal{snowman}
+{  \
+    \_[_]_
+      (")
+   >-( : )-<
+    (__:__)}
+\end{verbatim}
+\egroup
+
+\section{Defects}
+\begin{itemize}
+  \item no line wrapping
+  \item no duckthink
+  \item no robust vertical alignment
+\end{itemize}
+
+\twocolumn
+\section{Available Animals}
+\small
+\availableAnimal{duck}
+\availableAnimal{small-duck}
+\availableAnimal{cow}
+\availableAnimal{tux}
+\availableAnimal{pig}
+\availableAnimal{frog}
+\availableAnimal{snowman}
+\availableAnimal{r2d2}
+\availableAnimal{vader}
+\availableAnimal{head-in}
+\onecolumn
+\availableAnimal{yoda}
+\end{document}

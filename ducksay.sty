@@ -1,0 +1,171 @@
+\RequirePackage{xparse,l3keys2e}
+\def\ducksay@version{v0.1}
+\def\ducksay@date{2017/09/20}
+
+\ProvidesExplPackage
+  {ducksay}           {\ducksay@date}
+  {\ducksay@version}  {cowsay for LaTeX}
+
+\ExplSyntaxOn
+\int_new:N \l_ducksay_strlen_int
+\NewDocumentCommand{\ducksay}{ O{} m }{%
+  \group_begin:
+    \keys_set:nn { ducksay } { default_animal,#1 }
+    \exp_args:NNx \tl_set:Nn \l_tmpa_tl { #2 }
+    \regex_replace_all:nnN { \s } { \c{space} } \l_tmpa_tl
+    %\exp_args:NNx \int_set:Nn \l_ducksay_strlen_int {
+    %  \exp_args:Nx \tl_count_tokens:n { \l_tmpa_tl } }
+    \int_set:Nn \l_ducksay_strlen_int { \tl_count:N \l_tmpa_tl }
+    \frenchspacing
+    \par\noindent
+    \texttt{\ __\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{_}}\\\null
+    \texttt{(\ #2\ )}\\[-1ex]\null
+    \texttt{\ --\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{-}}\\\null
+    \texttt{\l_ducksay_animal_tl}
+  \group_end:
+}
+
+\NewDocumentCommand{\duckthink}{ O{} v }{%
+}
+
+\NewDocumentCommand{\DefaultAnimal}{ m }{
+  \keys_define:nn { ducksay } { default_animal .meta:n = {#1} }}
+
+\NewDocumentCommand{\AddAnimal}{ s m +v }{%
+  \tl_set:Nn \l_tmpa_tl { \ #3 }
+  \regex_replace_all:nnN { \r } { \c{newline}\c{null} } \l_tmpa_tl
+  \cs_gset_eq:cN { g_ducksay_animal_#2_tl } \l_tmpa_tl
+  \keys_define:nn { ducksay } {
+    #2 .code:n = \cs_set_eq:Nc \l_ducksay_animal_tl { g_ducksay_animal_#2_tl }
+  }
+  \IfBooleanT{#1}{
+    \keys_define:nn { ducksay } {
+      default_animal .meta:n = {#2} }}
+}
+
+\ExplSyntaxOff
+
+\AddAnimal*{duck}
+{  \
+    \   __
+      >(' )
+        )/
+       /(
+      /  `----/
+      \  ~=- /
+    ~^~^~^~^~^~^~^}
+\AddAnimal{small-duck}
+{  \
+    \
+      >()_
+       (__)__ _}
+\AddAnimal{cow}
+{  \  ^__^
+    \ (oo)\_______
+      (__)\       )\/\
+          ||----w |
+          ||     ||}
+\AddAnimal{head-in}
+{  \  
+    \ ^__^         /
+      (oo)\_______/  ________
+      (__)\       )=(  ___|_ \____
+          ||----w |  \ \    \____ |
+          ||     ||   ||         ||}
+\AddAnimal{tux}
+{  \
+    \  .--. 
+      |o_o |
+      |:_/ |
+     //   \ \
+    (|     | )
+   /'\_   _/`\
+   \___)=(___/}
+\AddAnimal{pig}
++  \     _//| .-~~~-.
+    \ _/oo  }       }-@
+     ('')_  }       |
+      `--'| { }--{  }
+           //_/  /_/+
+\AddAnimal{frog}
+{   \
+     \(.)_(.)
+   _ (   _   ) _
+  / \/`-----'\/ \
+__\ ( (     ) ) /__
+)   /\ \._./ /\   (
+ )_/ /|\   /|\ \_(}
+\AddAnimal{snowman}
+{  \
+    \_[_]_
+      (")
+   >-( : )-<
+    (__:__)}
+
+% from http://www.ascii-art.de/ascii/s/starwars.txt :
+\AddAnimal{yoda}
+{   \  |
+     \ |           ____
+      \|        _.' :  `._
+            .-.'`.  ;   .'`.-.
+   __      / : ___\ ;  /___ ; \      __
+ ,'_ ""--.:__;".-.";: :".-.":__;.--"" _`,
+ :' `.t""--.. '<@.`;_  ',@>` ..--""j.' `;
+      `:-.._J '-.-'L__ `-- ' L_..-;'
+        "-.__ ;  .-"  "-.  : __.-"
+            L ' /.------.\ ' J
+             "-.   "--"   .-"
+            __.l"-:_JL_;-";.__
+         .-j/'.;  ;""""  / .'\"-.
+       .' /:`. "-.:     .-" .';  `.
+    .-"  / ;  "-. "-..-" .-"  :    "-.
+ .+"-.  : :      "-.__.-"      ;-._   \
+ ; \  `.; ;                    : : "+. ;
+ :  ;   ; ;                    : ;  : \:
+ ;  :   ; :                    ;:   ;  :
+: \  ;  :  ;                  : ;  /  ::
+;  ; :   ; :                  ;   :   ;:
+:  :  ;  :  ;                : :  ;  : ;
+;\    :   ; :                ; ;     ; ;
+: `."-;   :  ;              :  ;    /  ;
+ ;    -:   ; :              ;  : .-"   :
+ :\     \  :  ;            : \.-"      :
+  ;`.    \  ; :            ;.'_..--  / ;
+  :  "-.  "-:  ;          :/."      .'  :
+   \         \ :          ;/  __        :
+    \       .-`.\        /t-""  ":-+.   :
+     `.  .-"    `l    __/ /`. :  ; ; \  ;
+       \   .-" .-"-.-"  .' .'j \  /   ;/
+        \ / .-"   /.     .'.' ;_:'    ;
+         :-""-.`./-.'     /    `.___.'
+               \ `t  ._  /
+                "-.t-._:'}
+\AddAnimal{r2d2}
+{  \
+    \ ,-----.
+    ,'_/_|_\_`.
+   /<<::8[O]::>\
+  _|-----------|_
+ |  | ====-=- |  |
+ |  | -=-==== |  |
+ \  | ::::|()||  /
+  | | ....|()|| |
+  | |_________| |
+  | |\_______/| |
+ /   \ /   \ /   \
+ `---' `---' `---'} 
+\AddAnimal{vader}
+{  \     _.-'~~~~~~`-._
+    \   /      ||      \
+       /       ||       \
+      |        ||        |
+      | _______||_______ |
+      |/ ----- \/ ----- \|
+     /  (     )  (     )  \
+    / \  ----- () -----  / \
+   /   \      /||\      /   \
+  /     \    /||||\    /     \
+ /       \  /||||||\  /       \
+/_        \o========o/        _\
+  `--...__|`-._  _.-'|__...--'
+          |    `'    |}
