@@ -1,9 +1,15 @@
 \documentclass[]{article}
 
 \usepackage{ducksay}
-\newcommand*{\availableAnimal}[1]{\par\makebox[0pt][l]{\ducksay[#1]{#1}}\mbox{}\\[1ex]}
+
+\newcommand*{\availableAnimal}[1]{\rlap{\ducksay[#1]{#1}}\hfill\mbox{}\\[1ex]}
 \newcommand*{\anml}{\texttt{<animal>}}
 \newcommand*{\msg}{\texttt{<message>}}
+\newenvironment{codedescription}{%
+  \parindent=-3em%
+  \parskip=1em%
+  \par%
+}{}
 
 \begin{document}
 \begin{titlepage}%>>>
@@ -32,29 +38,37 @@
   \makeatother
 \end{titlepage}%<<<
 \section{Macros}
-\bgroup
-\parindent=-2em
-\parskip=1em
-\hspace*{-2em}%
+\marginpar{%
+  \rlap{%
+    \tiny\ducksay[yoda,bubble=\footnotesize,align=t]{Use those, you might}}}
+The following macros are available:
+
+\begin{codedescription}
 \verb|\ducksay[<options>]{<message>}|\\
   options might include any of the options described in
-  section~\ref{sec:options}. Prints an \anml\ saying \msg. \msg\ is not
+  section~\ref{sec:options}. Prints an \anml\ saying \msg. \msg\ is not read in
   verbatim.
 
 \verb|\duckthink[<options>]{<message>}|\\
-  not implemented
+  options might include any of the options described in
+  section~\ref{sec:options}. Prints an \anml\ thinking \msg. \msg\ is not read
+  in verbatim. It is implemented using regular expressions replacing a \verb|\|
+  which is only preceded by \verb|\s*| in the first three lines with \verb|O|
+  and \verb|o|. It is therefore slower than \verb|\ducksay|.
 
 \verb|\DefaultAnimal{<animal>}|\\
   use the \anml\ if no optional argument is given to \verb|\ducksay|. Package
   default is duck. You might specify more options than \anml\ with this, but it
-  must contain an \anml, otherwise you have to specify an \anml\ in each call of
-  \verb|\ducksay|.
+  should contain an \anml, otherwise you have to specify an \anml\ in each call
+  of \verb|\ducksay|.
 
 \verb|\AddAnimal(*){<animal>}<ascii-art>|\\
   adds \anml\ to the known animals. \texttt{<ascii-art>} is multi-line verbatim
   and therefore should be delimited either by matching braces or by anything
   that works for \verb|\verb|. If the star is given \anml\ is the new default.
-  One space is added to the begin of \anml. For example, snowman is added with:
+  One space is added to the begin of \anml\ (compensating the opening symbol).
+  For example, snowman is added with:
+  \vspace{-2ex}
 \begin{verbatim}
 \AddAnimal{snowman}
 {  \
@@ -63,33 +77,57 @@
    >-( : )-<
     (__:__)}
 \end{verbatim}
-\egroup
+\end{codedescription}
 
 \section{Options}\label{sec:options}
+{\reversemarginpar\marginpar{%
+  \vspace*{-2em}\hspace*{-4em}%
+  \tiny\ducksay[hedgehog,bubble=\footnotesize,align=t]{Everyone likes options}}}
 The following Options are available to \verb|\ducksay| and \verb|\duckthink|:
 
-\bgroup
-\parindent=-2em
-\parskip=1em
+\begin{codedescription}
 \anml\\
   One of the animals listed in section~\ref{sec:animals} or any of the ones
   added with \verb|\AddAnimal|.
 
 \texttt{bubble=\#1}\\
-  use \texttt{\#1} in a group with the bubble (for font switches).
-\egroup
+  use \texttt{\#1} in a group right before the bubble (for font switches). Might
+  also be used as package option (but not all control sequences work out of the
+  box here).
+
+\texttt{align=\#1}\\
+  use \texttt{\#1} as the vertical alignment specifier given to the
+  \texttt{tabular} which is around the contents of \verb|\ducksay| and
+  \verb|\duckthink|. Might also be used as package option.
+\end{codedescription}
   
+\subsection{Package Options}
+The following options are only available as package options:
+
+\begin{codedescription}
+\texttt{animal=\#1}\\
+  sets \texttt{\#1} as the default \anml.
+\end{codedescription}
+
 \section{Defects}
+{\reversemarginpar\marginpar{%
+  \tiny\rlap{\ducksay[frog,bubble=\footnotesize,align=t]{Ohh, no!}}}}
 \begin{itemize}
   \item no line wrapping
-  \item no \verb|\duckthink|
 \end{itemize}
+
+\section{Dependencies}
+\marginpar{%
+  \tiny\rlap{\ducksay[kangaroo,bubble=\footnotesize,align=t]{We rely on it}}}
+The package depends on the two packages \texttt{xparse} and \texttt{l3keys2e}
+and all of their dependencies.
 
 \twocolumn
 \section{Available Animals}\label{sec:animals}
 \small
 \availableAnimal{duck}
 \availableAnimal{small-duck}
+\availableAnimal{duck-family}
 \availableAnimal{cow}
 \availableAnimal{tux}
 \availableAnimal{pig}
@@ -109,7 +147,7 @@ The following Options are available to \verb|\ducksay| and \verb|\duckthink|:
 \Huge
 \mbox{}\vfill
 \centering
-\ducksay{Have fun with it!}
+\makebox[0pt]{\duckthink{Who's gonna use it anyway?}}
 \vfill
 \egroup
 \end{document}

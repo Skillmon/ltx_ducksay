@@ -1,44 +1,70 @@
 \RequirePackage{xparse,l3keys2e}
-\def\ducksay@version{v0.1}
-\def\ducksay@date{2017/09/20}
+
+\def\ducksay@version{v0.1b}
+\def\ducksay@date{2017/09/21}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
   {\ducksay@version}  {cowsay for LaTeX}
 
 \ExplSyntaxOn
+
 \int_new:N \l_ducksay_strlen_int
-\NewDocumentCommand{\ducksay}{ O{} m }{%>>>
+
+\cs_new:Npn \ducksay_print:n #1 {%>>>
+  \exp_args:NNx \tl_set:Nn \l_tmpa_tl { #1 }
+  \regex_replace_all:nnN { \s } { \c{space} } \l_tmpa_tl
+  \int_set:Nn \l_ducksay_strlen_int { \tl_count:N \l_tmpa_tl }
+  \frenchspacing
   \group_begin:
-    \keys_set:nn { ducksay } { default_animal,#1 }
-    \exp_args:NNx \tl_set:Nn \l_tmpa_tl { #2 }
-    \regex_replace_all:nnN { \s } { \c{space} } \l_tmpa_tl
-    \int_set:Nn \l_ducksay_strlen_int { \tl_count:N \l_tmpa_tl }
-    \frenchspacing
-    \group_begin:
-      \ttfamily
+    \ttfamily
+    \begin{tabular}[\l_ducksay_align_tl]{@{}l@{}}
+      \ducksay_bubblesize:
       \begin{tabular}{@{}l@{}}
-        \ducksay_bubblesize:
-        \begin{tabular}{@{}l@{}}
-          {\ __\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{_}}\\\null
-          {(\ #2\ )}\\[-1ex]\null
-          {\ {-}{-}\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{{-}}}\\
-        \end{tabular}\\\null
-        \begin{tabular}{@{}l@{}}
-          \l_ducksay_animal_tl
-        \end{tabular}
+        {\ __\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{_}}\\\null
+        {(\ #1\ )}\\[-1ex]\null
+        {\ {-}{-}\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{{-}}}\\
+      \end{tabular}\\\null
+      \begin{tabular}{@{}l@{}}
+        \l_ducksay_animal_tl
       \end{tabular}
-    \group_end:
+    \end{tabular}
   \group_end:
 }%<<<
 
-%\NewDocumentCommand{\duckthink}{ O{} v }{%
-%}
+\NewDocumentCommand{\ducksay}{ O{} m }{%>>>
+  \group_begin:
+    \keys_set:nn { ducksay } { default_animal,#1 }
+    \ducksay_print:n { #2 }
+  \group_end:
+}%<<<
 
-\cs_set_eq:NN \ducksay_bubblesize: \relax
+% regexes for \cowthink >>>
+\regex_const:Nn \c_cowsay_first_regex  { \A(.\s*)\\ }
+\regex_const:Nn \c_cowsay_second_regex { \A(.[^\c{null}]*\c{null}\s*)\\ }
+\regex_const:Nn \c_cowsay_third_regex  {
+  \A(.[^\c{null}]*\c{null}[^\c{null}]*\c{null}\s*)\\ }
+%<<<
+
+\NewDocumentCommand{\duckthink}{ O{} m }{%>>>
+  \group_begin:
+    \keys_set:nn { ducksay } { default_animal,#1 }
+    \regex_replace_once:NnN \c_cowsay_first_regex  { \1O } \l_ducksay_animal_tl
+    \regex_replace_once:NnN \c_cowsay_second_regex { \1o } \l_ducksay_animal_tl
+    \regex_replace_once:NnN \c_cowsay_third_regex  { \1o } \l_ducksay_animal_tl
+    \ducksay_print:n { #2 }
+  \group_end:
+}%<<<
 
 \keys_define:nn { ducksay } {%>>>
-  ,bubble .code:n = \cs_set_eq:NN \ducksay_bubblesize: #1
+  ,bubble .code:n    = \cs_set:Nn \ducksay_bubblesize: {#1}
+  ,bubble .initial:n = \relax
+  ,align  .tl_set:N  = \l_ducksay_align_tl
+  ,align  .initial:n = {}
+  ,align  .value_required:n = true
+  ,animal .code:n    = {
+    \keys_define:nn { ducksay } { default_animal .meta:n = {#1} }}
+  ,animal .initial:n = duck
 }%<<<
 
 \NewDocumentCommand{\DefaultAnimal}{ m }{%>>>
@@ -56,13 +82,11 @@
       default_animal .meta:n = {#2} }}
 }%<<<
 
-\ProcessKeysOptions { ducksay }
-
 \ExplSyntaxOff
 
 % Animals:>>>
 % some of the below are from http://ascii.co.uk/art/kangaroo
-\AddAnimal*{duck}%>>>
+\AddAnimal{duck}%>>>
 {  \
     \   __
       >(' )
@@ -76,6 +100,14 @@
     \
       >()_
        (__)__ _}%<<<
+\AddAnimal{duck-family}%>>>
+{  \
+    \   __
+      >(' )
+        )/
+       /(
+      /  `----/  -()_  >()_
+    __\__~=-_/__ _(__)__(__)__ _}%<<<
 \AddAnimal{cow}%>>>
 {  \  ^__^
     \ (oo)\_______
@@ -106,12 +138,12 @@
            //_/  /_/+%<<<
 \AddAnimal{frog}%>>>
 {   \
-     \(.)_(.)
-   _ (   _   ) _
-  / \/`-----'\/ \
-__\ ( (     ) ) /__
-)   /\ \._./ /\   (
- )_/ /|\   /|\ \_(}%<<<
+     \ (.)_(.)
+    _ (   _   ) _
+   / \/`-----'\/ \
+ __\ ( (     ) ) /__
+ )   /\ \._./ /\   (
+  )_/ /|\   /|\ \_(}%<<<
 \AddAnimal{snowman}%>>>
 {  \
     \_[_]_
@@ -150,19 +182,19 @@ __\ ( (     ) ) /__
        .' /:`. :  :     /.".'';  `.
     .-"  / ;`.".  :    ."."   :    "-.
  .+"-.  : :   ".".". ."."      ;-._   \
- ; \  `.; ;     "."-"."        : : "+. ;
- :  ;   ; ;      ."."          : ;  : \:
- ;  :   ; :     ; .            ;:   ;  :
-: \  ;  :  ;   ; ;            : ;  /  ::
-;  ; :   ; :  . ;             ;   :   ;:
-:  :  ;  :  ;. .             : :  ;  : ;
-;\    :   ; : .              ; ;     ; ;
-: `."-;   :  ;              :  ;    /  ;
- ;    -:   ; :              ;  : .-"   :
- :\     \  :  ;            : \.-"      :
-  ;`.    \  ; :            ;.'_..--  / ;
-  :  "-.  "-:  ;          :/."      .'  :
-   \         \ :          ;/  __        :
+ ; \  `.; ; .   "."-"."        : : "+. ;
+ :  ;   ; ;  .   ."."    ;     : ;  : \:
+ ;  :   ; :     / /     /  ,   ;:   ;  :
+: \  ;  :  ;   ; /     :  ,   : ;  /  ::
+;  ; :   ; :  ; ;      ;      ;   :   ;:
+:  :  ;  :  ;. ;      '      : :  ;  : ;
+;\    :   ; : .          ,   ; ;     ; ;
+: `."-;   :  ;      .   ;   :  ;    /  ;
+ ;    -:   ; :      ,  ,    ;  : .-"   :
+ :\     \  :  ;    ,       : \.-"      :
+  ;`.    \  ; :   .   ,    ;.'_..--  / ;
+  :  "-.  "-:  ;     ,    :/."      .'  :
+   \         \ :    :     ;/  __        :
     \       .-`.\        /t-""  ":-+.   :
      `.  .-"    `l    __/ /`. :  ; ; \  ;
        \   .-" .-"-.-"  .' .'j \  /   ;/
@@ -200,5 +232,15 @@ __\ ( (     ) ) /__
   `--...__|`-._  _.-'|__...--'
           |    `'    |}%<<<
 %<<<
+
+\ExplSyntaxOn
+
+\ProcessKeysOptions { ducksay }
+
+\keys_define:nn { ducksay } {
+  ,animal .undefine:
+}
+
+\ExplSyntaxOff
 
 % vim: fdm=marker foldmarker=>>>,<<<
