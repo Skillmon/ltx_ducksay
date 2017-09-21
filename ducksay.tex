@@ -1,6 +1,7 @@
 \documentclass[]{article}
 
 \usepackage{ducksay}
+\usepackage{multicol}
 
 \newcommand*{\availableAnimal}[1]{\rlap{\ducksay[#1]{#1}}\hfill\mbox{}\\[1ex]}
 \newcommand*{\anml}{\texttt{<animal>}}
@@ -122,9 +123,9 @@ The following options are only available as package options:
 The package depends on the two packages \texttt{xparse} and \texttt{l3keys2e}
 and all of their dependencies.
 
-\twocolumn
 \section{Available Animals}\label{sec:animals}
 \small
+\begin{multicols}{2}
 \availableAnimal{duck}
 \availableAnimal{small-duck}
 \availableAnimal{duck-family}
@@ -138,9 +139,11 @@ and all of their dependencies.
 \availableAnimal{hedgehog}
 \availableAnimal{kangaroo}
 \availableAnimal{vader}
-\onecolumn
+\hspace*{-4em}\availableAnimal{yoda-head}
 \availableAnimal{yoda}
+\end{multicols}
 
+\onecolumn
 \clearpage
 \thispagestyle{empty}
 \bgroup
