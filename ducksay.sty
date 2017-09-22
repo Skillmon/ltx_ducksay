@@ -1,6 +1,9 @@
+%% This file may be distributed under the terms of the WTFPL
+%% Copyright (C) 2017 by Jonathan P. Spratte
+\NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xparse,l3keys2e}
 
-\def\ducksay@version{v0.1b}
+\def\ducksay@version{v1.0}
 \def\ducksay@date{2017/09/21}
 
 \ProvidesExplPackage
@@ -10,21 +13,79 @@
 \ExplSyntaxOn
 
 \int_new:N \l_ducksay_strlen_int
+\int_new:N \l_ducksay_lines_int
+\seq_new:N \l_ducksay_msg_lines_seq
 
-\cs_new:Npn \ducksay_print:n #1 {%>>>
+\cs_new:Npn \ducksay_longest_line:n #1 {%>>>
+  \int_incr:N \l_ducksay_lines_int
   \exp_args:NNx \tl_set:Nn \l_tmpa_tl { #1 }
   \regex_replace_all:nnN { \s } { \c{space} } \l_tmpa_tl
-  \int_set:Nn \l_ducksay_strlen_int { \tl_count:N \l_tmpa_tl }
+  \int_set:Nn \l_ducksay_strlen_int {
+    \int_max:nn { \l_ducksay_strlen_int } { \tl_count:N \l_tmpa_tl } }
+}%<<<
+
+\cs_new:Npn \ducksay_open_bubble: {%>>>
+  \begin{tabular}{@{}l@{}}
+    \mbox{}\\
+    \int_compare:nNnTF {\l_ducksay_lines_int} = {1} {
+      (
+    }{
+      /
+      \int_step_inline:nnnn {3}{1} {\l_ducksay_lines_int} {\\\kern-0.5ex|}
+      \\\detokenize{\ }
+    }
+    \\[-1ex]\mbox{}
+  \end{tabular}
+  \begin{tabular}{@{}l@{}}
+    _\\
+    \int_step_inline:nnnn{2}{1}{\l_ducksay_lines_int}{\\}\\[-1ex]
+    {-}
+  \end{tabular}
+}%<<<
+
+\cs_new:Npn \ducksay_close_bubble: {%>>>
+  \begin{tabular}{@{}l@{}}
+    _\\
+    \int_step_inline:nnnn{2}{1}{\l_ducksay_lines_int}{\\}\\[-1ex]
+    {-}
+  \end{tabular}
+  \begin{tabular}{@{}r@{}}
+    \mbox{}\\
+    \int_compare:nNnTF {\l_ducksay_lines_int} = {1} {
+      )
+    }{
+      \detokenize{\ }
+      \int_step_inline:nnnn {3}{1}{\l_ducksay_lines_int} {\\|\kern-0.5ex}
+      \\/
+    }
+    \\[-1ex]\mbox{}
+  \end{tabular}
+}%<<<
+
+\cs_new:Npn \ducksay_print_msg:n #1 #2 {%>>>
+  \begin{tabular}{@{} #2 @{}}
+    \int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{_}\\
+    #1\\[-1ex]
+    \int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{{-}}
+  \end{tabular}
+}%<<<
+
+\cs_new:Npn \ducksay_print:n #1 {%>>>
+  \int_zero:N \l_ducksay_strlen_int
+  \int_zero:N \l_ducksay_lines_int
+  \seq_set_split:Nnn \l_ducksay_msg_lines_seq {\\} { #1 }
+  \seq_map_function:NN \l_ducksay_msg_lines_seq \ducksay_longest_line:n
   \frenchspacing
   \group_begin:
     \ttfamily
     \begin{tabular}[\l_ducksay_align_tl]{@{}l@{}}
-      \ducksay_bubblesize:
+      \ducksay_bubble:
       \begin{tabular}{@{}l@{}}
-        {\ __\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{_}}\\\null
-        {(\ #1\ )}\\[-1ex]\null
-        {\ {-}{-}\int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{{-}}}\\
-      \end{tabular}\\\null
+        \ducksay_open_bubble:
+        \exp_args:Nno \ducksay_print_msg:n {#1} { \l_ducksay_msg_align_tl }
+        \ducksay_close_bubble:
+      \end{tabular}\\
+      \ducksay_body:
       \begin{tabular}{@{}l@{}}
         \l_ducksay_animal_tl
       \end{tabular}
@@ -39,32 +100,37 @@
   \group_end:
 }%<<<
 
-% regexes for \cowthink >>>
-\regex_const:Nn \c_cowsay_first_regex  { \A(.\s*)\\ }
-\regex_const:Nn \c_cowsay_second_regex { \A(.[^\c{null}]*\c{null}\s*)\\ }
-\regex_const:Nn \c_cowsay_third_regex  {
+% regexes for \duckthink >>>
+\regex_const:Nn \c_ducksay_first_regex  { \A(.\s*)\\ }
+\regex_const:Nn \c_ducksay_second_regex { \A(.[^\c{null}]*\c{null}\s*)\\ }
+\regex_const:Nn \c_ducksay_third_regex  {
   \A(.[^\c{null}]*\c{null}[^\c{null}]*\c{null}\s*)\\ }
 %<<<
 
 \NewDocumentCommand{\duckthink}{ O{} m }{%>>>
   \group_begin:
     \keys_set:nn { ducksay } { default_animal,#1 }
-    \regex_replace_once:NnN \c_cowsay_first_regex  { \1O } \l_ducksay_animal_tl
-    \regex_replace_once:NnN \c_cowsay_second_regex { \1o } \l_ducksay_animal_tl
-    \regex_replace_once:NnN \c_cowsay_third_regex  { \1o } \l_ducksay_animal_tl
+    \regex_replace_once:NnN \c_ducksay_first_regex  { \1O } \l_ducksay_animal_tl
+    \regex_replace_once:NnN \c_ducksay_second_regex { \1o } \l_ducksay_animal_tl
+    \regex_replace_once:NnN \c_ducksay_third_regex  { \1o } \l_ducksay_animal_tl
     \ducksay_print:n { #2 }
   \group_end:
 }%<<<
 
 \keys_define:nn { ducksay } {%>>>
-  ,bubble .code:n    = \cs_set:Nn \ducksay_bubblesize: {#1}
-  ,bubble .initial:n = \relax
-  ,align  .tl_set:N  = \l_ducksay_align_tl
-  ,align  .initial:n = {}
+  ,bubble .code:n       = \cs_set:Nn \ducksay_bubble: {#1}
+  ,bubble .initial:n    = \relax
+  ,body   .code:n       = \cs_set:Nn \ducksay_body: {#1}
+  ,body   .initial:n    = \relax
+  ,align  .tl_set:N     = \l_ducksay_align_tl
+  ,align  .initial:n    = {}
   ,align  .value_required:n = true
-  ,animal .code:n    = {
+  ,animal .code:n       = {
     \keys_define:nn { ducksay } { default_animal .meta:n = {#1} }}
-  ,animal .initial:n = duck
+  ,animal .initial:n    = duck
+  ,msg-align .tl_set:N  = \l_ducksay_msg_align_tl
+  ,msg-align .initial:n = l
+  ,msg-align .value_required:n = true
 }%<<<
 
 \NewDocumentCommand{\DefaultAnimal}{ m }{%>>>
@@ -219,6 +285,15 @@
        .' /:`. :  :     /.".'';  `.
     .-"  / ;`.".  :    ."."   :    "-.
  .+"-.  : :   ".".". ."."      ;-._   \}%<<<
+% from https://www.ascii-code.com/ascii-art/movies/star-wars.php
+\AddAnimal{small-yoda}%>>>
+{  \
+    \
+    __.-._
+    '-._"7'
+     /'.-c
+     |  /T
+    _)_/LI}%<<<
 \AddAnimal{r2d2}%>>>
 {  \
     \ ,-----.
@@ -245,7 +320,7 @@
    /   \      /||\      /   \
   /     \    /||||\    /     \
  /       \  /||||||\  /       \
-/_        \o========o/        _\
+/_        \O========O/        _\
   `--...__|`-._  _.-'|__...--'
           |    `'    |}%<<<
 %<<<
@@ -260,4 +335,5 @@
 
 \ExplSyntaxOff
 
+\endinput
 % vim: fdm=marker foldmarker=>>>,<<<
