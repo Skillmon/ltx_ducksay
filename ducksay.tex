@@ -1,7 +1,13 @@
-\documentclass[]{article}
+%% This package is distributed under the terms of the GPLv3 or later, or the
+%% LPPL 1.3c or later, which ever license fits your needs the best.
+%%
+%% Copyright (C) 2017 by Jonathan P. Spratte
+\documentclass[a4paper,10pt]{article}
 
 \usepackage{ducksay}
 \usepackage{multicol}
+\usepackage{hyperref}
+\usepackage{lmodern}
 
 \makeatletter
 \newcommand*{\availableAnimal}[1]{\@for\cs:=#1\do{%
@@ -24,7 +30,7 @@
   \centering
   %\mbox{}\vfill
   \Large
-    \ducksay[duck,bubble=\huge,msg-align=c]{This is\\ducksay!}\\
+    \ducksay[duck,bubble=\huge,msg-align=c,wd=8]{This is\\ducksay!}\\
   \vfill
   \normalsize
   \hspace*{-2cm}
@@ -55,7 +61,8 @@ The following macros are available:
 \verb|\ducksay[<options>]{<message>}|\\
   options might include any of the options described in
   section~\ref{sec:options}. Prints an \anml\ saying \msg. \msg\ is not read in
-  verbatim. Multi-line \msg s are possible using \verb|\\|.
+  verbatim. Multi-line \msg s are possible using \verb|\\|. \verb|\\| should not
+  be inside a macro but at toplevel. Else use the option \texttt{ht}.
 
 \verb|\duckthink[<options>]{<message>}|\\
   options might include any of the options described in
@@ -63,7 +70,8 @@ The following macros are available:
   in verbatim. It is implemented using regular expressions replacing a \verb|\|
   which is only preceded by \verb|\s*| in the first three lines with \verb|O|
   and \verb|o|. It is therefore slower than \verb|\ducksay|. Multi-line \msg s
-  are possible using \verb|\\|.
+  are possible using \verb|\\|. \verb|\\| should not be inside a macro but at
+  toplevel. Else use the option \texttt{ht}.
 
 \verb|\DefaultAnimal{<animal>}|\\
   use the \anml\ if none is given in the optional argument to \verb|\ducksay| or
@@ -92,7 +100,8 @@ The following macros are available:
 \section{Options}\label{sec:options}%>>>
 {\reversemarginpar\marginpar{%
   \vspace*{-2em}\hspace*{-4em}%
-  \tiny\ducksay[hedgehog,bubble=\footnotesize,align=t]{Everyone likes options}}}
+  \tiny%
+  \ducksay[hedgehog,bubble=\footnotesize,align=t]{Everyone likes\\options}}}
 The following Options are available to \verb|\ducksay| and \verb|\duckthink| and
 if not otherwise specified also as package options:
 
@@ -120,6 +129,16 @@ if not otherwise specified also as package options:
   use \texttt{\#1} for alignment of the rows of multi-line \msg s. It should
   match a \texttt{tabular} column specifier. Default is \texttt{l}. It only
   affects the contents of the speech bubble not the bubble.
+
+\texttt{wd=\#1}\\
+  in order to detect the width the \msg\ is expanded. This might not work out
+  for some commands (e.g. \verb|\url| from \texttt{hyperref}). If you specify
+  the width using \texttt{wd} the \msg\ is not expanded and therefore the
+  command might work out. \texttt{\#1} should be the character count.
+
+\texttt{ht=\#1}\\
+  you might explicitly set the height (the row count) of the \msg. This only has
+  an effect if you also specify \texttt{wd}.
 \end{codedescription}
   %<<<
 \subsection{Package Options}%>>>
@@ -143,10 +162,12 @@ The following options are only available as package options during load-time:
 The package depends on the two packages \texttt{xparse} and \texttt{l3keys2e}
 and all of their dependencies.
 %<<<
+%\clearpage
 \section{Available Animals}\label{sec:animals}%>>>
-\small
+The following animals are provided by this package. I did not create them (but
+altered some), they belong to their original creators.
+\footnotesize
 \begin{multicols}{2}
-\raggedbottom
 \availableAnimal{%>>>
   ,duck%
   ,small-duck%
@@ -157,17 +178,32 @@ and all of their dependencies.
   ,frog%
   ,snowman%
   ,head-in%
+  ,sodomized%
   ,hedgehog%
   ,kangaroo%
   ,rabbit%
+  ,dragon%
+  ,bunny%
   ,small-rabbit%
+  ,dog%
+  ,squirrel%
+}\clearpage\availableAnimal{%
   ,r2d2%
   ,vader%
-  ,yoda-head%
   ,small-yoda%
+  ,yoda-head%
   ,yoda%
 }%<<<
 \end{multicols}
+%<<<
+\section{Miscellaneous}%>>>
+\marginpar{%
+  \rlap{\tiny\ducksay[squirrel,bubble=\footnotesize,align=t]{I'd choose WTFPL}}}
+This package is distributed under the terms of the GPLv3 or later, or the LPPL
+1.3c or later, choose which ever license fits your needs the best.
+
+The package is hosted on \url{https://github.com/Skillmon/ltx_ducksay}, you
+might report bugs there.
 %<<<
 \clearpage
 \thispagestyle{empty}
@@ -177,8 +213,8 @@ and all of their dependencies.
 \centering
 \makebox[0pt]{\duckthink{Who's gonna use it anyway?}}
 \vfill
-\hfill\smash{\footnotesize\ducksay[small-yoda]{sources at
-  \detokenize{https://github.com/Skillmon/ltx_ducksay}}}
+\hfill\smash{\footnotesize\ducksay[small-yoda,wd=49]{hosted at
+  \url{https://github.com/Skillmon/ltx_ducksay}}}
 \egroup
 \end{document}
 
