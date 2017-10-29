@@ -17,6 +17,11 @@
 \int_new:N \l_ducksay_strlen_int
 \int_new:N \l_ducksay_lines_int
 \seq_new:N \l_ducksay_msg_lines_seq
+\tl_new:N \l_ducksay_align_tl
+\tl_new:N \l_ducksay_msg_align_tl
+\cs_new:Nn \ducksay_bubble: {}
+\cs_new:Nn \ducksay_body: {}
+
 
 \cs_new:Npn \ducksay_longest_line:n #1 {%>>>
   \int_incr:N \l_ducksay_lines_int
@@ -64,13 +69,15 @@
   \end{tabular}
 }%<<<
 
-\cs_new:Npn \ducksay_print_msg:n #1 #2 {%>>>
+\cs_new:Nn \ducksay_print_msg:nn {%>>>
   \begin{tabular}{@{} #2 @{}}
     \int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{_}\\
     #1\\[-1ex]
     \int_step_inline:nnnn{1}{1}{\l_ducksay_strlen_int}{{-}}
   \end{tabular}
 }%<<<
+
+\cs_generate_variant:Nn \ducksay_print_msg:nn { nV }
 
 \cs_new:Npn \ducksay_print:n #1 {%>>>
   \int_case:nnF { \l_ducksay_strlen_int }
@@ -92,7 +99,7 @@
       \ducksay_bubble:
       \begin{tabular}{@{}l@{}}
         \ducksay_open_bubble:
-        \exp_args:NnV \ducksay_print_msg:n {#1} \l_ducksay_msg_align_tl
+        \ducksay_print_msg:nV {#1} \l_ducksay_msg_align_tl
         \ducksay_close_bubble:
       \end{tabular}\\
       \ducksay_body:
@@ -133,11 +140,8 @@
 
 \keys_define:nn { ducksay } {%>>>
   ,bubble .code:n       = \cs_set:Nn \ducksay_bubble: {#1}
-  ,bubble .initial:n    = \relax
   ,body   .code:n       = \cs_set:Nn \ducksay_body: {#1}
-  ,body   .initial:n    = \relax
   ,align  .tl_set:N     = \l_ducksay_align_tl
-  ,align  .initial:n    = {}
   ,align  .value_required:n = true
   ,wd     .int_set:N    = \l_ducksay_strlen_int
   ,wd     .value_required:n = true
