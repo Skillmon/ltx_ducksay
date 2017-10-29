@@ -6,9 +6,11 @@
 %% This file is for documentation only
 \documentclass[a4paper,10pt]{article}
 
-\usepackage{ducksay}
+%\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage[ligatures]{ducksay}
 \usepackage{multicol}
-\usepackage{hyperref}
+\usepackage[colorlinks]{hyperref}
 \usepackage{lmodern}
 
 \makeatletter
@@ -62,14 +64,14 @@ The following macros are available:
 \begin{codedescription}
 \verb|\ducksay[<options>]{<message>}|\\
   options might include any of the options described in
-  section~\ref{sec:options}. Prints an \anml\ saying \msg. \msg\ is not read in
+  \autoref{sec:options}. Prints an \anml\ saying \msg. \msg\ is not read in
   verbatim. Multi-line \msg s are possible using \verb|\\|. \verb|\\| should not
   be inside a macro but at toplevel. Else use the option \texttt{ht}.
 
 \verb|\duckthink[<options>]{<message>}|\\
   options might include any of the options described in
-  section~\ref{sec:options}. Prints an \anml\ thinking \msg. \msg\ is not read
-  in verbatim. It is implemented using regular expressions replacing a \verb|\|
+  \autoref{sec:options}. Prints an \anml\ thinking \msg. \msg\ is not read in
+  verbatim. It is implemented using regular expressions replacing a \verb|\|
   which is only preceded by \verb|\s*| in the first three lines with \verb|O|
   and \verb|o|. It is therefore slower than \verb|\ducksay|. Multi-line \msg s
   are possible using \verb|\\|. \verb|\\| should not be inside a macro but at
@@ -77,9 +79,11 @@ The following macros are available:
 
 \verb|\DefaultAnimal{<animal>}|\\
   use the \anml\ if none is given in the optional argument to \verb|\ducksay| or
-  \verb|\duckthink|. Package default is \texttt{duck}. You might specify more
-  options than \anml\ with this, but it should contain an \anml, otherwise you
-  have to specify an \anml\ in each call of \verb|\ducksay|.
+  \verb|\duckthink|. Package default is \texttt{duck}.
+
+\verb|\DucksayOptions{<options>}|\\
+  set the defaults to the keys described in \autoref{sec:options}. Don't use an
+  \anml\ here, it has no effect.
 
 \verb|\AddAnimal(*){<animal>}<ascii-art>|\\
   adds \anml\ to the known animals. \texttt{<ascii-art>} is multi-line verbatim
@@ -104,28 +108,33 @@ The following macros are available:
   \vspace*{-2em}\hspace*{-4em}%
   \tiny%
   \ducksay[hedgehog,bubble=\footnotesize,align=t]{Everyone likes\\options}}}
-The following Options are available to \verb|\ducksay| and \verb|\duckthink| and
-if not otherwise specified also as package options:
+The following options are available to \verb|\ducksay|, \verb|\duckthink|, and
+\verb|\DucksayOptions| and if not otherwise specified also as package options:
 
 \begin{codedescription}
 \anml\\
-  One of the animals listed in section~\ref{sec:animals} or any of the ones
-  added with \verb|\AddAnimal|. Not useable as package option.
+  One of the animals listed in \autoref{sec:animals} or any of the ones added
+  with \verb|\AddAnimal|. Not useable as package option.
+
+\texttt{animal=\anml}\\
+  a longer alternative to the use of \anml\ if used in \verb|\ducksay| or
+  \verb|\duckthink|. If it is used as a package option or in
+  \verb|\DucksayOptions| it changes the default animal to \anml.
 
 \texttt{bubble=\#1}\\
   use \texttt{\#1} in a group right before the bubble (for font switches). Might
   be used as a package option but not all control sequences work out of the box
-  here.
+  there.
 
 \texttt{body=\#1}\\
   use \texttt{\#1} in a group right before the body (meaning the \anml). Might
   be used as a package option but not all control sequences work out of the box
-  here). E.g., to right-align the \anml\ to the bubble, use \verb|body=\hfill|.
+  there. E.g., to right-align the \anml\ to the bubble, use \verb|body=\hfill|.
 
 \texttt{align=\#1}\\
   use \texttt{\#1} as the vertical alignment specifier given to the
   \texttt{tabular} which is around the contents of \verb|\ducksay| and
-  \verb|\duckthink|. Might also be used as a package option.
+  \verb|\duckthink|.
 
 \texttt{msg-align=\#1}\\
   use \texttt{\#1} for alignment of the rows of multi-line \msg s. It should
@@ -136,21 +145,23 @@ if not otherwise specified also as package options:
   in order to detect the width the \msg\ is expanded. This might not work out
   for some commands (e.g. \verb|\url| from \texttt{hyperref}). If you specify
   the width using \texttt{wd} the \msg\ is not expanded and therefore the
-  command might work out. \texttt{\#1} should be the character count.
+  command \emph{might} work out. \texttt{\#1} should be the character count.
 
 \texttt{ht=\#1}\\
   you might explicitly set the height (the row count) of the \msg. This only has
   an effect if you also specify \texttt{wd}.
+
+\texttt{ligatures=\#1}\\
+  this is a \LaTeX3 regular expression which should match every character you
+  don't want to form ligatures during \verb|\AddAnimal|. The default expression
+  is \verb|[\-<>`]|. Giving no argument (or an empty one) disables the
+  replacement, which enhances compilation speed. The formation of ligatures was
+  only observed in combination with \verb|\usepackage[T1]{fontenc}| by the
+  author of this package. Therefore giving the option \texttt{ligatures} without
+  an argument might enhance the compilation speed for you without any
+  drawbacks.
 \end{codedescription}
   %<<<
-\subsection{Package Options}%>>>
-The following options are only available as package options during load-time:
-
-\begin{codedescription}
-\texttt{animal=\#1}\\
-  sets \texttt{\#1} as the default \anml.
-\end{codedescription}
-%<<<
 \section{Defects}%>>>
 {\reversemarginpar\marginpar{%
   \tiny\rlap{\ducksay[frog,bubble=\footnotesize,align=t]{Ohh, no!}}}}
@@ -168,35 +179,39 @@ and all of their dependencies.
 \section{Available Animals}\label{sec:animals}%>>>
 The following animals are provided by this package. I did not create them (but
 altered some), they belong to their original creators.
+\bgroup
 \footnotesize
 \begin{multicols}{2}
 \availableAnimal{%>>>
   ,duck%
   ,small-duck%
   ,duck-family%
+  ,small-rabbit%
+  ,squirrel%
   ,cow%
   ,tux%
+  ,head-in%
   ,pig%
   ,frog%
   ,snowman%
-  ,head-in%
+  ,bunny%
+  ,dragon%
   ,sodomized%
   ,hedgehog%
   ,kangaroo%
-  ,rabbit%
-  ,dragon%
-  ,bunny%
-  ,small-rabbit%
   ,dog%
-  ,squirrel%
-}\clearpage\availableAnimal{%
+  ,rabbit%
+  ,unicorn%
+}\end{multicols}\begin{multicols}{2}
+\availableAnimal{%
   ,r2d2%
   ,vader%
-  ,small-yoda%
   ,yoda-head%
+  ,small-yoda%
   ,yoda%
 }%<<<
 \end{multicols}
+\egroup
 %<<<
 \section{Miscellaneous}%>>>
 \marginpar{%
@@ -208,6 +223,7 @@ The package is hosted on \url{https://github.com/Skillmon/ltx_ducksay}, you
 might report bugs there.
 %<<<
 \clearpage
+% closing page>>>
 \thispagestyle{empty}
 \bgroup
 \Huge
@@ -218,6 +234,7 @@ might report bugs there.
 \hfill\smash{\footnotesize\ducksay[small-yoda,wd=49]{hosted at
   \url{https://github.com/Skillmon/ltx_ducksay}}}
 \egroup
+%<<<
 \end{document}
 
 % vim: fdm=marker foldmarker=>>>,<<<
