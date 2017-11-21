@@ -8,7 +8,7 @@
 
 %\usepackage[utf8]{inputenc}
 %\usepackage[T1]{fontenc}
-\usepackage[ligatures]{ducksay}
+\usepackage[ligatures,all]{ducksay}
 \usepackage{multicol}
 \usepackage[colorlinks]{hyperref}
 \usepackage{lmodern}
@@ -28,7 +28,26 @@
   \par%
 }{}
 
+\newdimen\foowidth
+\newcount\foolines
+
+%\ExplSyntaxOn
+\newcommand{\automaticducksay}[3][]{%
+  \setbox0\hbox{\texttt{x}}%
+  \foowidth=\wd0\relax%
+  \setbox0\hbox{\parbox{#2\foowidth}{\texttt{\strut#3\strut}}}%
+  \foolines = \numexpr(\ht0+\dp0)/\baselineskip\relax%\fp_eval:n { round( (\dp0)/(\baselineskip) , 0 ) + 1}%
+  \ducksay[#1,wd=#2,ht=\foolines]{{\parbox{#2\foowidth}{\raggedright\strut#3\strut}}}}
+%\ExplSyntaxOff
+
 \begin{document}
+\setbox0\hbox{\texttt{x}}
+\ducksay[wd=10]{\parbox{10\wd0}{this is a test for the test of automatic
+line wrapping}}
+\automaticducksay{9}{this is a test for the test of automatic
+line wrapping}
+\automaticducksay{9}{this is a test}% is a test for the test of automatic
+\ducksay[wd=9,ht=2]{this is a\\test}
 \begin{titlepage}%>>>
   \makeatletter
   \centering
@@ -141,6 +160,10 @@ The following options are available to \verb|\ducksay|, \verb|\duckthink|, and
   match a \texttt{tabular} column specifier. Default is \texttt{l}. It only
   affects the contents of the speech bubble not the bubble.
 
+\texttt{rel-align=\#1}\\
+  use \texttt{\#1} for alignment of the bubble and the body. It should match a
+  \texttt{tabular} column specifier. Default is \texttt{l}.
+
 \texttt{wd=\#1}\\
   in order to detect the width the \msg\ is expanded. This might not work out
   for some commands (e.g. \verb|\url| from \texttt{hyperref}). If you specify
@@ -154,7 +177,7 @@ The following options are available to \verb|\ducksay|, \verb|\duckthink|, and
 \texttt{ligatures=\#1}\\
   this is a \LaTeX3 regular expression which should match every character you
   don't want to form ligatures during \verb|\AddAnimal|. The default expression
-  is \verb|[\-<>`]|. Giving no argument (or an empty one) disables the
+  is \verb|[`<>,'\-]|. Giving no argument (or an empty one) disables the
   replacement, which enhances compilation speed. The formation of ligatures was
   only observed in combination with \verb|\usepackage[T1]{fontenc}| by the
   author of this package. Therefore giving the option \texttt{ligatures} without
@@ -202,6 +225,7 @@ altered some), they belong to their original creators.
   ,dog%
   ,rabbit%
   ,unicorn%
+  ,snail%
 }\end{multicols}\begin{multicols}{2}
 \availableAnimal{%
   ,r2d2%
@@ -231,8 +255,9 @@ might report bugs there.
 \centering
 \makebox[0pt]{\duckthink{Who's gonna use it anyway?}}
 \vfill
-\hfill\smash{\footnotesize\ducksay[small-yoda,wd=49]{hosted at
-  \url{https://github.com/Skillmon/ltx_ducksay}}}
+\hfill\smash{%
+  \footnotesize\ducksay[small-yoda,wd=39,ht=3,msg-align=c,rel-align=r]
+    {Hosted at\\\url{https://github.com/Skillmon/ltx_ducksay}\\it is.}}
 \egroup
 %<<<
 \end{document}

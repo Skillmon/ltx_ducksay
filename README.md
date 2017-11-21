@@ -11,6 +11,7 @@ macros are available:
  - `\ducksay[<options>]{<message>}`
  - `\duckthink[<options>]{<message>}`
  - `\DefaultAnimal{<animal>}`
+ - `\DucksayOptions{<options>}`
  - `\AddAnimal(*){<name>}<ascii-art>`
 
 `<ascii-art>` should be delimited either by matching braces or by the same
