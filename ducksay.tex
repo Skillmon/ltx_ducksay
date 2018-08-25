@@ -23,22 +23,20 @@
 \newcommand*{\anml}{\texttt{<animal>}}
 \newcommand*{\msg}{\texttt{<message>}}
 \newenvironment{codedescription}{%
-  \parindent=-3em%
-  \parskip=1em%
-  \par%
+  \parindent=-3em
+  \parskip=1em
+  \par
 }{}
 
 \newdimen\foowidth
 \newcount\foolines
 
-%\ExplSyntaxOn
 \newcommand{\automaticducksay}[3][]{%
   \setbox0\hbox{\texttt{x}}%
   \foowidth=\wd0\relax%
   \setbox0\hbox{\parbox{#2\foowidth}{\texttt{\strut#3\strut}}}%
-  \foolines = \numexpr(\ht0+\dp0)/\baselineskip\relax%\fp_eval:n { round( (\dp0)/(\baselineskip) , 0 ) + 1}%
-  \ducksay[#1,wd=#2,ht=\foolines]{{\parbox{#2\foowidth}{\raggedright\strut#3\strut}}}}
-%\ExplSyntaxOff
+  \foolines = \numexpr(\ht0+\dp0)/\baselineskip\relax
+  \ducksay[#1,wd=#2,ht=\foolines]{\unhbox0}}
 
 \begin{document}
 \setbox0\hbox{\texttt{x}}
@@ -226,6 +224,7 @@ altered some), they belong to their original creators.
   ,rabbit%
   ,unicorn%
   ,snail%
+  ,whale%
 }\end{multicols}\begin{multicols}{2}
 \availableAnimal{%
   ,r2d2%

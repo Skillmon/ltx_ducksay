@@ -14,7 +14,7 @@
 
 \ExplSyntaxOn
 
-% variables>>>
+% variables >>>
 \int_new:N \l_ducksay_strlen_int
 \int_new:N \l_ducksay_lines_int
 \seq_new:N \l_ducksay_msg_lines_seq
@@ -28,9 +28,13 @@
 \cs_new:Nn \ducksay_body: {}
 \regex_new:N \l_ducksay_ligatures_regex
 \dim_new:N \l_ducksay_xwidth_dim
+% temporary usage >>>
+\box_new:N \l_ducksay_tmpa_box
+\tl_new:N  \l_ducksay_tmpa_tl
+%<<<
 %<<<
 
-% predefined regexes>>>
+% predefined regexes >>>
 % regexes for \duckthink >>>
 \regex_const:Nn \c_ducksay_first_regex  { \A(.\s*)\\ }
 \regex_const:Nn \c_ducksay_second_regex { \A(.[^\c{null}]*\c{null}\s*)\\ }
@@ -43,7 +47,7 @@
 %<<<
 %<<<
 
-\msg_new:nnnn { ducksay} { option-unknown }
+\msg_new:nnnn { ducksay } { option-unknown }
   { Unknown\ option\ '#1'\ for\ package\ ducksay. }
   { If\ the\ option\ corresponds\ to\ one\ of\ the\ animals,\ make\ sure\ to\ 
     load\ that\ animal. }
@@ -102,6 +106,7 @@
   ,dog
   ,snail
   ,unicorn
+  ,whale
   ,r2d2
   ,vader
   ,yoda-head
@@ -110,54 +115,51 @@
 }%<<<
 
 % define load-switch keys >>>
-\clist_map_inline:Nn \g__ducksay_all_animals_clist {
-  \bool_new:c { g__ducksay_load_#1_bool }
-  \keys_define:nn { ducksay } {
-    #1 .bool_gset:c = { g__ducksay_load_#1_bool }
+\clist_map_inline:Nn \g__ducksay_all_animals_clist
+  {
+    \bool_new:c { g__ducksay_load_#1_bool }
+    \keys_define:nn { ducksay }
+      { #1 .bool_gset:c = { g__ducksay_load_#1_bool } }
   }
-}
-\keys_define:nn { ducksay } {
-  ,all .code:n = { 
-    \tl_if_empty:nTF { #1 }
-    {
-      \clist_map_inline:Nn \g__ducksay_all_animals_clist {
-        \keys_set:nn { ducksay } { ##1 }
+\keys_define:nn { ducksay }
+  {
+    ,all .code:n =
+      {
+        \tl_if_empty:nTF { #1 }
+          {
+            \clist_map_inline:Nn \g__ducksay_all_animals_clist
+              { \keys_set:nn { ducksay } { ##1 } }
+          }
+          {
+            \clist_map_inline:Nn \g__ducksay_all_animals_clist
+              { \keys_set:nn { ducksay } { ##1 = #1 } }
+          }
       }
-    }
-    {
-      \clist_map_inline:Nn \g__ducksay_all_animals_clist {
-        \keys_set:nn { ducksay } { ##1 = #1 }
-      }
-    }
   }
-}
 \keys_set:nn { ducksay } { duck }
 %<<<
 
 \ProcessKeysOptions { ducksay }
 
 % undefine load-switch keys >>>
-\clist_map_inline:Nn \g__ducksay_all_animals_clist {
-  \keys_define:nn { ducksay } {
-    #1 .undefine:
-  }
-}
-\keys_define:nn { ducksay } {
-  ,all .undefine:
-}
+\clist_map_inline:Nn \g__ducksay_all_animals_clist
+  { \keys_define:nn { ducksay } { #1 .undefine: } }
+\keys_define:nn { ducksay } { ,all .undefine: }
 %<<<
 
-\cs_new:Nn \ducksay_x_dims: {%>>>
-  \hbox_set:Nn \l_tmpa_box { x }
-  \dim_set:Nn \l_ducksay_xwidth_dim { \box_wd:N \l_tmpa_box }
-}%<<<
+\cs_new:Nn \ducksay_x_dims:%>>>
+  {
+    \hbox_set:Nn \l_ducksay_tmpa_box { x }
+    \dim_set:Nn \l_ducksay_xwidth_dim { \box_wd:N \l_ducksay_tmpa_box }
+  }
+%<<<
 
 \cs_new:Nn \ducksay_longest_line:n {%>>>
   \int_incr:N \l_ducksay_lines_int
-  \exp_args:NNx \tl_set:Nn \l_tmpa_tl { #1 }
-  \regex_replace_all:nnN { \s } { \c{space} } \l_tmpa_tl
+  \exp_args:NNx \tl_set:Nn \l_ducksay_tmpa_tl { #1 }
+  \regex_replace_all:nnN { \s } { \c{space} } \l_ducksay_tmpa_tl
   \int_set:Nn \l_ducksay_strlen_int {
-    \int_max:nn { \l_ducksay_strlen_int } { \tl_count:N \l_tmpa_tl } }
+    \int_max:nn { \l_ducksay_strlen_int } { \tl_count:N \l_ducksay_tmpa_tl } }
 }%<<<
 
 \cs_new:Nn \ducksay_open_bubble: {%>>>
@@ -276,43 +278,47 @@
   \keys_set:nn { ducksay } { #1 }}%<<<
 
 \NewDocumentCommand{\AddAnimal}{ s m +v }{%>>>
-  \tl_set:Nn \l_tmpa_tl { \ #3 }
-  \bool_if:NF \l_ducksay_empty_ligatures_bool {
-    \regex_replace_all:NnN \l_ducksay_ligatures_regex { \c{mbox}\0 } \l_tmpa_tl 
-  }
+  \tl_set:Nn \l_ducksay_tmpa_tl { \ #3 }
+  \bool_if:NF \l_ducksay_empty_ligatures_bool
+    {
+      \regex_replace_all:NnN \l_ducksay_ligatures_regex { \c{mbox}\0 }
+        \l_ducksay_tmpa_tl 
+    }
   \regex_replace_all:NnN \c_ducksay_newline_regex { \c{tabularnewline}\c{null} }
-    \l_tmpa_tl
-  \tl_gset_eq:cN { g_ducksay_animal_#2_tl } \l_tmpa_tl
+    \l_ducksay_tmpa_tl
+  \tl_gset_eq:cN { g_ducksay_animal_#2_tl } \l_ducksay_tmpa_tl
   \keys_define:nn { ducksay } {
     #2 .code:n = \tl_set_eq:Nc \l_ducksay_animal_tl { g_ducksay_animal_#2_tl }
   }
-  \IfBooleanT{#1}{
-    \keys_define:nn { ducksay } {
-      default_animal .meta:n = {#2} }}
+  \IfBooleanT{#1}
+    {
+      \keys_define:nn { ducksay } { default_animal .meta:n = { #2 } }
+    }
 }%<<<
 
 \NewDocumentCommand{\ducksay@AddAnimal}{ s m +v }{%>>>
   \bool_if:cT { g__ducksay_load_#2_bool }{
-  \tl_set:Nn \l_tmpa_tl { \ #3 }
-  \bool_if:NF \l_ducksay_empty_ligatures_bool {
-    \regex_replace_all:NnN \l_ducksay_ligatures_regex { \c{mbox}\0 } \l_tmpa_tl 
-  }
-  \regex_replace_all:NnN \c_ducksay_newline_regex { \c{tabularnewline}\c{null} }
-    \l_tmpa_tl
-  \tl_gset_eq:cN { g_ducksay_animal_#2_tl } \l_tmpa_tl
-  \keys_define:nn { ducksay } {
-    #2 .undefine:,
-    #2 .code:n = \tl_set_eq:Nc \l_ducksay_animal_tl { g_ducksay_animal_#2_tl }
-  }
-  \IfBooleanT{#1}{
+    \tl_set:Nn \l_ducksay_tmpa_tl { \ #3 }
+    \bool_if:NF \l_ducksay_empty_ligatures_bool {
+      \regex_replace_all:NnN \l_ducksay_ligatures_regex { \c{mbox}\0 }
+        \l_ducksay_tmpa_tl 
+    }
+    \regex_replace_all:NnN \c_ducksay_newline_regex
+      { \c{tabularnewline}\c{null} } \l_ducksay_tmpa_tl
+    \tl_gset_eq:cN { g_ducksay_animal_#2_tl } \l_ducksay_tmpa_tl
     \keys_define:nn { ducksay } {
-      default_animal .meta:n = {#2} }}
+      #2 .undefine:,
+      #2 .code:n = \tl_set_eq:Nc \l_ducksay_animal_tl { g_ducksay_animal_#2_tl }
+    }
+    \IfBooleanT{#1}{
+      \keys_define:nn { ducksay } {
+        default_animal .meta:n = {#2} }}
   }
 }%<<<
 
 \ExplSyntaxOff
 
-% Animals:>>>
+% Animals: >>>
 % some of the below are from http://ascii.co.uk/art/kangaroo
 \ducksay@AddAnimal{duck}%>>>
 {  \
@@ -483,6 +489,13 @@
                 \_|                        / /       / /
                                          _//       _//
                                        /_|       /_|}%<<<
+\ducksay@AddAnimal{whale}%>>> https://asciiart.website//index.php?art=animals/other%20(water)
+{ \                |-.
+   \     .---._     \ \.--|
+    \  /       `-..__)  ,-'
+      |     .          /
+       \--.__,   .__.,'
+        `-.___'._\_.'}%<<<
 
 % from http://www.ascii-art.de/ascii/s/starwars.txt :
 \ducksay@AddAnimal{yoda}%>>>
