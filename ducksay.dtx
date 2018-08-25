@@ -11,7 +11,7 @@
 %
 % ------------------------------------------------------------------------------
 %
-%<*driver>
+%<*driver>^^A>>>
 \def\nameofplainTeX{plain}
 \ifx\fmtname\nameofplainTeX\else
   \expandafter\begingroup
@@ -55,13 +55,11 @@ and the derived files           ducksay.pdf
 \else
   \expandafter\endgroup
 \fi
-%</driver>
 %
-%<*driver>
 \ProvidesFile{ducksay.dtx}
   [2018/08/25 cowsay for LaTeX]
 \documentclass{l3doc}
-\usepackage{ducksay}
+\usepackage[all]{ducksay}
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 \newcommand*{\anml}{\meta{animal}}
 \newcommand*{\msg}{\meta{message}}
@@ -76,21 +74,43 @@ and the derived files           ducksay.pdf
   \fi%
 }}
 \makeatother
+\newcommand*\closingpage%>>>
+  {%
+    \clearpage
+    \thispagestyle{empty}
+    \bgroup
+    \Huge
+    \mbox{}\vfill
+    \centering
+    \makebox[0pt]{\duckthink{Who's gonna use it anyway?}}
+    \vfill
+    \hfill
+    \smash
+      {%
+        \footnotesize
+        \ducksay[small-yoda,wd=39,ht=3,msg-align=c,rel-align=r]
+          {Hosted at\\\url{https://github.com/Skillmon/ltx_ducksay}\\it is.}%
+      }
+    \egroup
+    \clearpage
+  }%<<<
 \begin{document}
   \DocInput{ducksay.dtx}
 \end{document}
-%</driver>
-%<*pkg>
+%</driver>^^A<<<
+%<*pkg>^^A>>>
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xparse,l3keys2e}
 
-\def\ducksay@version{v1.2}
-\def\ducksay@date{2017/10/30}
+\def\ducksay@version{v2.0}
+\def\ducksay@date{2018/08/25}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
   {\ducksay@version}  {cowsay for LaTeX}
-%</pkg>
+
+%</pkg>^^A<<<
+% \fi
 %
 % \begin{titlepage}^^A>>>
 %   \makeatletter
@@ -119,9 +139,11 @@ and the derived files           ducksay.pdf
 % \end{titlepage}^^A<<<
 % \tableofcontents
 %
-% \begin{documentation}
+% \begin{documentation}^^A>>>
 %
-% \section{Macros}^^A>>>
+% \section{Documentation}
+%
+% \subsection{Macros}^^A>>>
 % \marginpar{%
 %   \rlap{%
 %     \tiny\ducksay[yoda,bubble=\footnotesize,align=t]{Use those, you might}}}
@@ -174,30 +196,27 @@ and the derived files           ducksay.pdf
 %   and therefore should be delimited either by matching braces or by anything
 %   that works for \cs{verb}. If the star is given \anml\ is the new default.
 %   One space is added to the begin of \anml\ (compensating the opening symbol).
-%   For example, snowman is added with:\\[1ex]
+%   For example, |snowman| is added with:\\[1ex]
 %   \begin{minipage}{\linewidth}
-% \begin{verbatim}
+%\begin{verbatim}
 % \AddAnimal{snowman}
 % {  \
-%     \_[_]_
-%       (")
-%    >-( : )-<
-%     (__:__)}
-% \end{verbatim}
+%     \ _[_]_
+%        (")
+%     >-( : )-<
+%      (__:__)}
+%\end{verbatim}
 %   \end{minipage}
 % \end{function}^^A<<<
 %^^A<<<
 %
-% \section{Options}\label{sec:options}^^A>>>
-% \begingroup
-%   \reversemarginpar
-%   \marginpar
-%     {%
-%       \vspace*{-2em}\hspace*{-4em}\tiny
-%       \ducksay[hedgehog,bubble=\footnotesize,align=t]
-%         {Everyone likes\\options}%
-%     }
-% \endgroup
+% \subsection{Options}\label{sec:options}^^A>>>
+% \marginpar
+%   {%
+%     \vspace*{-2em}\tiny
+%     \hfill
+%     \ducksay[hedgehog,bubble=\footnotesize,align=t]{Everyone likes\\options}%
+%   }
 % The following options are available to \cs{ducksay}, \cs{duckthink}, and
 % \cs{DucksayOptions} and if not otherwise specified also as package options:
 % \begin{options}
@@ -249,19 +268,17 @@ and the derived files           ducksay.pdf
 % \end{options}
 %^^A<<<
 %
-% \section{Defects}^^A>>>
+% \subsection{Defects}^^A>>>
 % \begingroup
 %   \reversemarginpar
 %   \marginpar
-%     {%
-%       \tiny\rlap{\ducksay[frog,bubble=\footnotesize,align=t]{Ohh, no!}}%
-%     }
+%     {\tiny\hfill\ducksay[frog,bubble=\footnotesize,align=t]{Ohh, no!}}
 % \endgroup
 % \begin{itemize}
 %   \item no automatic line wrapping
 % \end{itemize}^^A<<<
 %
-% \section{Dependencies}^^A>>>
+% \subsection{Dependencies}^^A>>>
 % \marginpar
 %   {%
 %     \tiny
@@ -271,47 +288,57 @@ and the derived files           ducksay.pdf
 % and all of their dependencies.
 %^^A<<<
 %
-% \section{Available Animals}\label{sec:animals}^^A>>>
+% \subsection{Available Animals}\label{sec:animals}^^A>>>
+% \marginpar
+%   {%
+%     \tiny
+%     \hfill
+%     \makebox[8em][r]
+%       {%
+%         \ducksay[whale,bubble=\footnotesize,align=t]
+%           {I'm the\\new one.}%
+%       }%
+%   }
 % The following animals are provided by this package. I did not create them (but
 % altered some), they belong to their original creators.
 % \bgroup
 % \footnotesize
 % \begin{multicols}{2}
-% \availableAnimal{%>>>
-%   ,duck%
-%   ,small-duck%
-%   ,duck-family%
-%   ,small-rabbit%
-%   ,squirrel%
-%   ,cow%
-%   ,tux%
-%   ,head-in%
-%   ,pig%
-%   ,frog%
-%   ,snowman%
-%   ,bunny%
-%   ,dragon%
-%   ,sodomized%
-%   ,hedgehog%
-%   ,kangaroo%
-%   ,dog%
-%   ,rabbit%
-%   ,unicorn%
-%   ,snail%
-%   ,whale%
+% \availableAnimal{^^A>>>
+%   ,duck^^A
+%   ,small-duck^^A
+%   ,duck-family^^A
+%   ,small-rabbit^^A
+%   ,squirrel^^A
+%   ,cow^^A
+%   ,tux^^A
+%   ,head-in^^A
+%   ,pig^^A
+%   ,frog^^A
+%   ,snowman^^A
+%   ,bunny^^A
+%   ,dragon^^A
+%   ,sodomized^^A
+%   ,hedgehog^^A
+%   ,kangaroo^^A
+%   ,dog^^A
+%   ,rabbit^^A
+%   ,unicorn^^A
+%   ,snail^^A
+%   ,whale^^A
 % }\end{multicols}\begin{multicols}{2}
-% \availableAnimal{%
-%   ,r2d2%
-%   ,vader%
-%   ,yoda-head%
-%   ,small-yoda%
-%   ,yoda%
-% }%<<<
+% \availableAnimal{^^A
+%   ,r2d2^^A
+%   ,vader^^A
+%   ,yoda-head^^A
+%   ,small-yoda^^A
+%   ,yoda^^A
+% }^^A<<<
 % \end{multicols}
 % \egroup
 %^^A<<<
 %
-% \section{Miscellaneous}^^A>>>
+% \subsection{Miscellaneous}^^A>>>
 % \marginpar
 %   {%
 %     \rlap
@@ -327,34 +354,20 @@ and the derived files           ducksay.pdf
 % might report bugs there.
 %^^A<<<
 %
-% \clearpage
-%^^A closing page>>>
-% \thispagestyle{empty}
-% \bgroup
-% \Huge
-% \mbox{}\vfill
-% \centering
-% \makebox[0pt]{\duckthink{Who's gonna use it anyway?}}
-% \vfill
-% \hfill\smash{%
-%   \footnotesize\ducksay[small-yoda,wd=39,ht=3,msg-align=c,rel-align=r]
-%     {Hosted at\\\url{https://github.com/Skillmon/ltx_ducksay}\\it is.}}
-% \egroup
-%^^A<<<
+% \end{documentation}^^A<<<
 %
-% \end{documentation}
-%
-% \begin{implementation}
-%
-%    \begin{macrocode}
-%<*pkg>
-%    \end{macrocode}
+%<*pkg>^^A>>>
 % 
+% \begin{implementation}^^A>>>
+%
+% \clearpage
+% \section{Implementation}
+%
 %    \begin{macrocode}
 %<@@=ducksay>
 %    \end{macrocode}
 %
-% \section{Variables}^^A>>>
+% \subsection{Variables}^^A>>>
 % \begin{variable}{\l_ducksay_strlen_int}^^A>>>
 %    \begin{macrocode}
 \int_new:N \l_ducksay_strlen_int
@@ -420,7 +433,7 @@ and the derived files           ducksay.pdf
 \dim_new:N \l_ducksay_xwidth_dim
 %    \end{macrocode}
 % \end{variable}^^A<<<
-% \subsection{For Temporary Usage}
+% \subsubsection{For Temporary Usage}
 % \begin{variable}{\l_ducksay_tmpa_box}^^A>>>
 %    \begin{macrocode}
 \box_new:N \l_ducksay_tmpa_box
@@ -431,9 +444,9 @@ and the derived files           ducksay.pdf
 \tl_new:N  \l_ducksay_tmpa_tl
 %    \end{macrocode}
 % \end{variable}^^A<<<
-^^A<<<
+%^^A<<<
 %
-% \section{Regular Expressions}^^A>>>
+% \subsection{Regular Expressions}^^A>>>
 % Regular expressions for \cs{duckthink}
 %    \begin{macrocode}
 \regex_const:Nn \c_ducksay_first_regex  { \A(.\s*)\\ }
@@ -446,9 +459,9 @@ and the derived files           ducksay.pdf
 \regex_const:Nn \c_ducksay_newline_regex { \r }
 \regex_set:Nn \l_ducksay_ligatures_regex { [`<>,'\-] }
 %    \end{macrocode}
-^^A<<<
+%^^A<<<
 %
-% \section{Messages}^^A>>>
+% \subsection{Messages}^^A>>>
 %    \begin{macrocode}
 \msg_new:nnnn { ducksay } { option-unknown }
   { Unknown\ option\ '#1'\ for\ package\ ducksay. }
@@ -456,9 +469,9 @@ and the derived files           ducksay.pdf
     load\ that\ animal. }
 %    \end{macrocode}^^A<<<
 %
-% \section{Key-value setup}^^A>>>
+% \subsection{Key-value setup}^^A>>>
 %    \begin{macrocode}
-\keys_define:nn { ducksay }^^A>>>
+\keys_define:nn { ducksay }
   {
     ,bubble .code:n       = \cs_set:Nn \ducksay_bubble: {#1}
     ,body   .code:n       = \cs_set:Nn \ducksay_body: {#1}
@@ -490,7 +503,7 @@ and the derived files           ducksay.pdf
     ,unknown   .code:n    = {
       \msg_error:nnx { ducksay } { option-unknown } { \l_keys_key_tl }
     }
-  }^^A<<<
+  }
 %    \end{macrocode}
 % Setting up a clist of all included animals^^A>>>
 %    \begin{macrocode}
@@ -564,16 +577,17 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \keys_define:nn { ducksay } { ,all .undefine: }
 %    \end{macrocode}^^A<<<
-
-\cs_new:Nn \ducksay_x_dims:%>>>
+%
+%    \begin{macrocode}
+\cs_new:Nn \ducksay_x_dims:
   {
     \hbox_set:Nn \l_ducksay_tmpa_box { x }
     \dim_set:Nn \l_ducksay_xwidth_dim { \box_wd:N \l_ducksay_tmpa_box }
   }
-%<<<
+%    \end{macrocode}
 
-% \section{Functions}
-% \subsection{Internal}^^A>>>
+% \subsection{Functions}^^A>>>
+% \subsubsection{Internal}^^A>>>
 %
 % \begin{macro}{\ducksay_longest_line:n}^^A>>>
 %   Calculate the length of the longest line
@@ -610,7 +624,7 @@ and the derived files           ducksay.pdf
       \mbox{-}
     \end{tabular}
   }
-%    \begin{macrocode}
+%    \end{macrocode}
 % \end{macro}^^A<<<
 %
 % \begin{macro}{\ducksay_close_bubble:}^^A>>>
@@ -634,7 +648,7 @@ and the derived files           ducksay.pdf
       \\[-1ex]\mbox{}
     \end{tabular}
   }
-%    \begin{macrocode}
+%    \end{macrocode}
 % \end{macro}^^A<<<
 %
 % \begin{macro}{\ducksay_print_msg:nn}^^A>>>
@@ -649,7 +663,7 @@ and the derived files           ducksay.pdf
     \end{tabular}
   }
 \cs_generate_variant:Nn \ducksay_print_msg:nn { nV }
-%    \begin{macrocode}
+%    \end{macrocode}
 % \end{macro}^^A<<<
 %
 % \begin{macro}{\ducksay_print:nn}^^A>>>
@@ -688,7 +702,7 @@ and the derived files           ducksay.pdf
     \group_end:
   }
 \cs_generate_variant:Nn \ducksay_print:nn { nV }
-%    \begin{macrocode}
+%    \end{macrocode}
 % \end{macro}^^A<<<
 %
 % \begin{macro}{\ducksay_prepare_say_and_think:n}^^A>>>
@@ -701,7 +715,7 @@ and the derived files           ducksay.pdf
     \keys_define:nn { ducksay } { animal .meta:n = { ##1 } }
     \keys_set:nn { ducksay } { default_animal , #1 }
   }
-%    \begin{macrocode}
+%    \end{macrocode}
 % \end{macro}^^A<<<
 %
 % \begin{macro}{\ducksay_to_duckthink:}^^A>>>
@@ -713,58 +727,12 @@ and the derived files           ducksay.pdf
     \regex_replace_once:NnN \c_ducksay_second_regex { \1o } \l_ducksay_animal_tl
     \regex_replace_once:NnN \c_ducksay_third_regex  { \1o } \l_ducksay_animal_tl
   }
-%    \begin{macrocode}
-% \end{macro}^^A<<<
-%^^A<<<
-%
-% \subsection{Document level}
-%
-% \begin{macro}{\ducksay}^^A>>>
-%    \begin{macrocode}
-\NewDocumentCommand \ducksay { O{} m }
-  {
-    \group_begin:
-      \ducksay_prepare_say_and_think:n { #1 }
-      \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
-    \group_end:
-  }
-%    \begin{macrocode}
+%    \end{macrocode}
 % \end{macro}^^A<<<
 %
-% \begin{macro}{\duckthink}^^A>>>
+% \begin{macro}{\ducksay_add_animal_inner:nnn}^^A>>>
 %    \begin{macrocode}
-\NewDocumentCommand \duckthink { O{} m }
-  {
-    \group_begin:
-      \ducksay_prepare_say_and_think:n { #1 }
-      \ducksay_to_duckthink:
-      \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
-    \group_end:
-  }
-%    \begin{macrocode}
-% \end{macro}^^A<<<
-%
-% \begin{macro}{\DefaultAnimal}^^A>>>
-%    \begin{macrocode}
-\NewDocumentCommand \DefaultAnimal { m }
-  {
-    \keys_define:nn { ducksay } { default_animal .meta:n = {#1} }
-  }
-%    \begin{macrocode}
-% \end{macro}^^A<<<
-%
-% \begin{macro}{\DucksayOptions}^^A>>>
-%    \begin{macrocode}
-\NewDocumentCommand \DucksayOptions { m }
-  {
-    \keys_set:nn { ducksay } { #1 }
-  }
-%    \begin{macrocode}
-% \end{macro}^^A<<<
-%
-% \begin{macro}{\AddAnimal}^^A>>>
-%    \begin{macrocode}
-\NewDocumentCommand \AddAnimal { s m +v }
+\cs_new_protected:Nn \ducksay_add_animal_inner:nnn
   {
     \tl_set:Nn \l_ducksay_tmpa_tl { \ #3 }
     \bool_if:NF \l_ducksay_empty_ligatures_bool
@@ -785,50 +753,95 @@ and the derived files           ducksay.pdf
         \keys_define:nn { ducksay } { default_animal .meta:n = { #2 } }
       }
   }
-%    \begin{macrocode}
+%    \end{macrocode}
 % \end{macro}^^A<<<
-
-\NewDocumentCommand{\ducksay@AddAnimal}{ s m +v }
+%
+% \begin{macro}{\ducksay@AddAnimal}^^A>>>
+%   Those animals provided by the package are not necessarily defined. Therefore
+%   they are added with \cs{ducksay@AddAnimal}.
+%    \begin{macrocode}
+\NewDocumentCommand \ducksay@AddAnimal { s m +v }
   {
     \bool_if:cT { g__ducksay_load_#2_bool }
       {
-        \tl_set:Nn \l_ducksay_tmpa_tl { \ #3 }
-        \bool_if:NF \l_ducksay_empty_ligatures_bool
-          {
-            \regex_replace_all:NnN
-              \l_ducksay_ligatures_regex { \c{mbox}\0 } \l_ducksay_tmpa_tl 
-          }
-        \regex_replace_all:NnN \c_ducksay_newline_regex
-          { \c{tabularnewline}\c{null} } \l_ducksay_tmpa_tl
-        \tl_gset_eq:cN { g_ducksay_animal_#2_tl } \l_ducksay_tmpa_tl
-        \keys_define:nn { ducksay }
-          {
-            #2 .undefine:,
-            #2 .code:n =
-              \tl_set_eq:Nc \l_ducksay_animal_tl { g_ducksay_animal_#2_tl }
-          }
-        \IfBooleanT{#1}
-          {
-            \keys_define:nn { ducksay } { default_animal .meta:n = { #2 } }
-          }
+        \ducksay_add_animal_inner:nnn { #1 } { #2 } { #3 }
       }
   }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%^^A<<<
+%
+% \subsubsection{Document level}^^A>>>
+%
+% \begin{macro}{\ducksay}^^A>>>
+%    \begin{macrocode}
+\NewDocumentCommand \ducksay { O{} m }
+  {
+    \group_begin:
+      \ducksay_prepare_say_and_think:n { #1 }
+      \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
+    \group_end:
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\duckthink}^^A>>>
+%    \begin{macrocode}
+\NewDocumentCommand \duckthink { O{} m }
+  {
+    \group_begin:
+      \ducksay_prepare_say_and_think:n { #1 }
+      \ducksay_to_duckthink:
+      \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
+    \group_end:
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\DefaultAnimal}^^A>>>
+%    \begin{macrocode}
+\NewDocumentCommand \DefaultAnimal { m }
+  {
+    \keys_define:nn { ducksay } { default_animal .meta:n = {#1} }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\DucksayOptions}^^A>>>
+%    \begin{macrocode}
+\NewDocumentCommand \DucksayOptions { m }
+  {
+    \keys_set:nn { ducksay } { #1 }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\AddAnimal}^^A>>>
+%    \begin{macrocode}
+\NewDocumentCommand \AddAnimal { s m +v }
+  {
+    \ducksay_add_animal_inner:nnn { #1 } { #2 } { #3 }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+%    \begin{macrocode}
 \ExplSyntaxOff
 \input{ducksay.animals.tex}
-%
-%    \begin{macrocode}
-\endinput
 %    \end{macrocode}
+%^^A<<<
+%^^A<<<
 %
-% \end{implementation}
+% \end{implementation}^^A<<<
 %
-%    \begin{macrocode}
-%</pkg>
-%    \end{macrocode}
+%</pkg>^^A<<<
+%
+% \subsection{Definition of the Animals}
 %
 %<*animals>^^A>>>
-^^A some of the below are from http://ascii.co.uk/art/kangaroo
-\ducksay@AddAnimal{duck}^^A>>>
+%^^A some of the below are from http://ascii.co.uk/art/kangaroo
+%    \begin{macrocode}
+\ducksay@AddAnimal{duck}%>>>
 {  \
     \   __
       >(' )
@@ -836,42 +849,42 @@ and the derived files           ducksay.pdf
        /(
       /  `----/
       \  ~=- /
-    ~^~^~^~^~^~^~^}^^A<<<
-\ducksay@AddAnimal{small-duck}^^A>>>
+    ~^~^~^~^~^~^~^}%<<<
+\ducksay@AddAnimal{small-duck}%>>>
 {  \
     \
       >()_
-       (__)__ _}^^A<<<
-\ducksay@AddAnimal{duck-family}^^A>>>
+       (__)__ _}%<<<
+\ducksay@AddAnimal{duck-family}%>>>
 {  \
     \   __
       >(' )
         )/
        /(
       /  `----/  -()_  >()_
-    __\__~=-_/__ _(__)__(__)__ _}^^A<<<
-\ducksay@AddAnimal{cow}^^A>>>
+    __\__~=-_/__ _(__)__(__)__ _}%<<<
+\ducksay@AddAnimal{cow}%>>>
 {  \  ^__^
     \ (oo)\_______
       (__)\       )\/\
           ||----w |
-          ||     ||}^^A<<<
-\ducksay@AddAnimal{head-in}^^A>>>
+          ||     ||}%<<<
+\ducksay@AddAnimal{head-in}%>>>
 {  \  
     \ ^__^         /
       (oo)\_______/  ________
       (__)\       )=(  ___|_ \____
           ||----w |  \ \    \____ |
-          ||     ||   ||         ||}^^A<<<
-\ducksay@AddAnimal{sodomized}^^A>>>
+          ||     ||   ||         ||}%<<<
+\ducksay@AddAnimal{sodomized}%>>>
 {  \             _
     \           (_)
       ^__^       / \
       (oo)\_____/_\ \
       (__)\       ) /
           ||----w ((
-          ||     ||>>}^^A<<<
-\ducksay@AddAnimal{tux}^^A>>>
+          ||     ||>>}%<<<
+\ducksay@AddAnimal{tux}%>>>
 {  \
     \  .--. 
       |o_o |
@@ -879,41 +892,42 @@ and the derived files           ducksay.pdf
      //   \ \
     (|     | )
    /'\_   _/`\
-   \___)=(___/}^^A<<<
-\ducksay@AddAnimal{pig}^^A>>>
+   \___)=(___/}%<<<
+\ducksay@AddAnimal{pig}%>>>
 +  \     _//| .-~~~-.
     \ _/oo  }        }-@
      ('')_  }        |
       `--'| { }--{  }
-           //_/  /_/+^^A<<<
-\ducksay@AddAnimal{frog}^^A>>>
+           //_/  /_/+%<<<
+\ducksay@AddAnimal{frog}%>>>
 {   \
      \ (.)_(.)
     _ (   _   ) _
    / \/`-----'\/ \
  __\ ( (     ) ) /__
  )   /\ \._./ /\   (
-  )_/ /|\   /|\ \_(}^^A<<<
-\ducksay@AddAnimal{snowman}^^A>>>
+  )_/ /|\   /|\ \_(}%<<<
+\ducksay@AddAnimal{snowman}%>>>
 {  \
     \_[_]_
       (")
    >-( : )-<
-    (__:__)}^^A<<<
-\ducksay@AddAnimal{hedgehog}^^A>>>
+    (__:__)}%<<<
+\ducksay@AddAnimal{hedgehog}%>>>
 {  \    .\|//||\||.
     \  |/\/||/|//|/|
       /. `|/\\|/||/||
-     o__,_|//|/||\||'}^^A<<<
-\ducksay@AddAnimal{kangaroo}^^A>>>
+     o__,_|//|/||\||'}%<<<
+\ducksay@AddAnimal{kangaroo}%>>>
 {  \
     \ _,'   ___
      <__\__/   \
         \_  /  _\
           \,\ / \\
             //   \\
-          ,/'     `\_,}^^A<<<
-\ducksay@AddAnimal{rabbit}^^A>>> http://chris.com/ascii/index.php?art=animals/rabbits
+          ,/'     `\_,}%<<<
+%^^A http://chris.com/ascii/index.php?art=animals/rabbits
+\ducksay@AddAnimal{rabbit}%>>>
 { \     / \`\         __
    \   |  \ `\      /`/ \
     \  \_/`\  \-"-/` /\  \
@@ -927,19 +941,19 @@ and the derived files           ducksay.pdf
        | \    \   /    / |
         \ \    \ /    / /
          `"`\   :   /'"`
-             `""`""`}^^A<<<
-\ducksay@AddAnimal{bunny}^^A>>>
+             `""`""`}%<<<
+\ducksay@AddAnimal{bunny}%>>>
 { \
    \      /
       /\ /
        ( )
-     .( o ).}^^A<<<
-\ducksay@AddAnimal{small-rabbit}^^A>>>
+     .( o ).}%<<<
+\ducksay@AddAnimal{small-rabbit}%>>>
 {  \
     \ _//
      (')---.
-      _/-_( )o}^^A<<<
-\ducksay@AddAnimal{dragon}^^A>>>
+      _/-_( )o}%<<<
+\ducksay@AddAnimal{dragon}%>>>
 {     \                    / \  //\
        \    |\___/|      /   \//  \\
         \   /0  0  \__  /    //  | \ \    
@@ -955,29 +969,32 @@ and the derived files           ducksay.pdf
   (( / ))     .----~-.\        \-'                 .~         \  `. \^-.
              ///.----..>        \             _ -~             `.  ^-`  ^-_
                ///-._ _ _ _ _ _ _}^ - - - - ~                     ~-- ,.-~
-                                                                  /.-~}^^A<<<
-\ducksay@AddAnimal{dog}^^A>>> http://www.ascii-art.de/ascii/def/dogs.txt
+                                                                  /.-~}%<<<
+%^^A http://www.ascii-art.de/ascii/def/dogs.txt
+\ducksay@AddAnimal{dog}%>>>
 {  \     __
     \ .-'\/\
        "\   '------.
      ___/       (  .'_____
-    '-----'"""'------"""""'}^^A<<<
-\ducksay@AddAnimal{squirrel}^^A>>> http://ascii.co.uk/art/squirrel
+    '-----'"""'------"""""'}%<<<
+%^^A http://ascii.co.uk/art/squirrel
+\ducksay@AddAnimal{squirrel}%>>>
 {  \           ,;:;;,
-    \         ;;;;;
+    \    ,    ;;;;;
       .=',    ;:;;:,
      /_', "=. ';:;:;
      @=:__,  \,;:;:'
        _(\.=  ;:;;'
       `"_(  _/="`
-       `"'``}^^A<<<
-\ducksay@AddAnimal{snail}^^A>>>
+       `"'``}%<<<
+\ducksay@AddAnimal{snail}%>>>
 {  \
     \          .-""-.
       oo      ; .-.  :
        \\__..-: '.__.')._
-        "-._.._'.__.-'_.."}^^A<<<
-\ducksay@AddAnimal{unicorn}^^A>>> from http://www.ascii-art.de/ascii/uvw/unicorn.txt
+        "-._.._'.__.-'_.."}%<<<
+%^^A http://www.ascii-art.de/ascii/uvw/unicorn.txt
+\ducksay@AddAnimal{unicorn}%>>>
 {   \
      \       /((((((\\\\
      ---====((((((((((\\\\\
@@ -996,16 +1013,17 @@ and the derived files           ducksay.pdf
        \/      \\_                          / /       > )
                 \_|                        / /       / /
                                          _//       _//
-                                       /_|       /_|}^^A<<<
-\ducksay@AddAnimal{whale}^^A>>> https://asciiart.website//index.php?art=animals/other%20(water)
+                                       /_|       /_|}%<<<
+%^^A https://asciiart.website//index.php?art=animals/other%20(water)
+\ducksay@AddAnimal{whale}%>>>
 { \                |-.
    \     .---._     \ \.--|
     \  /       `-..__)  ,-'
       |     .          /
        \--.__,   .__.,'
-        `-.___'._\_.'}^^A<<<
-^^A from http://www.ascii-art.de/ascii/s/starwars.txt :
-\ducksay@AddAnimal{yoda}^^A>>>
+        `-.___'._\_.'}%<<<
+%^^A from http://www.ascii-art.de/ascii/s/starwars.txt :
+\ducksay@AddAnimal{yoda}%>>>
 {   \
      \             ____
       \         _.' :  `._
@@ -1041,8 +1059,8 @@ and the derived files           ducksay.pdf
         \ / .-"   /.     .'.' ;_:'    ;
          :-""-.`./-.'     /    `.___.'
                \ `t  ._  /
-                "-.t-._:'}^^A<<<
-\ducksay@AddAnimal{yoda-head}^^A>>>
+                "-.t-._:'}%<<<
+\ducksay@AddAnimal{yoda-head}%>>>
 {   \
      \             ____
       \         _.' :  `._
@@ -1058,17 +1076,17 @@ and the derived files           ducksay.pdf
          .-j/'.;  ;""""  / .'\"-.
        .' /:`. :  :     /.".'';  `.
     .-"  / ;`.".  :    ."."   :    "-.
- .+"-.  : :   ".".". ."."      ;-._   \}^^A<<<
-^^A from https://www.ascii-code.com/ascii-art/movies/star-wars.php
-\ducksay@AddAnimal{small-yoda}^^A>>>
+ .+"-.  : :   ".".". ."."      ;-._   \}%<<<
+%^^A from https://www.ascii-code.com/ascii-art/movies/star-wars.php
+\ducksay@AddAnimal{small-yoda}%>>>
 {  \
     \
     __.-._
     '-._"7'
      /'.-c
      |  /T
-    _)_/LI}^^A<<<
-\ducksay@AddAnimal{r2d2}^^A>>>
+    _)_/LI}%<<<
+\ducksay@AddAnimal{r2d2}%>>>
 {  \
     \ ,-----.
     ,'_/_|_\_`.
@@ -1081,8 +1099,8 @@ and the derived files           ducksay.pdf
   | |_________| |
   | |\_______/| |
  /   \ /   \ /   \
- `---' `---' `---'}^^A<<<
-\ducksay@AddAnimal{vader}^^A>>>
+ `---' `---' `---'}%<<<
+\ducksay@AddAnimal{vader}%>>>
 {  \     _.-'~~~~~~`-._
     \   /      ||      \
        /       ||       \
@@ -1096,7 +1114,12 @@ and the derived files           ducksay.pdf
  /       \  /||||||\  /       \
 /_        \O========O/        _\
   `--...__|`-._  _.-'|__...--'
-          |    `'    |}^^A<<<
+          |    `'    |}%<<<
+%    \end{macrocode}
 %</animals>^^A<<<
 %
-^^A vim: fdm=marker foldmarker=>>>,<<<
+% \closingpage
+%
+\endinput
+%
+^^A vim: ft=tex fdm=marker fmr=>>>,<<<

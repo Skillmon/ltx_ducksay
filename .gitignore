@@ -3,3 +3,9 @@
 *.pdf
 *.toc
 *.out
+*.animals.tex
+*.glo
+*.hd
+*.idx
+*.sty
+*.tex
