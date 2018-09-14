@@ -73,13 +73,20 @@ and the derived files           ducksay.pdf
 \ProvidesFile{ducksay.dtx}
   [2018/08/25 cowsay for LaTeX]
 \documentclass{l3doc}
-\usepackage[all]{ducksay}
+\usepackage[version=2]{ducksay}
+\DucksayOptions{arg=tab,msg-align=l,vpad=1}
 \renewcommand*\thefootnote{\fnsymbol{footnote}}
 \newcommand*\anml{\meta{animal}}
 \newcommand*\msg{\meta{message}}
+\newcommand*\PolesInfo
+  {%
+    \href{https://ctan.org/pkg/l3kernel}{\file{interface3.pdf}} and the
+    documentation of \href{https://ctan.org/pkg/xcoffins}{\pkg{xcoffins}} for
+    information about coffin poles.%
+  }
 \usepackage{enumitem}
-\newenvironment{options}
-  {\begin{description}[style=nextline,font=\normalfont\ttfamily]}
+\newenvironment{options}[1][]
+  {\begin{description}[style=nextline,font=\normalfont\ttfamily,#1]}
   {\end{description}}
 \makeatletter
 \newcommand*\availableAnimal[1]
@@ -98,13 +105,29 @@ and the derived files           ducksay.pdf
       {%
         \smash
           {%
-            \ducksay[dog,body=\tiny,wd=3,msg-align=c,align=t,bubble=\normalsize]
-              {\arabic{page}}%
+            \ducksay
+              [dog,body=\tiny,wd=3,msg-align=c,align=t,MSG=\normalsize,vpad=0]
+              {\thepage}%
           }%
       }%
     \hfil\null
   }
 \let\@evenfoot\@oddfoot
+\def\@oddhead
+  {%
+    \null\hfill\firstmark
+  }
+\let\@evenhead\@oddhead
+\newcommand\DocImp{}
+\newcommand\SetVersion[1]
+  {%
+    \clearpage
+    \if\relax\detokenize{#1}\relax
+      \markboth{}{}%
+    \else
+      \markboth{}{\DocImp\ of Version #1}%
+    \fi
+  }
 \makeatother
 \setcounter{secnumdepth}{5}
 \setcounter{tocdepth}{5}
@@ -116,7 +139,7 @@ and the derived files           ducksay.pdf
         \hfil
         \makebox[.\marginparwidth][l]
           {%
-            \ducksay[head-in,bubble=\footnotesize,msg-align=c,align=t]
+            \ducksay[head-in,MSG=\footnotesize,msg-align=c,align=t]
               {It's always\\good to\\keep the\\overview!}%
           }%
       }%
@@ -163,17 +186,19 @@ and the derived files           ducksay.pdf
 % \fi
 %
 % \begin{titlepage}^^A>>>
+%   \DucksayOptions{vpad=0}%
 %   \makeatletter
 %   \centering
 %   \Large
-%     \ducksay[duck,bubble=\huge,msg-align=c,wd=8]{This is\\ducksay!}\\
+%     \ducksay[duck,MSG=\huge,msg-align=c]{This is\\ducksay!}\\
 %   \vfill
 %   \normalsize
 %   \hspace*{-2cm}
-%     \ducksay[cow,bubble=\large]{\ducksay@version}\\
+%     \ducksay[cow,MSG=\large,body-mirrored,body-align=r,msg-to-body=hc,out-h=r]
+%       {\ducksay@version}\\
 %   \small
 %   \vspace*{-5cm}\hspace*{5cm}
-%     \ducksay[small-duck,bubble=\normalsize]{But which Version?}
+%     \ducksay[small-duck,MSG=\normalsize]{But which Version?}
 %   \null\hfil
 %   \vspace{2cm}
 %   \vfill
@@ -181,72 +206,48 @@ and the derived files           ducksay.pdf
 %   \hspace*{-0cm}
 %   \large
 %   \smash{%
-%     \ducksay[r2d2,bubble=\large]{by Jonathan P. Spratte}}
+%     \ducksay[r2d2,MSG=\large,body-mirrored,msg-to-body=hc,body-to-msg=r]
+%       {by Jonathan P. Spratte}}
 %   \small
-%     \ducksay[hedgehog,bubble=\normalsize]{Today is \ducksay@date}
+%     \ducksay[hedgehog,MSG=\normalsize]{Today is \ducksay@date}
 %   \makeatother
 % \end{titlepage}^^A<<<
 % \tableofcontents
 %
 % \begin{documentation}^^A>>>
 %
-% \section{Documentation}
+% \section{Documentation}\def\DocImp{Documentation}%
 %
 % \subsection{Downward Compatibility Issues}
-%
-% \marginpar
+% \marginpar^^A>>>
 %   {
 %     \tiny
-%     \ducksay[snail,bubble=\footnotesize,align=t]{Yep, I screwed up!}
-%   }
+%     \ducksay[snail,MSG=\footnotesize,align=t]{Yep, I screwed up!}
+%   }^^A<<<
 %
 % \begin{itemize}
 %   \item Versions prior to v2.0 did use a regular expression for the option
-%     |ligatures|, see \autoref{sec:options} for more on this issue. This issue
-%     does occur independent on the used value of the |version| option.
+%     |ligatures|, see \autoref{sec:options} for more on this issue. With v2.0
+%     I do refer to the package's version, not the code variant which can be
+%     selected with the |version| option.
 % \end{itemize}
 %
-% \subsection{Version 1}
-%
-% \subsubsection{Introduction}
-%
-% This version is included for legacy support (old documents should behave the
-% same without any change to them). For the bleeding edge version of
-% \pkg{ducksay} skip this subsection and read \autoref{sec:v2}.
+% \subsection{Shared between versions}
 %
 % \subsubsection{Macros}^^A>>>
-% \marginpar
-%   {%
-%     \rlap
-%       {%
-%         \tiny
-%         \ducksay[yoda,bubble=\footnotesize,align=t]{Use those, you might}%
-%       }%
-%   }
-% The following macros are available:
+% \marginpar^^A>>>
+%   {
+%     \tiny
+%     \hfill
+%     \ducksay[bunny,MSG=\footnotesize,align=t,body-mirrored]
+%       {Macros for everyone!}
+%   }^^A<<<
 %
-% \begin{function}{\ducksay}^^A>>>
-%   \begin{syntax}
-%     \cs{ducksay}\oarg{options}\marg{message}
-%   \end{syntax}
-%   options might include any of the options described in
-%   \autoref{sec:options}. Prints an \anml\ saying \msg. \msg\ is not read in
-%   verbatim. Multi-line \msg s are possible using |\\|. |\\| should not be
-%   inside a macro but at toplevel. Else use the option |ht|.
-% \end{function}^^A<<<
-%
-% \begin{function}{\duckthink}^^A>>>
-%   \begin{syntax}
-%     \cs{duckthink}\oarg{options}\marg{message}
-%   \end{syntax}
-%   options might include any of the options described in
-%   \autoref{sec:options}. Prints an \anml\ thinking \msg. \msg\ is not read in
-%   verbatim. It is implemented using regular expressions replacing a |\|
-%   which is only preceded by |\s*| in the first three lines with |O|
-%   and |o|. It is therefore slower than \cs{ducksay}. Multi-line \msg s
-%   are possible using |\\|. |\\| should not be inside a macro but at
-%   toplevel. Else use the option |ht|.
-% \end{function}^^A<<<
+% A careful reader might notice that in the below list of macros there is no
+% \cs{ducksay} and no \cs{duckthink} contained. This is due to differences
+% between the two usable code variants (see the |version| key in
+% \autoref{sec:options} for the code variants, \autoref{sec:macros1} and
+% \autoref{sec:macros2} for descriptions of the two macros).
 %
 % \begin{function}{\DefaultAnimal}^^A>>>
 %   \begin{syntax}
@@ -260,8 +261,9 @@ and the derived files           ducksay.pdf
 %   \begin{syntax}
 %     \cs{DucksayOptions}\marg{options}
 %   \end{syntax}
-%   set the defaults to the keys described in \autoref{sec:options}. Don't use
-%   an \anml\ here, it has no effect.
+%   set the defaults to the keys described in \autoref{sec:options},
+%   \autoref{sec:options1} and \autoref{sec:options2}. Don't use an \anml\ here,
+%   it has no effect.
 % \end{function}^^A<<<
 %
 % \begin{function}{\AddAnimal}^^A>>>
@@ -286,25 +288,118 @@ and the derived files           ducksay.pdf
 %   It is not checked whether the animal already exists, you could therefore
 %   redefine existing animals with this macro.
 % \end{function}^^A<<<
+%
 %^^A<<<
 %
 % \subsubsection{Options}\label{sec:options}^^A>>>
 % \marginpar
 %   {%
 %     \vspace*{-2em}\tiny
+%     \ducksay[pig,MSG=\footnotesize,align=t]{Options.\\For every occasion}%
+%   }
+% The following options are available independent on the used code variant (the
+% value of the |version| key). They might be used as package options -- unless
+% otherwise specified -- or used in the macros \cs{DucksayOptions}, \cs{ducksay}
+% and \cs{duckthink} -- again unless otherwise specified. Some options might be
+% accessible in both code variants but do slightly different things. If that's
+% the case they will be explained in \autoref{sec:options1} and
+% \autoref{sec:options2} for |version| 1 and 2, respectively.
+% \begin{options}
+%   \item[version=\meta{number}]
+%     With this you can choose the code variant to be used. Currently |1| and
+%     |2| are available. This can be set only during package load time. For a
+%     dedicated description of each version look into \autoref{sec:v1} and
+%     \autoref{sec:v2}. The package author would choose |version=2|, the other
+%     version is mostly for legacy reasons. The default is |1| (again for legacy
+%     reasons).
+%   \item[\anml] 
+%     One of the animals listed in \autoref{sec:animals} or any of the ones
+%     added with \cs{AddAnimal}. Not useable as package option. Also don't use
+%     it in \cs{DucksayOptions}, it'll break the default animal selection.
+%   \item[animal=\anml]
+%     Locally sets the default animal. Note that \cs{ducksay} and \cs{duckthink}
+%     do digest their options inside of a group, so it just results in
+%     a longer alternative to the use of \anml\ if used in their options.
+%   \item[ligatures=\meta{token list}]
+%     each token you don't want to form ligatures during \cs{AddAnimal} should
+%     be contained in this list. All of them get enclosed by grouping |{| and
+%     |}| so that they can't form ligatures. Giving no argument (or an empty
+%     one) might enhance compilation speed by disabling this replacement. The
+%     formation of ligatures was only observed in combination with
+%     \verb|\usepackage[T1]{fontenc}| by the author of this package. Therefore
+%     giving the option |ligatures| without an argument might enhance the
+%     compilation speed for you without any drawbacks. Initially this is set to
+%     \texttt{\csuse{\detokenize{l_ducksay_ligatures_tl}}}.\\
+%     \textbf{Note:} In earlier releases this option's expected argument was a
+%     regular expression. This means that this option is not fully
+%     downward compatible with older versions. The speed gain however seems
+%     worth it (and I hope the affected documents are few).
+%   \item[add-think=\meta{bool}]
+%     by default the animals for \cs{duckthink} are not created during package
+%     load time, but only when they are really used -- but then they are created
+%     globally so it just has to be done once. This is done because they rely on
+%     a rather slow regular expression. If you set this key to |true| each
+%     \cs{AddAnimal} will also create the corresponding \cs{duckthink} variant
+%     immediately.
+% \end{options}
+%^^A<<<
+%
+% \SetVersion{1}%
+% \subsection{Version 1}\label{sec:v1}
+%
+% \subsubsection{Introduction}
+%
+% This version is included for legacy support (old documents should behave the
+% same without any change to them). For the bleeding edge version of
+% \pkg{ducksay} skip this subsection and read \autoref{sec:v2}.
+%
+% \subsubsection{Macros}\label{sec:macros1}^^A>>>
+% \marginpar
+%   {%
+%     \rlap
+%       {%
+%         \tiny
+%         \ducksay[yoda,MSG=\footnotesize,align=t]{Use those, you might}%
+%       }%
+%   }
+% The following is the description of macros which differ in behaviour from
+% those of version 2.
+%
+% \begin{function}{\ducksay}^^A>>>
+%   \begin{syntax}
+%     \cs{ducksay}\oarg{options}\marg{message}
+%   \end{syntax}
+%   options might include any of the options described in
+%   \autoref{sec:options} and \autoref{sec:options1}. Prints an \anml\ saying
+%   \msg. \msg\ is not read in verbatim. Multi-line \msg s are possible using
+%   |\\|. |\\| should not be inside a macro but at toplevel. Else use the option
+%   |ht|.
+% \end{function}^^A<<<
+%
+% \begin{function}{\duckthink}^^A>>>
+%   \begin{syntax}
+%     \cs{duckthink}\oarg{options}\marg{message}
+%   \end{syntax}
+%   options might include any of the options described in
+%   \autoref{sec:options} and \autoref{sec:options1}. Prints an \anml\ thinking
+%   \msg. \msg\ is not read in verbatim. It is implemented using regular
+%   expressions replacing a |\| which is only preceded by |\s*| in the first
+%   three lines with |O| and |o|. It is therefore slower than \cs{ducksay}.
+%   Multi-line \msg s are possible using |\\|. |\\| should not be inside a macro
+%   but at toplevel. Else use the option |ht|.
+% \end{function}^^A<<<
+%^^A<<<
+%
+% \subsubsection{Options}\label{sec:options1}^^A>>>
+% \marginpar
+%   {%
+%     \vspace*{-2em}\tiny
 %     \hfill
-%     \ducksay[hedgehog,bubble=\footnotesize,align=t]{Everyone likes\\options}%
+%     \ducksay[hedgehog,MSG=\footnotesize,align=t]{Everyone likes\\options}%
 %   }
 % The following options are available to \cs{ducksay}, \cs{duckthink}, and
 % \cs{DucksayOptions} and if not otherwise specified also as package options:
 % \begin{options}
-%   \item[\anml] 
-%     One of the animals listed in \autoref{sec:animals} or any of the ones
-%     added with \cs{AddAnimal}. Not useable as package option.
-%   \item[animal=\anml]
-%     a longer alternative to the use of \anml\ if used in \cs{ducksay} or
-%     \cs{duckthink}. If it is used as a package option or in
-%     \cs{DucksayOptions} it changes the default animal to \anml.
 %   \item[bubble=\meta{code}]
 %     use \meta{code} in a group right before the bubble (for font switches).
 %     Might be used as a package option but not all control sequences work out
@@ -334,20 +429,6 @@ and the derived files           ducksay.pdf
 %   \item[ht=\meta{count}]
 %     you might explicitly set the height (the row count) of the \msg. This only
 %     has an effect if you also specify |wd|.
-%   \item[ligatures=\meta{token list}]
-%     each token you don't want to form ligatures during \cs{AddAnimal} should
-%     be contained in this list. All of them get enclosed by grouping |{| and
-%     |}| so that they can't form ligatures. Giving no argument (or an empty
-%     one) might enhance compilation speed by disabling this replacement. The
-%     formation of ligatures was only observed in combination with
-%     \verb|\usepackage[T1]{fontenc}| by the author of this package. Therefore
-%     giving the option |ligatures| without an argument might enhance the
-%     compilation speed for you without any drawbacks. Initially this is set to
-%     \texttt{\csuse{\detokenize{l_ducksay_ligatures_tl}}}.\\
-%     \textbf{Note:} In earlier releases this option's expected argument was a
-%     regular expression. This means that this option is not fully
-%     downward compatible with older versions. The speed gain however seems
-%     worth it (and I hope the affected documents are few).
 % \end{options}
 %^^A<<<
 %
@@ -355,32 +436,248 @@ and the derived files           ducksay.pdf
 % \begingroup
 %   \reversemarginpar
 %   \marginpar
-%     {\tiny\hfill\ducksay[frog,bubble=\footnotesize,align=t]{Ohh, no!}}
+%     {\tiny\hfill\ducksay[frog,MSG=\footnotesize,align=t]{Ohh, no!}}
 % \endgroup
 % \begin{itemize}
 %   \item no automatic line wrapping
 % \end{itemize}^^A<<<
 %
+% \SetVersion{2}%
 % \subsection{Version 2}\label{sec:v2}
+% \marginpar^^A>>>
+%   {
+%     \fontsize{3.5pt}{3.5pt}\selectfont
+%     \ducksay[unicorn,MSG=\footnotesize,align=t]{Here's all the good stuff!}
+%   }^^A<<<
 %
-% \subsubsection{Introduction}
+% \subsubsection{Introduction}^^A>>>
 %
 % Version 2 is the current version of \pkg{ducksay}. To use it specify
 % |version=2| as an option to \cs{usepackage}. Version 2 features automatic line
-% wrapping (if configured so) and in general more options (with some nasty
-% argument parsing).
+% wrapping (if you specify a fixed width) and in general more options (with some
+% nasty argument parsing).
 %
 % If you're already used to version 1 you should note one important thing: You
-% should only specify the |version| and the animals you want to be loaded during
-% package loading as arguments to \cs{usepackage}. The other keys might not work
-% and only don't throw errors or warnings because of the legacy support of
-% version 1.
+% should only specify the |version|, the |ligatures| and |add-think| during
+% package load time as arguments to \cs{usepackage}. The other keys might not
+% work or do unintended things and only don't throw errors or warnings because
+% of the legacy support of version 1.
 %
+%^^A<<<
+%
+% \subsubsection{Macros}\label{sec:macros2}^^A>>>
+%
+% The following is the description of macros which differ in behaviour from
+% those of version 1.
+%
+% \begin{function}{\ducksay}^^A>>>
+%   \begin{syntax}
+%     \cs{ducksay}\oarg{options}\marg{message}
+%   \end{syntax}
+%   options might include any of the options described in
+%   \autoref{sec:options} and \autoref{sec:options2}. Prints an \anml\ saying
+%   \msg.\\
+%   The \msg\ can be read in in four different ways. For an explanation of the
+%   \msg\ reading see the description of the |arg| key in
+%   \autoref{sec:options2}.\\
+%   The height and width of the message is determined by measuring its
+%   dimensions and the bubble will be set accordingly. The box surrounding the
+%   message will be placed both horizontally and vertically centred inside of
+%   the bubble. The output utilizes \LaTeX3's coffin mechanism described in
+%   \href{https://ctan.org/pkg/l3kernel}{\file{interface3.pdf}} and the
+%   documentation of \href{https://ctan.org/pkg/xcoffins}{\pkg{xcoffins}}.
+% \end{function}^^A<<<
+%
+% \begin{function}{\duckthink}^^A>>>
+%   \begin{syntax}
+%     \cs{duckthink}\oarg{options}\marg{message}
+%   \end{syntax}
+%   The only difference to \cs{ducksay} is that in \cs{duckthink} the \anml s
+%   think the \msg\ and don't say it.\\
+%   It is implemented using regular expressions replacing a |\| which is only
+%   preceded by |\s*| in the first three lines with |O| and |o|. It's first
+%   use per \anml\ might therefore be slower than \cs{ducksay} depending on the
+%   |add-think| key (see its description in \autoref{sec:options}).\\
+%   \autoref{sec:options2}.
+% \end{function}^^A<<<
+%
+%^^A<<<
+%
+% \subsubsection{Options}\label{sec:options2}^^A>>>
+% In version 2 the following options are available. Keep in mind that you
+% shouldn't use them during package load time but in the arguments of
+% \cs{ducksay}, \cs{duckthink} or \cs{DucksayOptions}.
+% \begin{options}
+%   \item[arg=\meta{choice}]
+%     specifies how the \msg\ argument of \cs{ducksay} and \cs{duckthink} should
+%     be read in. Available options are |box|, |tab| and |tab*|:
+%     \begin{options}
+%       \item[box]
+%         the argument is read in either as a \cs{hbox} or a \cs{vbox} (the
+%         latter if a fixed width is specified with either |wd| or |wd*|). Note
+%         that in this mode any arguments relying on category code changes like
+%         e.g. \cs{verb} will work (provided that you don't use \cs{ducksay} or
+%         \cs{duckthink} inside of an argument of another macro of course).
+%       \item[tab]
+%         the argument is read in as the contents of a \env{tabular}. Note that
+%         in this mode any arguments relying on category code changes like e.g.
+%         \cs{verb} will \emph{not} work. This mode comes closest to the
+%         behaviour of version 1 of \pkg{ducksay}.
+%       \item[tab*]
+%         the argument is read in as the contents of a \env{tabular}. However it
+%         is read in verbatim and uses \cs{scantokens} to rescan the argument.
+%         Note that in this mode any arguments relying on category code changes
+%         like e.g. \cs{verb} will work. You can't use \cs{ducksay} or
+%         \cs{duckthink} as an argument to another macro in this mode however.
+%     \end{options}
+%   \item[b]
+%     shortcut for |out-v=b|.
+%   \item[body=\meta{font}]
+%     add \meta{font} to the font definitions in use to typeset the \anml's
+%     body.
+%   \item[body*=\meta{font}]
+%     clear any definitions previously made (including the package default) and
+%     set the font definitions in use to typeset the \anml's body to
+%     \meta{font}. The package default is \cs{verbatim@font}. In addition
+%     \cs{frenchspacing} will always be used prior to the defined \meta{font}.
+%   \item[body-align=\meta{choice}]
+%     sets the relative alignment of the \anml\ to the \msg. Possible choices
+%     are |l|, |c| and |r|. For |l| the \anml\ is flushed to the left of the
+%     \msg, for |c| it is centred and for |r| it is flushed right. More fine
+%     grained control over the alignment can be obtained with the keys
+%     |msg-to-body|, |body-to-msg|, |body-x| and |body-y|. Package default is
+%     |l|.
+%   \item[body-mirrored=\meta{bool}]
+%     if set true the \anml\ will be mirrored along its vertical centre axis.
+%     Package default is |false|.
+%   \item[body-to-msg=\meta{pole}]
+%     defines the horizontal coffin \meta{pole} to be used for the placement of
+%     the \anml\ beneath the \msg. See \PolesInfo.
+%   \item[body-x=\meta{dimen}]
+%     defines a horizontal offset of \meta{dimen} length of the \anml\ from its
+%     placement beneath the \msg.
+%   \item[body-y=\meta{dimen}]
+%     defines a vertical offset of \meta{dimen} length of the \anml\ from its
+%     placement beneath the \msg.
+%   \item[bubble=\meta{font}]
+%     add \meta{font} to the font definitions in use to typeset the bubble. This
+%     does not affect the \msg\ only the bubble put around it.
+%   \item[bubble*=\meta{font}]
+%     clear any definitions previously made (including the package default) and
+%     set the font definitions in use to typeset the bubble to \meta{font}. This
+%     does not affect the \msg\ only the bubble put around it. The package
+%     default is \cs{verbatim@font}.
+%   \item[bubble-bot-kern=\meta{dimen}]
+%     specifies a vertical offset of the placement of the lower border of the
+%     bubble from the bottom of the left and right borders.
+%   \item[bubble-delim-left-1=\meta{token list}]
+%     the left delimiter used if only one line of delimiters is needed. Package
+%     default is |(|.
+%   \item[bubble-delim-left-2=\meta{token list}]
+%     the upper most left delimiter used if more than one line of delimiters is
+%     needed. Package default is |/|.
+%   \item[bubble-delim-left-3=\meta{token list}]
+%     the left delimiters used to fill the gap if more than two lines of
+%     delimiters are needed. Package default is \verb+|+.
+%   \item[bubble-delim-left-4=\meta{token list}]
+%     the lower most left delimiters used if more than one line of delimiters is
+%     needed. Package default is |\|.
+%   \item[bubble-delim-right-1=\meta{token list}]
+%     the right delimiter used if only one line of delimiters is needed. Package
+%     default is |)|.
+%   \item[bubble-delim-right-2=\meta{token list}]
+%     the upper most right delimiter used if more than one line of delimiters is
+%     needed. Package default is |\|.
+%   \item[bubble-delim-right-3=\meta{token list}]
+%     the right delimiters used to fill the gap if more than two lines of
+%     delimiters are needed. Package default is \verb+|+.
+%   \item[bubble-delim-right-4=\meta{token list}]
+%     the lower most right delimiters used if more than one line of delimiters
+%     is needed. Package default is |/|.
+%   \item[bubble-delim-top=\meta{token list}]
+%     the delimiter used to create the top and bottom border of the bubble. The
+%     package default is |{-}| (the braces are important to suppress ligatures
+%     here).
+%   \item[bubble-side-kern=\meta{dimen}]
+%     specifies the kerning used to move the sideways delimiters added to fill
+%     the gap for more than two lines of bubble height. (the left one is moved
+%     to the left, the right one to the right)
+%   \item[bubble-top-kern=\meta{dimen}]
+%     specifies a vertical offset of the placement of the upper border of the
+%     bubble from the top of the left and right borders.
+%   \item[c]
+%     shortcut for |out-v=vc|.
+%   \item[col=\meta{column}]
+%     specifies the used column specifier used for the \msg\ enclosing
+%     \env{tabular} for |arg=tab| and |arg=tab*|. Has precedence over
+%     |msg-align|.
+%   \item[ht=\meta{count}]
+%     specifies a minimum height (in lines) of the \msg. The lines' count is
+%     that of the needed lines of the horizontal bubble delimiters. If the
+%     count of the actually needed lines is smaller than the specified
+%     \meta{count}, \meta{count} lines will be used. Else the required lines
+%     will be used.
+%   \item[msg=\meta{font}]
+%     add \meta{font} to the font definitions in use to typeset the \msg.
+%   \item[msg*=\meta{font}]
+%     clear any definitions previously made (including the package default) and
+%     set the font definitions in use to typeset the \msg\ to \meta{font}. The
+%     package default is \cs{verbatim@font}.
+%   \item[MSG=\meta{font}]
+%     same as |msg=\meta{font}, bubble=\meta{font}|.
+%   \item[MSG*=\meta{font}]
+%     same as |msg*=\meta{font}, bubble*=\meta{font}|.
+%   \item[msg-align=\meta{choice}]
+%     specifies the alignment of the \msg. Possible values are |l| for flushed
+%     left, |c| for centred, |r| for flushed right and |j| for justified. If
+%     |arg=tab| or |arg=tab*| the |j| choice is only available for fixed width
+%     contents. Package default is |l|.
+%   \item[msg-to-bubble=\meta{pole}]
+%     defines the horizontal coffin \meta{pole} to be used as the reference
+%     point for the placement of the \anml\ beneath the \msg. See \PolesInfo.
+%   \item[out-h=\meta{pole}]
+%     defines the horizontal coffin \meta{pole} to be used as the anchor point
+%     for the print out of the complete result of \cs{ducksay} and
+%     \cs{duckthink}. See \PolesInfo.
+%   \item[out-x=\meta{dimen}]
+%     specifies an additional horizontal offset of the print out of the complete
+%     result of \cs{ducksay} and \cs{duckthink}.
+%   \item[out-y=\meta{dimen}]
+%     specifies an additional vertical offset of the print out of the complete
+%     result of \cs{ducksay} and \cs{duckthink}
+%   \item[out-v=\meta{pole}]
+%     defines the vertical coffin \meta{pole} to be used as the anchor point for
+%     the print out of the complete result of \cs{ducksay} and \cs{duckthink}.
+%     See \PolesInfo.
+%   \item[t]
+%     shortcut for |out-v=t|.
+%   \item[vpad=\meta{count}]
+%     add \meta{count} to the lines used for the bubble, resulting in
+%     \meta{count} more lines than necessary to enclose the \msg\ inside of the
+%     bubble.
+%   \item[wd=\meta{count}]
+%     specifies the width of the \msg\ to be fixed to \meta{count} times the
+%     width of an upper case M in the \msg's font declaration. A value smaller
+%     than 0 is considered deactivated, else the width is considered as fixed.
+%     For a fixed width the argument of \cs{ducksay} and \cs{duckthink} is read
+%     in as a \cs{vbox} for |arg=box| and the column definition uses a |p|-type
+%     column for |arg=tab| and |arg=tab*|.
+%   \item[wd*=\meta{dimen}]
+%     specifies the width of the \msg\ to be fixed to \meta{dimen}. A value
+%     smaller than 0pt is considered deactivated, else the width is considered
+%     as fixed. For a fixed width the argument of \cs{ducksay} and
+%     \cs{duckthink} is read in as a \cs{vbox} for |arg=box| and the column
+%     definition uses a |p|-type column for |arg=tab| and |arg=tab*|.
+% \end{options}
+%
+%^^A<<<
+%
+% \SetVersion{}%
 % \subsection{Dependencies}^^A>>>
 % \marginpar
 %   {%
 %     \tiny
-%     \rlap{\ducksay[kangaroo,bubble=\footnotesize,align=t]{We rely on you}}%
+%     \rlap{\ducksay[kangaroo,MSG=\footnotesize,align=t]{We rely on you}}%
 %   }
 % The package depends on the two packages \pkg{xparse} and \pkg{l3keys2e}
 % and all of their dependencies.
@@ -393,7 +690,7 @@ and the derived files           ducksay.pdf
 %     \hfill
 %     \makebox[8em][r]
 %       {%
-%         \ducksay[whale,bubble=\footnotesize,align=t]
+%         \ducksay[whale,MSG=\footnotesize,align=t]
 %           {I'm the\\new one.}%
 %       }%
 %   }
@@ -401,7 +698,7 @@ and the derived files           ducksay.pdf
 % altered some), they belong to their original creators.
 % \bgroup
 % \scriptsize
-% \DucksayOptions{bubble=\footnotesize}
+% \DucksayOptions{MSG=\footnotesize}
 % \begin{multicols}{2}
 % \availableAnimal{^^A>>>
 %   ,duck^^A
@@ -443,7 +740,7 @@ and the derived files           ducksay.pdf
 %     \rlap
 %       {%
 %         \tiny
-%         \ducksay[squirrel,bubble=\footnotesize,align=t]{I'd choose WTFPL}%
+%         \ducksay[squirrel,MSG=\footnotesize,align=t]{I'd choose WTFPL}%
 %       }%
 %   }
 % This package is distributed under the terms of the GPLv3 or later, or the LPPL
@@ -459,6 +756,7 @@ and the derived files           ducksay.pdf
 %
 % \clearpage
 %
+% \SetVersion{}\def\DocImp{Implementation}%
 % \section{Implementation}^^A>>>
 %
 %^^A main file >>>
@@ -470,19 +768,24 @@ and the derived files           ducksay.pdf
 % \subsection{Shared between versions}^^A>>>
 %
 % \subsubsection{Variables}^^A>>>
-% \begin{variable}{\l_ducksay_strlen_int}^^A>>>
+% \begin{variable}{\l_ducksay_msg_width_int}^^A>>>
 %    \begin{macrocode}
-\int_new:N \l_ducksay_strlen_int
+\int_new:N \l_ducksay_msg_width_int
 %    \end{macrocode}
 % \end{variable}^^A<<<
-% \begin{variable}{\l_ducksay_lines_int}^^A>>>
+% \begin{variable}{\l_ducksay_msg_height_int}^^A>>>
 %    \begin{macrocode}
-\int_new:N \l_ducksay_lines_int
+\int_new:N \l_ducksay_msg_height_int
 %    \end{macrocode}
 % \end{variable}^^A<<<
 % \begin{variable}{\l_ducksay_msg_lines_seq}^^A>>>
 %    \begin{macrocode}
 \seq_new:N \l_ducksay_msg_lines_seq
+%    \end{macrocode}
+% \end{variable}^^A<<<
+% \begin{variable}{\l_ducksay_say_or_think_tl}^^A>>>
+%    \begin{macrocode}
+\tl_new:N \l_ducksay_say_or_think_tl
 %    \end{macrocode}
 % \end{variable}^^A<<<
 % \begin{variable}{\l_ducksay_align_tl}^^A>>>
@@ -500,11 +803,6 @@ and the derived files           ducksay.pdf
 \tl_new:N \l_ducksay_animal_tl
 %    \end{macrocode}
 % \end{variable}^^A<<<
-% \begin{variable}{\g__ducksay_all_animals_clist}^^A>>>
-%    \begin{macrocode}
-\clist_new:N \g__ducksay_all_animals_clist
-%    \end{macrocode}
-% \end{variable}^^A<<<
 % \begin{variable}{\ducksay_bubble:}^^A>>>
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_bubble: {}
@@ -513,6 +811,11 @@ and the derived files           ducksay.pdf
 % \begin{variable}{\ducksay_body:}^^A>>>
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_body: {}
+%    \end{macrocode}
+% \end{variable}^^A<<<
+% \begin{variable}{\l_ducksay_also_add_think_bool}^^A>>>
+%    \begin{macrocode}
+\bool_new:N \l_ducksay_also_add_think_bool
 %    \end{macrocode}
 % \end{variable}^^A<<<
 % \begin{variable}{\l_ducksay_version_one_bool}^^A>>>
@@ -535,127 +838,106 @@ and the derived files           ducksay.pdf
 \tl_new:N  \l_ducksay_tmpa_tl
 %    \end{macrocode}
 % \end{variable}^^A<<<
+% \subsubsection{Regular Expressions}^^A>>>
+% Regular expressions for \cs{duckthink}
+%    \begin{macrocode}
+\regex_const:Nn \c_ducksay_first_regex  { \A(.\s*)\\ }
+\regex_const:Nn \c_ducksay_second_regex { \A(.[^\c{null}]*\c{null}\s*)\\ }
+\regex_const:Nn \c_ducksay_third_regex  {
+  \A(.[^\c{null}]*\c{null}[^\c{null}]*\c{null}\s*)\\ }
+%    \end{macrocode}
+%^^A<<<
+%
+%^^A<<<
+%
+% \subsubsection{Messages}^^A>>>
+%    \begin{macrocode}
+\msg_new:nnn { ducksay } { load-time-only }
+  { The~`#1`~key~is~to~be~used~only~during~package~load~time. }
+%    \end{macrocode}
 %^^A<<<
 %
 % \subsubsection{Key-value setup}^^A>>>
 %    \begin{macrocode}
 \keys_define:nn { ducksay }
   {
-    ,bubble .code:n       = \cs_set:Npn \ducksay_bubble: {#1}
-    ,body   .code:n       = \cs_set:Npn \ducksay_body: {#1}
-    ,align  .tl_set:N     = \l_ducksay_align_tl
+    ,bubble .code:n        = \cs_set:Npn \ducksay_bubble: {#1}
+    ,body   .code:n        = \cs_set:Npn \ducksay_body: {#1}
+    ,align  .tl_set:N      = \l_ducksay_align_tl
     ,align  .value_required:n = true
-    ,wd     .int_set:N    = \l_ducksay_strlen_int
+    ,wd     .int_set:N     = \l_ducksay_msg_width_int
+    ,wd     .initial:n     = -\c_max_int
     ,wd     .value_required:n = true
-    ,ht     .int_set:N    = \l_ducksay_lines_int
+    ,ht     .int_set:N     = \l_ducksay_msg_height_int
+    ,ht     .initial:n     = -\c_max_int
     ,ht     .value_required:n = true
-    ,animal .code:n       =
+    ,animal .code:n        =
       { \keys_define:nn { ducksay } { default_animal .meta:n = { #1 } } }
-    ,animal .initial:n    = duck
-    ,msg-align .tl_set:N  = \l_ducksay_msg_align_tl
-    ,msg-align .initial:n = l
+    ,animal .initial:n     = duck
+    ,msg-align .tl_set:N   = \l_ducksay_msg_align_tl
+    ,msg-align .initial:n  = l
     ,msg-align .value_required:n = true
-    ,rel-align .tl_set:N  = \l_ducksay_rel_align_tl
-    ,rel-align .initial:n = l
+    ,rel-align .tl_set:N   = \l_ducksay_rel_align_tl
+    ,rel-align .initial:n  = l
     ,rel-align .value_required:n = true
-    ,ligatures .tl_set:N  = \l_ducksay_ligatures_tl
-    ,ligatures .initial:n = { `<>,'- }
-    ,unknown   .code:n    =
-      { \msg_error:nnx { ducksay } { option-unknown } { \l_keys_key_tl } }
+    ,ligatures .tl_set:N   = \l_ducksay_ligatures_tl
+    ,ligatures .initial:n  = { `<>,'- }
+    ,add-think .bool_set:N = \l_ducksay_also_add_think_bool
     ,version   .choice:
-    ,version / 1 .code:n  = 
+    ,version / 1 .code:n   = 
       {
         \bool_set_false:N \l_ducksay_version_two_bool
         \bool_set_true:N  \l_ducksay_version_one_bool
       }
-    ,version / 2 .code:n  =
+    ,version / 2 .code:n   =
       {
         \bool_set_false:N \l_ducksay_version_one_bool
         \bool_set_true:N  \l_ducksay_version_two_bool
       }
-    ,version   .initial:n = 1
+    ,version   .initial:n  = 1
   }
-%    \end{macrocode}
-% Setting up a clist of all included animals^^A>>>
-%    \begin{macrocode}
-\clist_set:Nn \g__ducksay_all_animals_clist
-  {
-    duck
-    ,small-duck
-    ,duck-family
-    ,squirrel
-    ,cow
-    ,head-in
-    ,sodomized
-    ,tux
-    ,pig
-    ,frog
-    ,snowman
-    ,bunny
-    ,small-rabbit
-    ,rabbit
-    ,dragon
-    ,hedgehog
-    ,kangaroo
-    ,dog
-    ,snail
-    ,unicorn
-    ,whale
-    ,r2d2
-    ,vader
-    ,yoda-head
-    ,small-yoda
-    ,yoda
-  }
-%    \end{macrocode}
-% define load-switches for each of them
-%    \begin{macrocode}
-\clist_map_inline:Nn \g__ducksay_all_animals_clist
-  {
-    \bool_new:c { g__ducksay_load_#1_bool }
-    \keys_define:nn { ducksay }
-      { #1 .bool_gset:c = { g__ducksay_load_#1_bool } }
-  }
-%    \end{macrocode}
-% define one key to call all of them
-%    \begin{macrocode}
-\keys_define:nn { ducksay }
-  {
-    ,all .code:n =
-      {
-        \tl_if_empty:nTF { #1 }
-          {
-            \clist_map_inline:Nn \g__ducksay_all_animals_clist
-              { \keys_set:nn { ducksay } { ##1 } }
-          }
-          {
-            \clist_map_inline:Nn \g__ducksay_all_animals_clist
-              { \keys_set:nn { ducksay } { ##1 = #1 } }
-          }
-      }
-  }
-%    \end{macrocode}^^A<<<
-% by default load |duck|
-%    \begin{macrocode}
-\keys_set:nn { ducksay } { duck }
 %    \end{macrocode}
 %
 %    \begin{macrocode}
 \ProcessKeysOptions { ducksay }
 %    \end{macrocode}
 %
-% Undefine the |all| key and all of the load-time keys
+% Undefined the load-time-only keys
 %    \begin{macrocode}
-\keys_define:nn { ducksay } { all .undefine: }
-\clist_map_inline:Nn \g__ducksay_all_animals_clist
+\keys_define:nn { ducksay }
   {
-    \keys_define:nn { ducksay } { #1 .undefine: }
+    version .code:n = \msg_error:nnn { ducksay } { load-time-only } { version }
   }
-%    \end{macrocode}^^A<<<
+%    \end{macrocode}
+%
+%^^A<<<
+%
 %
 % \subsubsection{Functions}^^A>>>
 %
+% \paragraph{Generating Variants of External Functions}^^A>>>
+%
+%    \begin{macrocode}
+\cs_generate_variant:Nn \tl_if_eq:nnT { VnT }
+%    \end{macrocode}
+%^^A<<<
+%
 % \paragraph{Internal}^^A>>>
+%
+% \begin{macro}{\ducksay_create_think_animal:n}^^A>>>
+%    \begin{macrocode}
+\cs_new_protected:Npn \ducksay_create_think_animal:n #1
+  {
+    \group_begin:
+      \tl_set_eq:Nc \l_ducksay_tmpa_tl { g_ducksay_animal_say_#1_tl }
+      \regex_replace_once:NnN \c_ducksay_first_regex  { \1O } \l_ducksay_tmpa_tl
+      \regex_replace_once:NnN \c_ducksay_second_regex { \1o } \l_ducksay_tmpa_tl
+      \regex_replace_once:NnN \c_ducksay_third_regex  { \1o } \l_ducksay_tmpa_tl
+      \tl_gset_eq:cN { g_ducksay_animal_think_#1_tl } \l_ducksay_tmpa_tl
+    \group_end:
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
 %
 % \begin{macro}{\ducksay_replace_verb_newline:Nn}^^A>>>
 %    \begin{macrocode}
@@ -672,46 +954,6 @@ and the derived files           ducksay.pdf
   {
     \tl_set:Nn \ProcessedArgument { #2 }
     \ducksay_replace_verb_newline:Nn \ProcessedArgument { #1 }
-  }
-%    \end{macrocode}
-% \end{macro}^^A<<<
-%
-% \begin{macro}{\ducksay_add_animal_inner:nnn}^^A>>>
-%    \begin{macrocode}
-\cs_new_protected:Npn \ducksay_add_animal_inner:nnn #1 #2 #3
-  {
-    \tl_set:Nn \l_ducksay_tmpa_tl { \ #3 }
-    \tl_map_inline:Nn \l_ducksay_ligatures_tl
-      {
-        \tl_replace_all:Nnn \l_ducksay_tmpa_tl { ##1 } { { ##1 } }
-      }
-    \ducksay_replace_verb_newline:Nn \l_ducksay_tmpa_tl { \tabularnewline\null }
-    \tl_gset_eq:cN { g_ducksay_animal_#2_tl } \l_ducksay_tmpa_tl
-    \keys_define:nn { ducksay }
-      {
-        #2 .code:n =
-          { \tl_set_eq:Nc \l_ducksay_animal_tl { g_ducksay_animal_#2_tl } }
-      }
-    \IfBooleanT{#1}
-      {
-        \keys_define:nn { ducksay } { default_animal .meta:n = { #2 } }
-      }
-  }
-%    \end{macrocode}
-% \end{macro}^^A<<<
-%
-% \begin{macro}{\ducksay@AddAnimal}^^A>>>
-%   Those animals provided by the package are not necessarily to be defined and
-%   might already be defined. Therefore they are added with
-%   \cs{ducksay@AddAnimal}.
-%    \begin{macrocode}
-\NewDocumentCommand \ducksay@AddAnimal { s m +v }
-  {
-    \bool_if:cT { g__ducksay_load_#2_bool }
-      {
-        \tl_if_exist:cF { g_ducksay_animal_#2_tl }
-          { \ducksay_add_animal_inner:nnn { #1 } { #2 } { #3 } }
-      }
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -742,7 +984,26 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \NewDocumentCommand \AddAnimal { s m +v }
   {
-    \ducksay_add_animal_inner:nnn { #1 } { #2 } { #3 }
+    \tl_set:Nn \l_ducksay_tmpa_tl { \ #3 }
+    \tl_map_inline:Nn \l_ducksay_ligatures_tl
+      { \tl_replace_all:Nnn \l_ducksay_tmpa_tl { ##1 } { { ##1 } } }
+    \ducksay_replace_verb_newline:Nn \l_ducksay_tmpa_tl { \tabularnewline\null }
+    \tl_gset_eq:cN { g_ducksay_animal_say_#2_tl } \l_ducksay_tmpa_tl
+    \keys_define:nn { ducksay }
+      {
+        #2 .code:n =
+          {
+            \tl_if_exist:cF
+              { g_ducksay_animal_ \l_ducksay_say_or_think_tl _#2_tl }
+              { \ducksay_create_think_animal:n { #2 } }
+            \tl_set_eq:Nc \l_ducksay_animal_tl
+              { g_ducksay_animal_ \l_ducksay_say_or_think_tl _#2_tl }
+          }
+      }
+    \bool_if:NT \l_ducksay_also_add_think_bool
+      { \ducksay_create_think_animal:n { #2 } }
+    \IfBooleanT{#1}
+      { \keys_define:nn { ducksay } { default_animal .meta:n = { #2 } } }
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -755,9 +1016,9 @@ and the derived files           ducksay.pdf
 % \subsubsection{Load the Correct Version and the Animals}^^A>>>
 %    \begin{macrocode}
 \bool_if:NT \l_ducksay_version_one_bool
-  { \input{ducksay.code.v1.tex} }
+  { \file_input:n { ducksay.code.v1.tex } }
 \bool_if:NT \l_ducksay_version_two_bool
-  { \input{ducksay.code.v2.tex} }
+  { \file_input:n { ducksay.code.v2.tex } }
 %    \end{macrocode}
 %
 %    \begin{macrocode}
@@ -771,30 +1032,11 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 %^^A<<<
 %
+% \SetVersion{1}%
 % \subsection{Version 1}^^A>>>
 %    \begin{macrocode}
 %<*code.v1>
 %    \end{macrocode}
-%
-% \subsubsection{Regular Expressions}^^A>>>
-% Regular expressions for \cs{duckthink}
-%    \begin{macrocode}
-\regex_const:Nn \c_ducksay_first_regex  { \A(.\s*)\\ }
-\regex_const:Nn \c_ducksay_second_regex { \A(.[^\c{null}]*\c{null}\s*)\\ }
-\regex_const:Nn \c_ducksay_third_regex  {
-  \A(.[^\c{null}]*\c{null}[^\c{null}]*\c{null}\s*)\\ }
-%    \end{macrocode}
-%^^A<<<
-%
-% \subsubsection{Messages}^^A>>>
-%    \begin{macrocode}
-\msg_new:nnnn { ducksay } { option-unknown }
-  { Unknown\ option\ '#1'\ for\ package\ ducksay. }
-  {
-    If\ the\ option\ corresponds\ to\ one\ of\ the\ animals,\ make\ sure\ to\ 
-    load\ that\ animal.
-  }
-%    \end{macrocode}^^A<<<
 %
 % \subsubsection{Functions}^^A>>>
 % \paragraph{Internal}^^A>>>
@@ -804,12 +1046,13 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_longest_line:n #1
   {
-    \int_incr:N \l_ducksay_lines_int
+    \int_incr:N \l_ducksay_msg_height_int
     \exp_args:NNx \tl_set:Nn \l_ducksay_tmpa_tl { #1 }
     \regex_replace_all:nnN { \s } { \c { space } } \l_ducksay_tmpa_tl
-    \int_set:Nn \l_ducksay_strlen_int
+    \int_set:Nn \l_ducksay_msg_width_int
       {
-        \int_max:nn { \l_ducksay_strlen_int } { \tl_count:N \l_ducksay_tmpa_tl }
+        \int_max:nn
+          { \l_ducksay_msg_width_int } { \tl_count:N \l_ducksay_tmpa_tl }
       }
   }
 %    \end{macrocode}
@@ -822,17 +1065,18 @@ and the derived files           ducksay.pdf
   {
     \begin{tabular}{@{}l@{}}
       \null\\
-      \int_compare:nNnTF {\l_ducksay_lines_int} = {1} { ( }
+      \int_compare:nNnTF { \l_ducksay_msg_height_int } = { 1 } { ( }
         {
           /
-          \int_step_inline:nnn { 3 } { \l_ducksay_lines_int } { \\\kern-0.5ex| }
+          \int_step_inline:nnn
+            { 3 } { \l_ducksay_msg_height_int } { \\\kern-0.2em| }
           \\\detokenize{\ }
         }
       \\[-1ex]\null
     \end{tabular}
     \begin{tabular}{@{}l@{}}
       _\\
-      \int_step_inline:nnn { 2 } { \l_ducksay_lines_int } { \\ } \\[-1ex]
+      \int_step_inline:nnn { 2 } { \l_ducksay_msg_height_int } { \\ } \\[-1ex]
       \mbox { - }
     \end{tabular}
   }
@@ -846,16 +1090,17 @@ and the derived files           ducksay.pdf
   {
     \begin{tabular}{@{}l@{}}
       _\\
-      \int_step_inline:nnn { 2 } { \l_ducksay_lines_int } { \\ } \\[-1ex]
+      \int_step_inline:nnn { 2 } { \l_ducksay_msg_height_int } { \\ } \\[-1ex]
       { - }
     \end{tabular}
     \begin{tabular}{@{}r@{}}
       \null\\
-      \int_compare:nNnTF { \l_ducksay_lines_int } = { 1 }
+      \int_compare:nNnTF { \l_ducksay_msg_height_int } = { 1 }
         { ) }
         {
           \detokenize {\ }
-          \int_step_inline:nnn { 3 } { \l_ducksay_lines_int } { \\|\kern-0.5ex }
+          \int_step_inline:nnn
+            { 3 } { \l_ducksay_msg_height_int } { \\|\kern-0.2em }
           \\/
         }
       \\[-1ex]\null
@@ -870,9 +1115,9 @@ and the derived files           ducksay.pdf
 \cs_new:Npn \ducksay_print_msg:nn #1 #2
   {
     \begin{tabular}{@{} #2 @{}}
-      \int_step_inline:nn { \l_ducksay_strlen_int } { _ } \\
+      \int_step_inline:nn { \l_ducksay_msg_width_int } { _ } \\
       #1\\[-1ex]
-      \int_step_inline:nn { \l_ducksay_strlen_int } { { - } }
+      \int_step_inline:nn { \l_ducksay_msg_width_int } { { - } }
     \end{tabular}
   }
 \cs_generate_variant:Nn \ducksay_print_msg:nn { nV }
@@ -884,16 +1129,17 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_print:nn #1 #2
   {
-    \int_compare:nNnTF { \l_ducksay_strlen_int } = { 0 }
+    \int_compare:nNnTF { \l_ducksay_msg_width_int } < { 0 }
       {
+        \int_zero:N \l_ducksay_msg_height_int
         \seq_set_split:Nnn \l_ducksay_msg_lines_seq { \\ } { #1 }
         \seq_map_function:NN \l_ducksay_msg_lines_seq \ducksay_longest_line:n
       }
       {
-        \int_compare:nNnT { \l_ducksay_lines_int } = { 0 }
+        \int_compare:nNnT { \l_ducksay_msg_height_int } < { 0 }
           {
-            \regex_count:nnN { \c { \\ } } { #1 } \l_ducksay_lines_int
-            \int_incr:N \l_ducksay_lines_int
+            \regex_count:nnN { \c { \\ } } { #1 } \l_ducksay_msg_height_int
+            \int_incr:N \l_ducksay_msg_height_int
           }
       }
     \group_begin:
@@ -923,22 +1169,11 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_prepare_say_and_think:n #1
   {
-    \int_zero:N \l_ducksay_strlen_int
-    \int_zero:N \l_ducksay_lines_int
-    \keys_define:nn { ducksay } { animal .meta:n = { ##1 } }
-    \keys_set:nn { ducksay } { default_animal , #1 }
-  }
-%    \end{macrocode}
-% \end{macro}^^A<<<
-%
-% \begin{macro}{\ducksay_to_duckthink:}^^A>>>
-%   Convert ducksay to duckthink
-%    \begin{macrocode}
-\cs_new:Npn \ducksay_to_duckthink:
-  {
-    \regex_replace_once:NnN \c_ducksay_first_regex  { \1O } \l_ducksay_animal_tl
-    \regex_replace_once:NnN \c_ducksay_second_regex { \1o } \l_ducksay_animal_tl
-    \regex_replace_once:NnN \c_ducksay_third_regex  { \1o } \l_ducksay_animal_tl
+    \int_set:Nn \l_ducksay_msg_width_int  { -\c_max_int }
+    \int_set:Nn \l_ducksay_msg_height_int { -\c_max_int }
+    \keys_set:nn { ducksay } { #1 }
+    \tl_if_empty:NT \l_ducksay_animal_tl
+      { \keys_set:nn { ducksay } { default_animal } }
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -951,6 +1186,7 @@ and the derived files           ducksay.pdf
 \NewDocumentCommand \ducksay { O{} m }
   {
     \group_begin:
+      \tl_set:Nn \l_ducksay_say_or_think_tl { say }
       \ducksay_prepare_say_and_think:n { #1 }
       \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
     \group_end:
@@ -963,8 +1199,8 @@ and the derived files           ducksay.pdf
 \NewDocumentCommand \duckthink { O{} m }
   {
     \group_begin:
+      \tl_set:Nn \l_ducksay_say_or_think_tl { think }
       \ducksay_prepare_say_and_think:n { #1 }
-      \ducksay_to_duckthink:
       \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
     \group_end:
   }
@@ -977,22 +1213,33 @@ and the derived files           ducksay.pdf
 %</code.v1>
 %    \end{macrocode}^^A<<<
 %
+% \SetVersion{2}%
 % \subsection{Version 2}^^A>>>
 %    \begin{macrocode}
 %<*code.v2>
 %    \end{macrocode}
 %
+% \subsubsection{Messages}^^A>>>
+%    \begin{macrocode}
+\msg_new:nnn { ducksay } { justify~unavailable }
+  {
+    Justified~content~is~not~available~for~tabular~argument~mode~without~fixed~
+    width.~`l`~column~is~used~instead.
+  }
+\msg_new:nnn { ducksay } { unknown~message~alignment }
+  {
+    The~specified~message~alignment~`\exp_not:n { #1 }`~is~unknown.~
+    `l`~is~used~as~fallback.
+  }
+%    \end{macrocode}
+%
+%^^A<<<
+%
 % \subsubsection{Variables}^^A>>>
 %
 % \paragraph{Token Lists}
 %    \begin{macrocode}
-\tl_new:N \l_ducksay_body_fount_tl
-\tl_new:N \l_ducksay_body_to_msg_align_body_tl
-\tl_new:N \l_ducksay_body_to_msg_align_msg_tl 
-\tl_new:N \l_ducksay_bubble_fount_tl
-\tl_new:N \l_ducksay_msg_fount_tl
-\tl_new:N \l_ducksay_output_h_pole_tl
-\tl_new:N \l_ducksay_output_v_pole_tl
+\tl_new:N \l_ducksay_msg_align_vbox_tl
 %    \end{macrocode}
 %
 % \paragraph{Boxes}
@@ -1000,10 +1247,16 @@ and the derived files           ducksay.pdf
 \box_new:N \l_ducksay_msg_box
 %    \end{macrocode}
 %
+% \paragraph{Bools}
+%    \begin{macrocode}
+\bool_new:N \l_ducksay_eat_arg_box_bool
+\bool_new:N \l_ducksay_eat_arg_tab_verb_bool
+\bool_new:N \l_ducksay_mirrored_body_bool
+%    \end{macrocode}
+%
 % \paragraph{Coffins}
 %    \begin{macrocode}
 \coffin_new:N \l_ducksay_body_coffin
-\coffin_new:N \l_ducksay_bubble_bottom_coffin
 \coffin_new:N \l_ducksay_bubble_close_coffin
 \coffin_new:N \l_ducksay_bubble_open_coffin
 \coffin_new:N \l_ducksay_bubble_top_coffin
@@ -1013,14 +1266,93 @@ and the derived files           ducksay.pdf
 % \paragraph{Dimensions}
 %    \begin{macrocode}
 \dim_new:N \l_ducksay_hpad_dim
-\dim_new:N \l_ducksay_vpad_dim
 \dim_new:N \l_ducksay_bubble_bottom_kern_dim
 \dim_new:N \l_ducksay_bubble_top_kern_dim
-\dim_new:N \l_ducksay_body_x_offset_dim
-\dim_new:N \l_ducksay_body_y_offset_dim
 \dim_new:N \l_ducksay_msg_width_dim
-\dim_new:N \l_ducksay_output_x_offset_dim
-\dim_new:N \l_ducksay_output_y_offset_dim
+%    \end{macrocode}
+%
+%^^A<<<
+%
+% \subsubsection{Options}^^A>>>
+%
+%    \begin{macrocode}
+\keys_define:nn { ducksay }
+  {
+    ,arg .choice:
+    ,arg / box  .code:n = \bool_set_true:N  \l_ducksay_eat_arg_box_bool
+    ,arg / tab  .code:n =
+      {
+        \bool_set_false:N \l_ducksay_eat_arg_box_bool
+        \bool_set_false:N \l_ducksay_eat_arg_tab_verb_bool
+      }
+    ,arg / tab* .code:n =
+      {
+        \bool_set_false:N \l_ducksay_eat_arg_box_bool
+        \bool_set_true:N  \l_ducksay_eat_arg_tab_verb_bool
+      }
+    ,wd* .dim_set:N = \l_ducksay_msg_width_dim
+    ,wd* .initial:n = -\c_max_dim
+    ,body-mirrored .bool_set:N = \l_ducksay_mirrored_body_bool
+    ,body-x      .dim_set:N = \l_ducksay_body_x_offset_dim
+    ,body-y      .dim_set:N = \l_ducksay_body_y_offset_dim
+    ,body-to-msg .tl_set:N  = \l_ducksay_body_to_msg_align_body_tl
+    ,msg-to-body .tl_set:N  = \l_ducksay_body_to_msg_align_msg_tl
+    ,body-align .choice:
+    ,body-align / l .meta:n = { body-to-msg = l , msg-to-body = l }
+    ,body-align / c .meta:n = { body-to-msg = hc , msg-to-body = hc }
+    ,body-align / r .meta:n = { body-to-msg = r , msg-to-body = r }
+    ,body-align .initial:n = l
+    ,msg-align   .choice:
+    ,msg-align  / l .code:n = { \tl_set:Nn \l_ducksay_msg_align_tl { l } }
+    ,msg-align  / c .code:n = { \tl_set:Nn \l_ducksay_msg_align_tl { c } }
+    ,msg-align  / r .code:n = { \tl_set:Nn \l_ducksay_msg_align_tl { r } }
+    ,msg-align  / j .code:n = { \tl_set:Nn \l_ducksay_msg_align_tl { j } }
+    ,out-h   .tl_set:N  = \l_ducksay_output_h_pole_tl
+    ,out-h   .initial:n = l
+    ,out-v   .tl_set:N  = \l_ducksay_output_v_pole_tl
+    ,out-v   .initial:n = vc
+    ,out-x   .dim_set:N = \l_ducksay_output_x_offset_dim
+    ,out-y   .dim_set:N = \l_ducksay_output_y_offset_dim
+    ,t       .meta:n    = { out-v = t }
+    ,c       .meta:n    = { out-v = vc }
+    ,b       .meta:n    = { out-v = b }
+    ,body*   .tl_set:N  = \l_ducksay_body_fount_tl
+    ,msg*    .tl_set:N  = \l_ducksay_msg_fount_tl
+    ,bubble* .tl_set:N  = \l_ducksay_bubble_fount_tl
+    ,body*   .initial:n = \verbatim@font
+    ,msg*    .initial:n = \verbatim@font
+    ,bubble* .initial:n = \verbatim@font
+    ,body    .code:n    = \tl_put_right:Nn \l_ducksay_body_fount_tl   { #1 }
+    ,msg     .code:n    = \tl_put_right:Nn \l_ducksay_msg_fount_tl    { #1 }
+    ,bubble  .code:n    = \tl_put_right:Nn \l_ducksay_bubble_fount_tl { #1 }
+    ,MSG     .meta:n    = { msg = #1 , bubble = #1 }
+    ,vpad    .int_set:N = \l_ducksay_vpad_int
+    ,col     .tl_set:N  = \l_ducksay_msg_tabular_column_tl
+    ,bubble-top-kern  .tl_set:N  = \l_ducksay_bubble_top_kern_tl
+    ,bubble-top-kern  .initial:n = { -.5ex }
+    ,bubble-bot-kern  .tl_set:N  = \l_ducksay_bubble_bottom_kern_tl
+    ,bubble-bot-kern  .initial:n = { .2ex }
+    ,bubble-side-kern .tl_set:N  = \l_ducksay_bubble_side_kern_tl
+    ,bubble-side-kern .initial:n = { 0.2em }
+    ,bubble-delim-top     .tl_set:N  = \l_ducksay_bubble_delim_top_tl
+    ,bubble-delim-left-1  .tl_set:N  = \l_ducksay_bubble_delim_left_a_tl
+    ,bubble-delim-left-2  .tl_set:N  = \l_ducksay_bubble_delim_left_b_tl
+    ,bubble-delim-left-3  .tl_set:N  = \l_ducksay_bubble_delim_left_c_tl
+    ,bubble-delim-left-4  .tl_set:N  = \l_ducksay_bubble_delim_left_d_tl
+    ,bubble-delim-right-1 .tl_set:N  = \l_ducksay_bubble_delim_right_a_tl
+    ,bubble-delim-right-2 .tl_set:N  = \l_ducksay_bubble_delim_right_b_tl
+    ,bubble-delim-right-3 .tl_set:N  = \l_ducksay_bubble_delim_right_c_tl
+    ,bubble-delim-right-4 .tl_set:N  = \l_ducksay_bubble_delim_right_d_tl
+    ,bubble-delim-top     .initial:n = { { - } }
+    ,bubble-delim-left-1  .initial:n = (
+    ,bubble-delim-left-2  .initial:n = /
+    ,bubble-delim-left-3  .initial:n = |
+    ,bubble-delim-left-4  .initial:n = \c_backslash_str
+    ,bubble-delim-right-1 .initial:n = )
+    ,bubble-delim-right-2 .initial:n = \c_backslash_str
+    ,bubble-delim-right-3 .initial:n = |
+    ,bubble-delim-right-4 .initial:n = /
+  }
 %    \end{macrocode}
 %
 %^^A<<<
@@ -1029,12 +1361,176 @@ and the derived files           ducksay.pdf
 %
 % \paragraph{Internal}^^A>>>
 %
+% \begin{macro}{\ducksay_evaluate_message_alignment_fixed_width_tabular:}^^A>>>
+%    \begin{macrocode}
+\cs_new:Npn \ducksay_evaluate_message_alignment_fixed_width_tabular:
+  {
+    \tl_if_empty:NT \l_ducksay_msg_tabular_column_tl
+      {
+        \tl_set:Nx \l_ducksay_msg_tabular_column_tl
+          {
+            \str_case:Vn \l_ducksay_msg_align_tl
+              {
+                { l } { \exp_not:n { >{ \raggedright \arraybackslash } } }
+                { c } { \exp_not:n { >{ \centering   \arraybackslash } } }
+                { r } { \exp_not:n { >{ \raggedleft  \arraybackslash } } }
+                { j } { }
+              }
+            p { \exp_not:N \l_ducksay_msg_width_dim }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\ducksay_evaluate_message_alignment_fixed_width_vbox:}^^A>>>
+%    \begin{macrocode}
+\cs_new:Npn \ducksay_evaluate_message_alignment_fixed_width_vbox:
+  {
+    \tl_set:Nx \l_ducksay_msg_align_vbox_tl
+      {
+        \str_case:Vn \l_ducksay_msg_align_tl
+          {
+            { l } { \exp_not:N \raggedright }
+            { c } { \exp_not:N \centering   }
+            { r } { \exp_not:N \raggedleft  }
+            { j } { }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\ducksay_calculate_msg_width_from_int:}^^A>>>
+%    \begin{macrocode}
+\cs_new:Npn \ducksay_calculate_msg_width_from_int:
+  {
+    \hbox_set:Nn \l_ducksay_tmpa_box { \l_ducksay_msg_fount_tl M }
+    \dim_set:Nn \l_ducksay_msg_width_dim 
+      { \l_ducksay_msg_width_int \box_wd:N \l_ducksay_tmpa_box }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\ducksay_msg_tabular_begin:}^^A>>>
+%    \begin{macrocode}
+\cs_new:Npn \ducksay_msg_tabular_begin:
+  {
+    \ducksay_msg_tabular_begin_inner:V \l_ducksay_msg_tabular_column_tl
+  }
+\cs_new:Npn \ducksay_msg_tabular_begin_inner:n #1
+  {
+    \begin { tabular } { @{} #1 @{} }
+  }
+\cs_generate_variant:Nn \ducksay_msg_tabular_begin_inner:n { V }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\ducksay_msg_tabular_end:}^^A>>>
+%    \begin{macrocode}
+\cs_new:Npn \ducksay_msg_tabular_end:
+  {
+    \end { tabular }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\ducksay_digest_options:n}^^A>>>
+%    \begin{macrocode}
+\cs_new:Npn \ducksay_digest_options:n #1
+  {
+    \keys_set:nn { ducksay } { #1 }
+    \tl_if_empty:NT \l_ducksay_animal_tl
+      { \keys_set:nn { ducksay } { default_animal } }
+    \bool_if:NTF \l_ducksay_eat_arg_box_bool
+      {
+        \dim_compare:nNnTF { \l_ducksay_msg_width_dim } < { \c_zero_dim }
+          {
+            \int_compare:nNnTF { \l_ducksay_msg_width_int } < { \c_zero_int }
+              {
+                \cs_set_eq:NN
+                  \ducksay_eat_argument:w \ducksay_eat_argument_hbox:w
+              }
+              {
+                \cs_set_eq:NN
+                  \ducksay_eat_argument:w \ducksay_eat_argument_vbox:w
+                \ducksay_calculate_msg_width_from_int:
+              }
+          }
+          {
+            \cs_set_eq:NN \ducksay_eat_argument:w \ducksay_eat_argument_vbox:w
+          }
+      }
+      {
+        \dim_compare:nNnTF { \l_ducksay_msg_width_dim } < { \c_zero_dim }
+          {
+            \int_compare:nNnTF { \l_ducksay_msg_width_int } < { \c_zero_int }
+              {
+                \tl_if_empty:NT \l_ducksay_msg_tabular_column_tl
+                  {
+                    \str_case:Vn \l_ducksay_msg_align_tl
+                      {
+                        { l }
+                          { \tl_set:Nn \l_ducksay_msg_tabular_column_tl { l } }
+                        { c }
+                          { \tl_set:Nn \l_ducksay_msg_tabular_column_tl { c } }
+                        { r }
+                          { \tl_set:Nn \l_ducksay_msg_tabular_column_tl { r } }
+                        { j } {
+                          \msg_error:nn { ducksay } { justify~unavailable }
+                          \tl_set:Nn \l_ducksay_msg_tabular_column_tl { l }
+                        }
+                      }
+                  }
+              }
+              {
+                \ducksay_calculate_msg_width_from_int:
+                \ducksay_evaluate_message_alignment_fixed_width_tabular:
+              }
+          }
+          {
+            \ducksay_evaluate_message_alignment_fixed_width_tabular:
+          }
+        \cs_set_eq:NN \ducksay_eat_argument:w \ducksay_eat_argument_tabular:w
+      }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\ducksay_set_bubble_top_kern:}^^A>>>
+%    \begin{macrocode}
+\cs_new:Npn \ducksay_set_bubble_top_kern:
+  {
+    \group_begin:
+    \l_ducksay_bubble_fount_tl
+    \exp_args:NNNx
+    \group_end:
+    \dim_set:Nn \l_ducksay_bubble_top_kern_dim
+      { \dim_eval:n { \l_ducksay_bubble_top_kern_tl } }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\ducksay_set_bubble_bottom_kern:}^^A>>>
+%    \begin{macrocode}
+\cs_new:Npn \ducksay_set_bubble_bottom_kern:
+  {
+    \group_begin:
+    \l_ducksay_bubble_fount_tl
+    \exp_args:NNNx
+    \group_end:
+    \dim_set:Nn \l_ducksay_bubble_bottom_kern_dim
+      { \dim_eval:n { \l_ducksay_bubble_bottom_kern_tl } }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
 % \begin{macro}{\ducksay_shipout:}^^A>>>
 %    \begin{macrocode}
 \cs_new_protected:Npn \ducksay_shipout:
   {
     \hbox_set:Nn \l_ducksay_tmpa_box { \l_ducksay_bubble_fount_tl - }
-    \int_set:Nn \l_ducksay_msg_wd_int
+    \int_set:Nn \l_ducksay_msg_width_int
       {
         \fp_eval:n
           {
@@ -1042,30 +1538,47 @@ and the derived files           ducksay.pdf
               ( \box_wd:N \l_ducksay_msg_box / \box_wd:N \l_ducksay_tmpa_box )
           }
       }
-    \int_set:Nn \l_ducksay_msg_ht_int
+    \group_begin:
+    \l_ducksay_bubble_fount_tl
+    \exp_args:NNNx
+    \group_end:
+    \int_set:Nn \l_ducksay_msg_height_int
       {
-        \fp_eval:n
+        \int_max:nn
           {
-            ceil
-              (
-                ( \box_ht:N \l_ducksay_msg_box + \box_dp:N \l_ducksay_msg_box )
-                / ( \arraystretch * \baselineskip )
-              )
+            \fp_eval:n
+              {
+                ceil
+                  (
+                    (
+                      \box_ht:N \l_ducksay_msg_box
+                      + \box_dp:N \l_ducksay_msg_box
+                    )
+                    / ( \arraystretch * \baselineskip )
+                  )
+              }
+            + \l_ducksay_vpad_int
           }
+          { \l_ducksay_msg_height_int }
       }
     \hcoffin_set:Nn \l_ducksay_bubble_open_coffin
       {
         \l_ducksay_bubble_fount_tl
         \begin{tabular}{@{}l@{}}
-          \int_compare:nNnTF { \l_ducksay_msg_ht_int } = { \c_one_int }
+          \int_compare:nNnTF { \l_ducksay_msg_height_int } = { \c_one_int }
             {
-              (
+              \l_ducksay_bubble_delim_left_a_tl
             }
             {
-              /\\
-              \int_step_inline:nnn { \c_three_int } { \l_ducksay_msg_ht_int }
-                { \kern-.5ex|\\ }
-              \c_backslash_str
+              \l_ducksay_bubble_delim_left_b_tl\\
+              \int_step_inline:nnn
+                { 3 } { \l_ducksay_msg_height_int }
+                {
+                  \kern-\l_ducksay_bubble_side_kern_tl
+                  \l_ducksay_bubble_delim_left_c_tl
+                  \\
+                }
+              \l_ducksay_bubble_delim_left_d_tl
             }
         \end{tabular}
       }
@@ -1073,33 +1586,34 @@ and the derived files           ducksay.pdf
       {
         \l_ducksay_bubble_fount_tl
         \begin{tabular}{@{}r@{}}
-          \int_compare:nNnTF { \l_ducksay_msg_ht_int } = { \c_one_int }
+          \int_compare:nNnTF { \l_ducksay_msg_height_int } = { \c_one_int }
             {
-              )
+              \l_ducksay_bubble_delim_right_a_tl
             }
             {
-              \c_backslash_str \\
-              \int_step_inline:nnn { \c_three_int } { \l_ducksay_msg_ht_int }
-                { |\kern-.5ex\\ }
-              /
+              \l_ducksay_bubble_delim_right_b_tl \\
+              \int_step_inline:nnn
+                { 3 } { \l_ducksay_msg_height_int }
+                {
+                  \l_ducksay_bubble_delim_right_c_tl
+                  \kern-\l_ducksay_bubble_side_kern_tl
+                  \\
+                }
+              \l_ducksay_bubble_delim_right_d_tl
             }
         \end{tabular}
       }
     \hcoffin_set:Nn \l_ducksay_bubble_top_coffin
       {
         \l_ducksay_bubble_fount_tl
-        { _ } { _ }
-        \int_step_inline:nn { \l_ducksay_msg_wd_int } { { _ } }
-      }
-    \hcoffin_set:Nn \l_ducksay_bubble_bottom_coffin
-      {
-        \l_ducksay_bubble_fount_tl
-        { - } { - }
-        \int_step_inline:nn { \l_ducksay_msg_wd_int } { { - } }
+        \l_ducksay_bubble_delim_top_tl \l_ducksay_bubble_delim_top_tl
+        \int_step_inline:nn { \l_ducksay_msg_width_int }
+          { \l_ducksay_bubble_delim_top_tl }
       }
     \hcoffin_set:Nn \l_ducksay_msg_coffin { \box_use:N \l_ducksay_msg_box }
     \hcoffin_set:Nn \l_ducksay_body_coffin
       {
+        \frenchspacing
         \l_ducksay_body_fount_tl
         \begin{tabular} { @{} l @{} }
           \l_ducksay_animal_tl
@@ -1108,24 +1622,18 @@ and the derived files           ducksay.pdf
     \bool_if:NT \l_ducksay_mirrored_body_bool
       {
         \coffin_scale:Nnn \l_ducksay_body_coffin { -\c_one_int } { \c_one_int }
+        \str_case:Vn \l_ducksay_body_to_msg_align_body_tl
+          {
+            { l } { \tl_set:Nn \l_ducksay_body_to_msg_align_body_tl { r } }
+            { r } { \tl_set:Nn \l_ducksay_body_to_msg_align_body_tl { l } }
+          }
       }
     \dim_set:Nn \l_ducksay_hpad_dim
       {
-        .5 *
         (
           \coffin_wd:N \l_ducksay_bubble_top_coffin
           - \coffin_wd:N \l_ducksay_msg_coffin
-        )
-      }
-    \dim_set:Nn \l_ducksay_vpad_dim
-      {
-        .5 *
-        (
-          \coffin_ht:N \l_ducksay_bubble_open_coffin
-          + \coffin_dp:N \l_ducksay_bubble_open_coffin
-          - \coffin_ht:N \l_ducksay_msg_coffin
-          - \coffin_dp:N \l_ducksay_msg_coffin
-        )
+        ) / 2
       }
     \coffin_join:NnnNnnnn
       \l_ducksay_msg_coffin         { l } { vc }
@@ -1135,13 +1643,15 @@ and the derived files           ducksay.pdf
       \l_ducksay_msg_coffin          { r } { vc }
       \l_ducksay_bubble_close_coffin { l } { vc }
       { \l_ducksay_hpad_dim } { \c_zero_dim }
+    \ducksay_set_bubble_top_kern:
+    \ducksay_set_bubble_bottom_kern:
     \coffin_join:NnnNnnnn
       \l_ducksay_msg_coffin        { hc } { t }
       \l_ducksay_bubble_top_coffin { hc } { b }
       { \c_zero_dim } { \l_ducksay_bubble_top_kern_dim }
     \coffin_join:NnnNnnnn
-      \l_ducksay_msg_coffin           { hc } { b }
-      \l_ducksay_bubble_bottom_coffin { hc } { t }
+      \l_ducksay_msg_coffin        { hc } { b }
+      \l_ducksay_bubble_top_coffin { hc } { t }
       { \c_zero_dim } { \l_ducksay_bubble_bottom_kern_dim }
     \coffin_join:NVnNVnnn
       \l_ducksay_msg_coffin  \l_ducksay_body_to_msg_align_msg_tl  { b }
@@ -1167,18 +1677,44 @@ and the derived files           ducksay.pdf
 %
 % \begin{macro}{\ducksay_eat_argument_tabular:w}^^A>>>
 %    \begin{macrocode}
-\NewDocumentCommand \ducksay_eat_argument_tabular:w
-  { >{ \ducksay_process_verb_newline:nn {} } +v }
+\cs_new:Npn \ducksay_eat_argument_tabular:w
+  {
+    \bool_if:NTF \l_ducksay_eat_arg_tab_verb_bool
+      { \ducksay_eat_argument_tabular_verb:w }
+      { \ducksay_eat_argument_tabular_normal:w }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\ducksay_eat_argument_tabular_inner:w}^^A>>>
+%    \begin{macrocode}
+\cs_new:Npn \ducksay_eat_argument_tabular_inner:w #1
   {
     \hbox_set:Nn \l_ducksay_msg_box
       {
         \l_ducksay_msg_fount_tl
         \ducksay_msg_tabular_begin:
-          \scantokens { #1 }
+          #1
         \ducksay_msg_tabular_end:
       }
     \ducksay_shipout:
   }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\ducksay_eat_argument_tabular_verb:w}^^A>>>
+%    \begin{macrocode}
+\NewDocumentCommand \ducksay_eat_argument_tabular_verb:w
+  { >{ \ducksay_process_verb_newline:nn {} } +v }
+  { \ducksay_eat_argument_tabular_inner:w { \scantokens { #1 } } }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\ducksay_eat_argument_tabular_normal:w}^^A>>>
+%    \begin{macrocode}
+\NewDocumentCommand \ducksay_eat_argument_tabular_normal:w
+  { >{ \ducksay_process_verb_newline:nn {} } +m }
+  { \ducksay_eat_argument_tabular_inner:w { #1 } }
 %    \end{macrocode}
 % \end{macro}^^A<<<
 %
@@ -1207,6 +1743,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \ducksay_eat_argument_vbox:w
   {
+    \ducksay_evaluate_message_alignment_fixed_width_vbox:
     \afterassignment \ducksay_eat_argument_vbox_inner:w
     \let \l_ducksay_nothing =
   }
@@ -1221,6 +1758,9 @@ and the derived files           ducksay.pdf
       \hsize \l_ducksay_msg_width_dim
       \group_insert_after:N \ducksay_shipout:
       \l_ducksay_msg_fount_tl
+      \l_ducksay_msg_align_vbox_tl
+      \@afterindentfalse
+      \@afterheading
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -1232,6 +1772,8 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_generate_variant:Nn \coffin_join:NnnNnnnn { NVnNVnnn }
 \cs_generate_variant:Nn \coffin_typeset:Nnnnn { NVVnn }
+\cs_generate_variant:Nn \tl_if_eq:nnT { VnT }
+\cs_generate_variant:Nn \str_case:nn { Vn }
 %    \end{macrocode}
 %
 %^^A<<<
@@ -1272,12 +1814,13 @@ and the derived files           ducksay.pdf
 %</code.v2>
 %    \end{macrocode}^^A<<<
 %
+% \SetVersion{}%
 % \subsection{Definition of the Animals}^^A>>>
 %
 %    \begin{macrocode}
 %<*animals>
 %^^A some of the below are from http://ascii.co.uk/art/kangaroo
-\ducksay@AddAnimal{duck}%>>>
+\AddAnimal{duck}%>>>
 {  \
     \   __
       >(' )
@@ -1286,12 +1829,12 @@ and the derived files           ducksay.pdf
       /  `----/
       \  ~=- /
     ~^~^~^~^~^~^~^}%<<<
-\ducksay@AddAnimal{small-duck}%>>>
+\AddAnimal{small-duck}%>>>
 {  \
     \
       >()_
        (__)__ _}%<<<
-\ducksay@AddAnimal{duck-family}%>>>
+\AddAnimal{duck-family}%>>>
 {  \
     \   __
       >(' )
@@ -1299,20 +1842,20 @@ and the derived files           ducksay.pdf
        /(
       /  `----/  -()_  >()_
     __\__~=-_/__ _(__)__(__)__ _}%<<<
-\ducksay@AddAnimal{cow}%>>>
+\AddAnimal{cow}%>>>
 {  \  ^__^
     \ (oo)\_______
       (__)\       )\/\
           ||----w |
           ||     ||}%<<<
-\ducksay@AddAnimal{head-in}%>>>
+\AddAnimal{head-in}%>>>
 {  \  
     \ ^__^         /
       (oo)\_______/  ________
       (__)\       )=(  ___|_ \____
           ||----w |  \ \    \____ |
           ||     ||   ||         ||}%<<<
-\ducksay@AddAnimal{sodomized}%>>>
+\AddAnimal{sodomized}%>>>
 {  \             _
     \           (_)
       ^__^       / \
@@ -1320,7 +1863,7 @@ and the derived files           ducksay.pdf
       (__)\       ) /
           ||----w ((
           ||     ||>>}%<<<
-\ducksay@AddAnimal{tux}%>>>
+\AddAnimal{tux}%>>>
 {  \
     \  .--. 
       |o_o |
@@ -1329,13 +1872,13 @@ and the derived files           ducksay.pdf
     (|     | )
    /'\_   _/`\
    \___)=(___/}%<<<
-\ducksay@AddAnimal{pig}%>>>
+\AddAnimal{pig}%>>>
 +  \     _//| .-~~~-.
     \ _/oo  }        }-@
      ('')_  }        |
       `--'| { }--{  }
            //_/  /_/+%<<<
-\ducksay@AddAnimal{frog}%>>>
+\AddAnimal{frog}%>>>
 {   \
      \ (.)_(.)
     _ (   _   ) _
@@ -1343,18 +1886,18 @@ and the derived files           ducksay.pdf
  __\ ( (     ) ) /__
  )   /\ \._./ /\   (
   )_/ /|\   /|\ \_(}%<<<
-\ducksay@AddAnimal{snowman}%>>>
+\AddAnimal{snowman}%>>>
 {  \
     \_[_]_
       (")
    >-( : )-<
     (__:__)}%<<<
-\ducksay@AddAnimal{hedgehog}%>>>
+\AddAnimal{hedgehog}%>>>
 {  \    .\|//||\||.
     \  |/\/||/|//|/|
       /. `|/\\|/||/||
      o__,_|//|/||\||'}%<<<
-\ducksay@AddAnimal{kangaroo}%>>>
+\AddAnimal{kangaroo}%>>>
 {  \
     \ _,'   ___
      <__\__/   \
@@ -1363,7 +1906,7 @@ and the derived files           ducksay.pdf
             //   \\
           ,/'     `\_,}%<<<
 %^^A http://chris.com/ascii/index.php?art=animals/rabbits
-\ducksay@AddAnimal{rabbit}%>>>
+\AddAnimal{rabbit}%>>>
 { \     / \`\         __
    \   |  \ `\      /`/ \
     \  \_/`\  \-"-/` /\  \
@@ -1378,18 +1921,18 @@ and the derived files           ducksay.pdf
         \ \    \ /    / /
          `"`\   :   /'"`
              `""`""`}%<<<
-\ducksay@AddAnimal{bunny}%>>>
+\AddAnimal{bunny}%>>>
 { \
    \      /
       /\ /
        ( )
      .( o ).}%<<<
-\ducksay@AddAnimal{small-rabbit}%>>>
+\AddAnimal{small-rabbit}%>>>
 {  \
     \ _//
      (')---.
       _/-_( )o}%<<<
-\ducksay@AddAnimal{dragon}%>>>
+\AddAnimal{dragon}%>>>
 {     \                    / \  //\
        \    |\___/|      /   \//  \\
         \   /0  0  \__  /    //  | \ \    
@@ -1407,14 +1950,14 @@ and the derived files           ducksay.pdf
                ///-._ _ _ _ _ _ _}^ - - - - ~                     ~-- ,.-~
                                                                   /.-~}%<<<
 %^^A http://www.ascii-art.de/ascii/def/dogs.txt
-\ducksay@AddAnimal{dog}%>>>
+\AddAnimal{dog}%>>>
 {  \     __
     \ .-'\/\
        "\   '------.
      ___/       (  .'_____
     '-----'"""'------"""""'}%<<<
 %^^A http://ascii.co.uk/art/squirrel
-\ducksay@AddAnimal{squirrel}%>>>
+\AddAnimal{squirrel}%>>>
 {  \           ,;:;;,
     \    ,    ;;;;;
       .=',    ;:;;:,
@@ -1423,14 +1966,14 @@ and the derived files           ducksay.pdf
        _(\.=  ;:;;'
       `"_(  _/="`
        `"'``}%<<<
-\ducksay@AddAnimal{snail}%>>>
+\AddAnimal{snail}%>>>
 {  \
     \          .-""-.
       oo      ; .-.  :
        \\__..-: '.__.')._
         "-._.._'.__.-'_.."}%<<<
 %^^A http://www.ascii-art.de/ascii/uvw/unicorn.txt
-\ducksay@AddAnimal{unicorn}%>>>
+\AddAnimal{unicorn}%>>>
 {   \
      \       /((((((\\\\
      ---====((((((((((\\\\\
@@ -1451,7 +1994,7 @@ and the derived files           ducksay.pdf
                                          _//       _//
                                        /_|       /_|}%<<<
 %^^A https://asciiart.website//index.php?art=animals/other%20(water)
-\ducksay@AddAnimal{whale}%>>>
+\AddAnimal{whale}%>>>
 { \                |-.
    \     .---._     \ \.--|
     \  /       `-..__)  ,-'
@@ -1459,7 +2002,7 @@ and the derived files           ducksay.pdf
        \--.__,   .__.,'
         `-.___'._\_.'}%<<<
 %^^A from http://www.ascii-art.de/ascii/s/starwars.txt :
-\ducksay@AddAnimal{yoda}%>>>
+\AddAnimal{yoda}%>>>
 {   \
      \             ____
       \         _.' :  `._
@@ -1496,7 +2039,7 @@ and the derived files           ducksay.pdf
          :-""-.`./-.'     /    `.___.'
                \ `t  ._  /
                 "-.t-._:'}%<<<
-\ducksay@AddAnimal{yoda-head}%>>>
+\AddAnimal{yoda-head}%>>>
 {   \
      \             ____
       \         _.' :  `._
@@ -1514,7 +2057,7 @@ and the derived files           ducksay.pdf
     .-"  / ;`.".  :    ."."   :    "-.
  .+"-.  : :   ".".". ."."      ;-._   \}%<<<
 %^^A from https://www.ascii-code.com/ascii-art/movies/star-wars.php
-\ducksay@AddAnimal{small-yoda}%>>>
+\AddAnimal{small-yoda}%>>>
 {  \
     \
     __.-._
@@ -1522,7 +2065,7 @@ and the derived files           ducksay.pdf
      /'.-c
      |  /T
     _)_/LI}%<<<
-\ducksay@AddAnimal{r2d2}%>>>
+\AddAnimal{r2d2}%>>>
 {  \
     \ ,-----.
     ,'_/_|_\_`.
@@ -1536,7 +2079,7 @@ and the derived files           ducksay.pdf
   | |\_______/| |
  /   \ /   \ /   \
  `---' `---' `---'}%<<<
-\ducksay@AddAnimal{vader}%>>>
+\AddAnimal{vader}%>>>
 {  \     _.-'~~~~~~`-._
     \   /      ||      \
        /       ||       \
