@@ -196,7 +196,7 @@ and the derived files           ducksay.pdf
 \RequirePackage{xparse,l3keys2e}
 
 \def\ducksay@version{v2.0}
-\def\ducksay@date{2018/08/25}
+\def\ducksay@date{2018/09/15}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
@@ -211,7 +211,7 @@ and the derived files           ducksay.pdf
 %   \makeatletter
 %   \centering
 %   \Large
-%     \ducksay[duck,MSG=\huge,msg-align=c]{This is\\ducksay!}\\
+%     \ducksay[duck,MSG=\huge,msg-align=c]{This is\\\pkg{ducksay}!}\\
 %   \vfill
 %   \normalsize
 %   \hspace*{-2cm}
@@ -706,7 +706,7 @@ and the derived files           ducksay.pdf
 %     \rlap{\ducksay[kangaroo,MSG=\footnotesize,align=t]{We rely on you}}%
 %   }
 % The package depends on the two packages \pkg{xparse} and \pkg{l3keys2e}
-% and all of their dependencies.
+% and all of their dependencies. Version 2 additionally depends on \pkg{array}.
 %^^A<<<
 %
 % \subsection{Available Animals}\label{sec:animals}^^A>>>
@@ -975,11 +975,22 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A<<<
 %
-% \begin{macro}{\ducksay_process_verb_newline:nn}^^A>>>
+% \begin{macro}{\ducksay_replace_verb_newline_newline:Nn}^^A>>>
 %    \begin{macrocode}
-\cs_new_protected:Npn \ducksay_process_verb_newline:nn #1 #2
+\cs_new_protected:Npx \ducksay_replace_verb_newline_newline:Nn #1 #2
   {
-    \tl_set:Nn \ProcessedArgument { #2 }
+    \tl_replace_all:Nnn #1
+      { \char_generate:nn { 13 } { 12 } \char_generate:nn { 13 } { 12 } } { #2 }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\ducksay_process_verb_newline:nnn}^^A>>>
+%    \begin{macrocode}
+\cs_new_protected:Npn \ducksay_process_verb_newline:nnn #1 #2 #3
+  {
+    \tl_set:Nn \ProcessedArgument { #3 }
+    \ducksay_replace_verb_newline_newline:Nn \ProcessedArgument { #2 }
     \ducksay_replace_verb_newline:Nn \ProcessedArgument { #1 }
   }
 %    \end{macrocode}
@@ -1244,6 +1255,11 @@ and the derived files           ducksay.pdf
 % \subsection{Version 2}^^A>>>
 %    \begin{macrocode}
 %<*code.v2>
+%    \end{macrocode}
+%
+% Load the additional dependencies of version 2.
+%    \begin{macrocode}
+\RequirePackage{array}
 %    \end{macrocode}
 %
 % \subsubsection{Messages}^^A>>>
@@ -1732,15 +1748,14 @@ and the derived files           ducksay.pdf
 % \begin{macro}{\ducksay_eat_argument_tabular_verb:w}^^A>>>
 %    \begin{macrocode}
 \NewDocumentCommand \ducksay_eat_argument_tabular_verb:w
-  { >{ \ducksay_process_verb_newline:nn {} } +v }
+  { >{ \ducksay_process_verb_newline:nnn { ~ } { ~ \par } } +v }
   { \ducksay_eat_argument_tabular_inner:w { \scantokens { #1 } } }
 %    \end{macrocode}
 % \end{macro}^^A<<<
 %
 % \begin{macro}{\ducksay_eat_argument_tabular_normal:w}^^A>>>
 %    \begin{macrocode}
-\NewDocumentCommand \ducksay_eat_argument_tabular_normal:w
-  { >{ \ducksay_process_verb_newline:nn {} } +m }
+\NewDocumentCommand \ducksay_eat_argument_tabular_normal:w { +m }
   { \ducksay_eat_argument_tabular_inner:w { #1 } }
 %    \end{macrocode}
 % \end{macro}^^A<<<
