@@ -3,7 +3,7 @@ ducksay: cowsay for LaTeX
 This package is distributed under the terms of GPLv3 or later, or the LPPL 1.3c
 or later, which ever license fits your needs the best.
 
-Copyright (C) 2017 by Jonathan P. Spratte
+Copyright (C) 2017-2018 by Jonathan P. Spratte
 
 The package draws ASCII art of animals saying a specified message. The following
 macros are available:
@@ -17,4 +17,5 @@ macros are available:
 `<ascii-art>` should be delimited either by matching braces or by the same
 symbol and is read verbatim.
 
-Multi-line messages are supported but need to be manually created using `\\`.
+Multi-line messages are now fully supported. The package comes with two
+versions, choosable with the `version` key.

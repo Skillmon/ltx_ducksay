@@ -1,6 +1,5 @@
 *.aux
 *.log
-*.pdf
 *.toc
 *.out
 *.animals.tex
