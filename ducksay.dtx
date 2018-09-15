@@ -86,7 +86,28 @@ and the derived files           ducksay.pdf
   }
 \usepackage{enumitem}
 \newenvironment{options}[1][]
-  {\begin{description}[style=nextline,font=\normalfont\ttfamily,#1]}
+  {%
+    \begin{description}
+      [
+        style=nextline
+        ,font=\normalfont\ttfamily
+        ,labelindent=-.5\marginparwidth
+        ,labelwidth=\dimexpr.5\marginparwidth-5pt\relax
+        ,labelsep*=5pt
+        ,leftmargin=!
+        ,#1
+      ]%
+    \renewenvironment{options}[1][]
+      {%
+        \begin{description}
+          [
+            style=nextline
+            ,font=\normalfont\ttfamily
+            ,#1
+          ]%
+      }
+      {\end{description}}%
+  }
   {\end{description}}
 \makeatletter
 \newcommand*\availableAnimal[1]
@@ -94,7 +115,7 @@ and the derived files           ducksay.pdf
     \@for\cs:=#1\do
       {%
         \ifx\cs\@empty\else
-          \rlap{\expandafter\ducksay\expandafter[\cs]{\cs}}\hfill\null\\[1ex]%
+          \rlap{\expandafter\ducksay\expandafter[\cs]{\cs}}\hfill\null\par%
         \fi
       }%
   }
@@ -549,7 +570,9 @@ and the derived files           ducksay.pdf
 %     |l|.
 %   \item[body-mirrored=\meta{bool}]
 %     if set true the \anml\ will be mirrored along its vertical centre axis.
-%     Package default is |false|.
+%     Package default is |false|. If you set it |true| you'll most likely need
+%     to manually adjust the alignment of the body with one or more of the
+%     keys |body-align|, |body-to-msg|, |msg-to-body|, |body-x| and |body-y|.
 %   \item[body-to-msg=\meta{pole}]
 %     defines the horizontal coffin \meta{pole} to be used for the placement of
 %     the \anml\ beneath the \msg. See \PolesInfo.
@@ -661,13 +684,16 @@ and the derived files           ducksay.pdf
 %     than 0 is considered deactivated, else the width is considered as fixed.
 %     For a fixed width the argument of \cs{ducksay} and \cs{duckthink} is read
 %     in as a \cs{vbox} for |arg=box| and the column definition uses a |p|-type
-%     column for |arg=tab| and |arg=tab*|.
+%     column for |arg=tab| and |arg=tab*|. If both |wd| is not smaller than 0
+%     and |wd*| is not smaller than 0pt, |wd*| will take precedence.
 %   \item[wd*=\meta{dimen}]
 %     specifies the width of the \msg\ to be fixed to \meta{dimen}. A value
 %     smaller than 0pt is considered deactivated, else the width is considered
 %     as fixed. For a fixed width the argument of \cs{ducksay} and
 %     \cs{duckthink} is read in as a \cs{vbox} for |arg=box| and the column
-%     definition uses a |p|-type column for |arg=tab| and |arg=tab*|.
+%     definition uses a |p|-type column for |arg=tab| and |arg=tab*|. If both
+%     |wd| is not smaller than 0 and |wd*| is not smaller than 0pt, |wd*| will
+%     take precedence.
 % \end{options}
 %
 %^^A<<<
@@ -697,8 +723,9 @@ and the derived files           ducksay.pdf
 % The following animals are provided by this package. I did not create them (but
 % altered some), they belong to their original creators.
 % \bgroup
-% \scriptsize
-% \DucksayOptions{MSG=\footnotesize}
+% \fontsize{6pt}{6pt}\selectfont
+% \parindent=0pt
+% \DucksayOptions{MSG=\footnotesize,vpad=0,arg=tab}
 % \begin{multicols}{2}
 % \availableAnimal{^^A>>>
 %   ,duck^^A
@@ -719,9 +746,9 @@ and the derived files           ducksay.pdf
 %   ,kangaroo^^A
 %   ,dog^^A
 %   ,rabbit^^A
-%   ,unicorn^^A
 %   ,snail^^A
 %   ,whale^^A
+%   ,unicorn^^A
 % }\end{multicols}\begin{multicols}{2}
 % \availableAnimal{^^A
 %   ,r2d2^^A
