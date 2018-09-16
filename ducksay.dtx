@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% File: ducksay.dtx Copyright (C) 2018 Jonathan P. Spratte
+% File: ducksay.dtx Copyright (C) 2017-2018 Jonathan P. Spratte
 %
 % This work  may be  distributed and/or  modified under  the conditions  of the
 % LaTeX Project Public License (LPPL),  either version 1.3c  of this license or
@@ -71,9 +71,11 @@ and the derived files           ducksay.pdf
 \fi
 %
 \ProvidesFile{ducksay.dtx}
-  [2018/08/25 cowsay for LaTeX]
+  [\csname ducksay@date\endcsname\ cowsay for LaTeX]
 \documentclass{l3doc}
 \usepackage[version=2]{ducksay}
+\let\metaORIG\meta
+\protected\def\meta #1{\texttt{\metaORIG{#1}}}
 \DucksayOptions{arg=tab,msg-align=l,vpad=1}
 \renewcommand*\thefootnote{\fnsymbol{footnote}}
 \newcommand*\anml{\meta{animal}}
@@ -195,7 +197,7 @@ and the derived files           ducksay.pdf
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xparse,l3keys2e}
 
-\def\ducksay@version{v2.0}
+\def\ducksay@version{2.0}
 \def\ducksay@date{2018/09/15}
 
 \ProvidesExplPackage
@@ -216,7 +218,7 @@ and the derived files           ducksay.pdf
 %   \normalsize
 %   \hspace*{-2cm}
 %     \ducksay[cow,MSG=\large,body-mirrored,body-align=r,msg-to-body=hc,out-h=r]
-%       {\ducksay@version}\\
+%       {v\ducksay@version}\\
 %   \small
 %   \vspace*{-5cm}\hspace*{5cm}
 %     \ducksay[small-duck,MSG=\normalsize]{But which Version?}
@@ -251,6 +253,9 @@ and the derived files           ducksay.pdf
 %     |ligatures|, see \autoref{sec:options} for more on this issue. With v2.0
 %     I do refer to the package's version, not the code variant which can be
 %     selected with the |version| option.
+%   \item In a document created with package versions prior to v2.0 you'll have
+%     to specify the option |version=1| in newer versions to make those old
+%     documents behave like they used to. 
 % \end{itemize}
 %
 % \subsection{Shared between versions}
@@ -307,7 +312,35 @@ and the derived files           ducksay.pdf
 %\end{verbatim}
 %   \end{minipage}
 %   It is not checked whether the animal already exists, you could therefore
-%   redefine existing animals with this macro.
+%   redefine existing animals with this macro.\\
+%   The symbols signalizing the speech (in the |snowman| example above the two
+%   backslashes) should at most be used in the first three lines, as they get
+%   replaced by |O| and |o| for \cs{duckthink}. They also shouldn't be preceded
+%   by anything other than a space in that line.
+% \end{function}^^A<<<
+%
+% \begin{function}{\AddColoredAnimal}^^A>>>
+%   \begin{syntax}
+%     \cs{AddColoredAnimal}\meta{*}\marg{animal}\meta{ascii-art}
+%   \end{syntax}
+%   It does the same as \cs{AddAnimal} but allows three different colouring
+%   syntaxes. You can use \cs{textcolor} in the \meta{ascii-art} with the syntax
+%   \texttt{\cs{textcolor}\marg{color}\marg{text}}. Note that you can't
+%   use braces in the arguments of \cs{textcolor}.\\
+%   You can also use a delimited \cs{color} of the form
+%   \texttt{\cs{bgroup}\cs{color}\marg{color}\meta{text}\cs{egroup}}, a space
+%   after that |\egroup| will be considered a space in the output, you don't
+%   have to leave a space after the |\egroup| (so
+%   |\bgroup\color{red}RedText\egroupOtherText| is valid syntax). You can't nest
+%   delimited \cs{color}s.\\
+%   Also you can use an undelimited \cs{color}. It affects anything until the
+%   end of the current line (or, if used inside of the \meta{text} of an
+%   delimited \cs{color}, anything until the end of that delimited \cs{color}'s
+%   \meta{text}). The syntax would be \cs{color}\marg{color}.\\
+%   The package doesn't load anything providing those colouring commands for you
+%   and it doesn't provide any coloured animals. The parsing is done using
+%   regular expressions provided by \LaTeX3. It is therefore slower than the
+%   normal \cs{AddAnimal}.
 % \end{function}^^A<<<
 %
 %^^A<<<
@@ -331,8 +364,7 @@ and the derived files           ducksay.pdf
 %     |2| are available. This can be set only during package load time. For a
 %     dedicated description of each version look into \autoref{sec:v1} and
 %     \autoref{sec:v2}. The package author would choose |version=2|, the other
-%     version is mostly for legacy reasons. The default is |1| (again for legacy
-%     reasons).
+%     version is mostly for legacy reasons. The default is |2|.
 %   \item[\anml] 
 %     One of the animals listed in \autoref{sec:animals} or any of the ones
 %     added with \cs{AddAnimal}. Not useable as package option. Also don't use
@@ -371,8 +403,9 @@ and the derived files           ducksay.pdf
 % \subsubsection{Introduction}
 %
 % This version is included for legacy support (old documents should behave the
-% same without any change to them). For the bleeding edge version of
-% \pkg{ducksay} skip this subsection and read \autoref{sec:v2}.
+% same without any change to them -- except the usage of |version=1| as an
+% option. For the bleeding edge version of \pkg{ducksay} skip this subsection
+% and read \autoref{sec:v2}.
 %
 % \subsubsection{Macros}\label{sec:macros1}^^A>>>
 % \marginpar
@@ -390,24 +423,24 @@ and the derived files           ducksay.pdf
 %   \begin{syntax}
 %     \cs{ducksay}\oarg{options}\marg{message}
 %   \end{syntax}
-%   options might include any of the options described in
-%   \autoref{sec:options} and \autoref{sec:options1}. Prints an \anml\ saying
-%   \msg. \msg\ is not read in verbatim. Multi-line \msg s are possible using
-%   |\\|. |\\| should not be inside a macro but at toplevel. Else use the option
-%   |ht|.
+%   options might include any of the options described in \autoref{sec:options}
+%   and \autoref{sec:options1} if not otherwise specified. Prints an \anml\
+%   saying \msg. \msg\ is not read in verbatim. Multi-line \msg s are possible
+%   using |\\|. |\\| should not be contained in a macro definition but at
+%   toplevel. Else use the option |ht|.
 % \end{function}^^A<<<
 %
 % \begin{function}{\duckthink}^^A>>>
 %   \begin{syntax}
 %     \cs{duckthink}\oarg{options}\marg{message}
 %   \end{syntax}
-%   options might include any of the options described in
-%   \autoref{sec:options} and \autoref{sec:options1}. Prints an \anml\ thinking
-%   \msg. \msg\ is not read in verbatim. It is implemented using regular
-%   expressions replacing a |\| which is only preceded by |\s*| in the first
-%   three lines with |O| and |o|. It is therefore slower than \cs{ducksay}.
-%   Multi-line \msg s are possible using |\\|. |\\| should not be inside a macro
-%   but at toplevel. Else use the option |ht|.
+%   options might include any of the options described in \autoref{sec:options}
+%   and \autoref{sec:options1} if not otherwise specified. Prints an \anml\
+%   thinking \msg. \msg\ is not read in verbatim. It is implemented using
+%   regular expressions replacing a |\| which is only preceded by |\s*| in the
+%   first three lines with |O| and |o|. It is therefore slower than
+%   \cs{ducksay}. Multi-line \msg s are possible using |\\|. |\\| should not be
+%   contained in a macro definition but at toplevel. Else use the option |ht|.
 % \end{function}^^A<<<
 %^^A<<<
 %
@@ -428,7 +461,7 @@ and the derived files           ducksay.pdf
 %   \item[body=\meta{code}]
 %     use \meta{code} in a group right before the body (meaning the \anml).
 %     Might be used as a package option but not all control sequences work out
-%     of the box there. E.g., to right-align the \anml\ to the bubble, use
+%     of the box there. E.g.\@ to right-align the \anml\ to the bubble, use
 %     \verb|body=\hfill|.
 %   \item[align=\meta{valign}]
 %     use \meta{valign} as the vertical alignment specifier given to the
@@ -443,7 +476,7 @@ and the derived files           ducksay.pdf
 %     match a \env{tabular} column specifier. Default is |l|.
 %   \item[wd=\meta{count}]
 %     in order to detect the width the \msg\ is expanded. This might not work
-%     out for some commands (e.g. \cs{url} from \pkg{hyperref}). If you
+%     out for some commands (e.g.\@ \cs{url} from \pkg{hyperref}). If you
 %     specify the width using |wd| the \msg\ is not expanded and
 %     therefore the command \emph{might} work out. \meta{count} should be the
 %     character count.
@@ -473,8 +506,7 @@ and the derived files           ducksay.pdf
 %
 % \subsubsection{Introduction}^^A>>>
 %
-% Version 2 is the current version of \pkg{ducksay}. To use it specify
-% |version=2| as an option to \cs{usepackage}. Version 2 features automatic line
+% Version 2 is the current version of \pkg{ducksay}. It features automatic line
 % wrapping (if you specify a fixed width) and in general more options (with some
 % nasty argument parsing).
 %
@@ -495,9 +527,9 @@ and the derived files           ducksay.pdf
 %   \begin{syntax}
 %     \cs{ducksay}\oarg{options}\marg{message}
 %   \end{syntax}
-%   options might include any of the options described in
-%   \autoref{sec:options} and \autoref{sec:options2}. Prints an \anml\ saying
-%   \msg.\\
+%   options might include any of the options described in \autoref{sec:options}
+%   and \autoref{sec:options2} if not otherwise specified. Prints an \anml\
+%   saying \msg.\\
 %   The \msg\ can be read in in four different ways. For an explanation of the
 %   \msg\ reading see the description of the |arg| key in
 %   \autoref{sec:options2}.\\
@@ -516,10 +548,10 @@ and the derived files           ducksay.pdf
 %   The only difference to \cs{ducksay} is that in \cs{duckthink} the \anml s
 %   think the \msg\ and don't say it.\\
 %   It is implemented using regular expressions replacing a |\| which is only
-%   preceded by |\s*| in the first three lines with |O| and |o|. It's first
-%   use per \anml\ might therefore be slower than \cs{ducksay} depending on the
-%   |add-think| key (see its description in \autoref{sec:options}).\\
-%   \autoref{sec:options2}.
+%   preceded by |\s*| (any number of space tokens) in the first three lines with
+%   |O| and |o|. It's first use per \anml\ might therefore be slower than
+%   \cs{ducksay} depending on the |add-think| key (see its description in
+%   \autoref{sec:options}).
 % \end{function}^^A<<<
 %
 %^^A<<<
@@ -537,18 +569,18 @@ and the derived files           ducksay.pdf
 %         the argument is read in either as a \cs{hbox} or a \cs{vbox} (the
 %         latter if a fixed width is specified with either |wd| or |wd*|). Note
 %         that in this mode any arguments relying on category code changes like
-%         e.g. \cs{verb} will work (provided that you don't use \cs{ducksay} or
+%         e.g.\@ \cs{verb} will work (provided that you don't use \cs{ducksay} or
 %         \cs{duckthink} inside of an argument of another macro of course).
 %       \item[tab]
 %         the argument is read in as the contents of a \env{tabular}. Note that
-%         in this mode any arguments relying on category code changes like e.g.
-%         \cs{verb} will \emph{not} work. This mode comes closest to the
+%         in this mode any arguments relying on category code changes like
+%         e.g.\@ \cs{verb} will \emph{not} work. This mode comes closest to the
 %         behaviour of version 1 of \pkg{ducksay}.
 %       \item[tab*]
 %         the argument is read in as the contents of a \env{tabular}. However it
 %         is read in verbatim and uses \cs{scantokens} to rescan the argument.
 %         Note that in this mode any arguments relying on category code changes
-%         like e.g. \cs{verb} will work. You can't use \cs{ducksay} or
+%         like e.g.\@ \cs{verb} will work. You can't use \cs{ducksay} or
 %         \cs{duckthink} as an argument to another macro in this mode however.
 %     \end{options}
 %   \item[b]
@@ -647,14 +679,43 @@ and the derived files           ducksay.pdf
 %     set the font definitions in use to typeset the \msg\ to \meta{font}. The
 %     package default is \cs{verbatim@font}.
 %   \item[MSG=\meta{font}]
-%     same as |msg=\meta{font}, bubble=\meta{font}|.
+%     same as \texttt{msg=\meta{font}, bubble=\meta{font}}.
 %   \item[MSG*=\meta{font}]
-%     same as |msg*=\meta{font}, bubble*=\meta{font}|.
+%     same as \texttt{msg*=\meta{font}, bubble*=\meta{font}}.
 %   \item[msg-align=\meta{choice}]
 %     specifies the alignment of the \msg. Possible values are |l| for flushed
 %     left, |c| for centred, |r| for flushed right and |j| for justified. If
 %     |arg=tab| or |arg=tab*| the |j| choice is only available for fixed width
 %     contents. Package default is |l|.
+%   \item[msg-align-c=\meta{token list}]
+%     set the \meta{token list} which is responsible to typeset the message
+%     centred if the option |msg-align=c| is used. It is used independent of the
+%     |arg| key. For |arg=tab| and |arg=tab*| the macro \cs{arraybackslash}
+%     provided by \pkg{array} is used afterwards. The package default is
+%     |\centering|. It might be useful if you want to use \pkg{ragged2e}'s
+%     \cs{Centering} for example.
+%   \item[msg-align-j=\meta{token list}]
+%     set the \meta{token list} which is responsible to typeset the message
+%     justified if the option |msg-align=j| is used. It is used independent of
+%     the |arg| key. For |arg=tab| and |arg=tab*| the macro \cs{arraybackslash}
+%     provided by \pkg{array} is used afterwards. The package default is
+%     empty as justification is the default behaviour of contents of a |p|
+%     column and of a \cs{vbox}. It might be useful if you want to use
+%     \pkg{ragged2e}'s \cs{justifying} for example.
+%   \item[msg-align-l=\meta{token list}]
+%     set the \meta{token list} which is responsible to typeset the message
+%     flushed left if the option |msg-align=l| is used. It is used independent
+%     of the |arg| key. For |arg=tab| and |arg=tab*| the macro
+%     \cs{arraybackslash} provided by \pkg{array} is used afterwards. The
+%     package default is |\raggedright|. It might be useful if you want to use
+%     \pkg{ragged2e}'s \cs{RaggedRight} for example.
+%   \item[msg-align-r=\meta{token list}]
+%     set the \meta{token list} which is responsible to typeset the message
+%     flushed right if the option |msg-align=r| is used. It is used independent
+%     of the |arg| key. For |arg=tab| and |arg=tab*| the macro
+%     \cs{arraybackslash} provided by \pkg{array} is used afterwards. The
+%     package default is |\raggedleft|. It might be useful if you want to use
+%     \pkg{ragged2e}'s \cs{RaggedLeft} for example.
 %   \item[msg-to-bubble=\meta{pole}]
 %     defines the horizontal coffin \meta{pole} to be used as the reference
 %     point for the placement of the \anml\ beneath the \msg. See \PolesInfo.
@@ -872,6 +933,12 @@ and the derived files           ducksay.pdf
 \regex_const:Nn \c_ducksay_second_regex { \A(.[^\c{null}]*\c{null}\s*)\\ }
 \regex_const:Nn \c_ducksay_third_regex  {
   \A(.[^\c{null}]*\c{null}[^\c{null}]*\c{null}\s*)\\ }
+\regex_const:Nn \c_ducksay_textcolor_regex
+  { \cO(?:\\textcolor\{(.*?)\}\{(.*?)\}) }
+\regex_const:Nn \c_ducksay_color_delim_regex
+  { \cO(?:\\bgroup\\color\{(.*?)\}(.*)\\egroup) }
+\regex_const:Nn \c_ducksay_color_regex
+  { \cO(?:\\color\{(.*?)\}) }
 %    \end{macrocode}
 %^^A<<<
 %
@@ -921,7 +988,7 @@ and the derived files           ducksay.pdf
         \bool_set_false:N \l_ducksay_version_one_bool
         \bool_set_true:N  \l_ducksay_version_two_bool
       }
-    ,version   .initial:n  = 1
+    ,version   .initial:n  = 2
   }
 %    \end{macrocode}
 %
@@ -929,7 +996,7 @@ and the derived files           ducksay.pdf
 \ProcessKeysOptions { ducksay }
 %    \end{macrocode}
 %
-% Undefined the load-time-only keys
+% Undefine the load-time-only keys
 %    \begin{macrocode}
 \keys_define:nn { ducksay }
   {
@@ -938,7 +1005,6 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 %
 %^^A<<<
-%
 %
 % \subsubsection{Functions}^^A>>>
 %
@@ -996,6 +1062,30 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A<<<
 %
+% \begin{macro}{\ducksay_add_animal_inner:nn}^^A>>>
+%    \begin{macrocode}
+\cs_new_protected:Npn \ducksay_add_animal_inner:nn #1 #2
+  {
+    \tl_set:Nn \l_ducksay_tmpa_tl { \ #2 }
+    \tl_map_inline:Nn \l_ducksay_ligatures_tl
+      { \tl_replace_all:Nnn \l_ducksay_tmpa_tl { ##1 } { { ##1 } } }
+    \ducksay_replace_verb_newline:Nn \l_ducksay_tmpa_tl { \tabularnewline\null }
+    \tl_gset_eq:cN { g_ducksay_animal_say_#1_tl } \l_ducksay_tmpa_tl
+    \keys_define:nn { ducksay }
+      {
+        #1 .code:n =
+          {
+            \tl_if_exist:cF
+              { g_ducksay_animal_ \l_ducksay_say_or_think_tl _#1_tl }
+              { \ducksay_create_think_animal:n { #1 } }
+            \tl_set_eq:Nc \l_ducksay_animal_tl
+              { g_ducksay_animal_ \l_ducksay_say_or_think_tl _#1_tl }
+          }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
 %^^A<<<
 %
 % \paragraph{Document level}^^A>>>
@@ -1022,22 +1112,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \NewDocumentCommand \AddAnimal { s m +v }
   {
-    \tl_set:Nn \l_ducksay_tmpa_tl { \ #3 }
-    \tl_map_inline:Nn \l_ducksay_ligatures_tl
-      { \tl_replace_all:Nnn \l_ducksay_tmpa_tl { ##1 } { { ##1 } } }
-    \ducksay_replace_verb_newline:Nn \l_ducksay_tmpa_tl { \tabularnewline\null }
-    \tl_gset_eq:cN { g_ducksay_animal_say_#2_tl } \l_ducksay_tmpa_tl
-    \keys_define:nn { ducksay }
-      {
-        #2 .code:n =
-          {
-            \tl_if_exist:cF
-              { g_ducksay_animal_ \l_ducksay_say_or_think_tl _#2_tl }
-              { \ducksay_create_think_animal:n { #2 } }
-            \tl_set_eq:Nc \l_ducksay_animal_tl
-              { g_ducksay_animal_ \l_ducksay_say_or_think_tl _#2_tl }
-          }
-      }
+    \ducksay_add_animal_inner:nn { #2 } { #3 }
     \bool_if:NT \l_ducksay_also_add_think_bool
       { \ducksay_create_think_animal:n { #2 } }
     \IfBooleanT{#1}
@@ -1045,6 +1120,29 @@ and the derived files           ducksay.pdf
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
+%
+% \begin{macro}{\AddColoredAnimal}^^A>>>
+%    \begin{macrocode}
+\NewDocumentCommand \AddColoredAnimal { s m +v }
+  {
+    \ducksay_add_animal_inner:nn { #2 } { #3 }
+    \regex_replace_all:Nnc \c_ducksay_color_delim_regex
+      { \c{bgroup}\c{color}\cB\{\1\cE\}\2\c{egroup} }
+      { g_ducksay_animal_say_#2_tl }
+    \regex_replace_all:Nnc \c_ducksay_color_regex
+      { \c{color}\cB\{\1\cE\} }
+      { g_ducksay_animal_say_#2_tl }
+    \regex_replace_all:Nnc \c_ducksay_textcolor_regex
+      { \c{textcolor}\cB\{\1\cE\}\cB\{\2\cE\} }
+      { g_ducksay_animal_say_#2_tl }
+    \bool_if:NT \l_ducksay_also_add_think_bool
+      { \ducksay_create_think_animal:n { #2 } }
+    \IfBooleanT{#1}
+      { \keys_define:nn { ducksay } { default_animal .meta:n = { #2 } } }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
 %^^A<<<
 %
 %^^A<<<
@@ -1333,6 +1431,7 @@ and the derived files           ducksay.pdf
         \bool_set_false:N \l_ducksay_eat_arg_box_bool
         \bool_set_true:N  \l_ducksay_eat_arg_tab_verb_bool
       }
+    ,arg .initial:n = tab
     ,wd* .dim_set:N = \l_ducksay_msg_width_dim
     ,wd* .initial:n = -\c_max_dim
     ,body-mirrored .bool_set:N = \l_ducksay_mirrored_body_bool
@@ -1350,6 +1449,14 @@ and the derived files           ducksay.pdf
     ,msg-align  / c .code:n = { \tl_set:Nn \l_ducksay_msg_align_tl { c } }
     ,msg-align  / r .code:n = { \tl_set:Nn \l_ducksay_msg_align_tl { r } }
     ,msg-align  / j .code:n = { \tl_set:Nn \l_ducksay_msg_align_tl { j } }
+    ,msg-align-l .tl_set:N  = \l_ducksay_msg_align_l_tl
+    ,msg-align-l .initial:n = \raggedright
+    ,msg-align-c .tl_set:N  = \l_ducksay_msg_align_c_tl
+    ,msg-align-c .initial:n = \centering
+    ,msg-align-r .tl_set:N  = \l_ducksay_msg_align_r_tl
+    ,msg-align-r .initial:n = \raggedleft
+    ,msg-align-j .tl_set:N  = \l_ducksay_msg_align_j_tl
+    ,msg-align-j .initial:n = {}
     ,out-h   .tl_set:N  = \l_ducksay_output_h_pole_tl
     ,out-h   .initial:n = l
     ,out-v   .tl_set:N  = \l_ducksay_output_v_pole_tl
@@ -1412,13 +1519,17 @@ and the derived files           ducksay.pdf
       {
         \tl_set:Nx \l_ducksay_msg_tabular_column_tl
           {
-            \str_case:Vn \l_ducksay_msg_align_tl
-              {
-                { l } { \exp_not:n { >{ \raggedright \arraybackslash } } }
-                { c } { \exp_not:n { >{ \centering   \arraybackslash } } }
-                { r } { \exp_not:n { >{ \raggedleft  \arraybackslash } } }
-                { j } { }
-              }
+            >
+            {
+              \str_case:Vn \l_ducksay_msg_align_tl
+                {
+                  { l } { \exp_not:N \l_ducksay_msg_align_l_tl }
+                  { c } { \exp_not:N \l_ducksay_msg_align_c_tl }
+                  { r } { \exp_not:N \l_ducksay_msg_align_r_tl }
+                  { j } { \exp_not:N \l_ducksay_msg_align_j_tl }
+                }
+              \exp_not:N \arraybackslash
+            }
             p { \exp_not:N \l_ducksay_msg_width_dim }
           }
       }
@@ -1434,10 +1545,10 @@ and the derived files           ducksay.pdf
       {
         \str_case:Vn \l_ducksay_msg_align_tl
           {
-            { l } { \exp_not:N \raggedright }
-            { c } { \exp_not:N \centering   }
-            { r } { \exp_not:N \raggedleft  }
-            { j } { }
+            { l } { \exp_not:N \l_ducksay_msg_align_l_tl }
+            { c } { \exp_not:N \l_ducksay_msg_align_c_tl }
+            { r } { \exp_not:N \l_ducksay_msg_align_r_tl }
+            { j } { \exp_not:N \l_ducksay_msg_align_j_tl }
           }
       }
   }
@@ -1816,6 +1927,7 @@ and the derived files           ducksay.pdf
 \cs_generate_variant:Nn \coffin_typeset:Nnnnn { NVVnn }
 \cs_generate_variant:Nn \tl_if_eq:nnT { VnT }
 \cs_generate_variant:Nn \str_case:nn { Vn }
+\cs_generate_variant:Nn \regex_replace_all:NnN { Nnc }
 %    \end{macrocode}
 %
 %^^A<<<
