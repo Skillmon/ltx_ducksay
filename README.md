@@ -1,7 +1,13 @@
 ducksay: cowsay for LaTeX
 
-This package is distributed under the terms of GPLv3 or later, or the LPPL 1.3c
-or later, which ever license fits your needs the best.
+This work may be distributed and/or modified under the conditions of the LaTeX
+Project Public License (LPPL), either version 1.3c of this license or (at your
+option) any later version. The latest version of this license is in the file:
+
+  http://www.latex-project.org/lppl.txt
+
+This work is "maintained" (as per LPPL maintenance status) by
+  Jonathan P. Spratte.
 
 Copyright (C) 2017-2018 by Jonathan P. Spratte
 
