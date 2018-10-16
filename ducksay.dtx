@@ -1897,6 +1897,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \ducksay_eat_argument_hbox:w
   {
+    \group_begin:
     \afterassignment \ducksay_eat_argument_hbox_inner:w
     \let \l_ducksay_nothing =
   }
@@ -1907,6 +1908,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \ducksay_eat_argument_hbox_inner:w
   {
+    \group_end:
     \setbox \l_ducksay_msg_box \hbox \c_group_begin_token
       \group_insert_after:N \ducksay_shipout:
       \l_ducksay_msg_fount_tl
@@ -1919,6 +1921,7 @@ and the derived files           ducksay.pdf
 \cs_new_protected_nopar:Npn \ducksay_eat_argument_vbox:w
   {
     \ducksay_evaluate_message_alignment_fixed_width_vbox:
+    \group_begin:
     \afterassignment \ducksay_eat_argument_vbox_inner:w
     \let \l_ducksay_nothing =
   }
@@ -1929,8 +1932,10 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \ducksay_eat_argument_vbox_inner:w
   {
+    \group_end:
     \setbox \l_ducksay_msg_box \vbox \c_group_begin_token
       \hsize \l_ducksay_msg_width_dim
+      \linewidth \hsize
       \group_insert_after:N \ducksay_shipout:
       \l_ducksay_msg_fount_tl
       \l_ducksay_msg_align_vbox_tl
