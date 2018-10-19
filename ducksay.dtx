@@ -187,8 +187,8 @@ and the derived files           ducksay.pdf
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xparse,l3keys2e}
 
-\def\ducksay@version{2.0}
-\def\ducksay@date{2018/09/21}
+\def\ducksay@version{2.1}
+\def\ducksay@date{2018/10/19}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
@@ -394,7 +394,7 @@ and the derived files           ducksay.pdf
 %
 % This version is included for legacy support (old documents should behave the
 % same without any change to them -- except the usage of |version=1| as an
-% option. For the bleeding edge version of \pkg{ducksay} skip this subsection
+% option). For the bleeding edge version of \pkg{ducksay} skip this subsection
 % and read \autoref{sec:v2}.
 %
 % \subsubsection{Macros}\label{sec:macros1}^^A>>>
@@ -637,7 +637,7 @@ and the derived files           ducksay.pdf
 %     the left delimiters used to fill the gap if more than two lines of
 %     delimiters are needed. Package default is \verb+|+.
 %   \item[bubble-delim-left-4=\meta{token list}]
-%     the lower most left delimiters used if more than one line of delimiters is
+%     the lower most left delimiter used if more than one line of delimiters is
 %     needed. Package default is |\|.
 %   \item[bubble-delim-right-1=\meta{token list}]
 %     the right delimiter used if only one line of delimiters is needed. Package
@@ -649,7 +649,7 @@ and the derived files           ducksay.pdf
 %     the right delimiters used to fill the gap if more than two lines of
 %     delimiters are needed. Package default is \verb+|+.
 %   \item[bubble-delim-right-4=\meta{token list}]
-%     the lower most right delimiters used if more than one line of delimiters
+%     the lower most right delimiter used if more than one line of delimiters
 %     is needed. Package default is |/|.
 %   \item[bubble-delim-top=\meta{token list}]
 %     the delimiter used to create the top and bottom border of the bubble. The
@@ -746,6 +746,9 @@ and the derived files           ducksay.pdf
 %   \item[out-y=\meta{dimen}]
 %     specifies an additional vertical offset of the print out of the complete
 %     result of \cs{ducksay} and \cs{duckthink}
+%   \item[strip-spaces=\meta{bool}]
+%     if set |true| leading and trailing spaces are stripped from the \msg\ if
+%     |arg=box| is used. Initially this is set to |false|.
 %   \item[t]
 %     shortcut for |out-v=t|.
 %   \item[vpad=\meta{count}]
@@ -788,7 +791,8 @@ and the derived files           ducksay.pdf
 %       }%
 %   }
 % The package depends on the two packages \pkg{xparse} and \pkg{l3keys2e}
-% and all of their dependencies. Version 2 additionally depends on \pkg{array}.
+% and all of their dependencies. Version 2 additionally depends on \pkg{array}
+% and \pkg{grabbox}.
 %^^A<<<
 %
 % \subsection{Available Animals}\label{sec:animals}^^A>>>
@@ -1356,7 +1360,7 @@ and the derived files           ducksay.pdf
 %
 % Load the additional dependencies of version 2.
 %    \begin{macrocode}
-\RequirePackage{array}
+\RequirePackage{array,grabbox}
 %    \end{macrocode}
 %
 % \subsubsection{Messages}^^A>>>
@@ -1515,6 +1519,7 @@ and the derived files           ducksay.pdf
     ,bubble-delim-right-2 .initial:n = \c_backslash_str
     ,bubble-delim-right-3 .initial:n = |
     ,bubble-delim-right-4 .initial:n = /
+    ,strip-spaces .bool_set:N  = \l_ducksay_msg_strip_spaces_bool
   }
 %    \end{macrocode}
 %
@@ -1897,21 +1902,10 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \ducksay_eat_argument_hbox:w
   {
-    \group_begin:
-    \afterassignment \ducksay_eat_argument_hbox_inner:w
-    \let \l_ducksay_nothing =
-  }
-%    \end{macrocode}
-% \end{macro}^^A<<<
-%
-% \begin{macro}{\ducksay_eat_argument_hbox_inner:w}^^A>>>
-%    \begin{macrocode}
-\cs_new_protected_nopar:Npn \ducksay_eat_argument_hbox_inner:w
-  {
-    \group_end:
-    \setbox \l_ducksay_msg_box \hbox \c_group_begin_token
-      \group_insert_after:N \ducksay_shipout:
-      \l_ducksay_msg_fount_tl
+    \bool_if:NTF \l_ducksay_msg_strip_spaces_bool
+      { \grabbox }
+      { \grabbox* }
+      \l_ducksay_msg_box [ \l_ducksay_msg_fount_tl ] \hbox \ducksay_shipout:
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -1921,26 +1915,19 @@ and the derived files           ducksay.pdf
 \cs_new_protected_nopar:Npn \ducksay_eat_argument_vbox:w
   {
     \ducksay_evaluate_message_alignment_fixed_width_vbox:
-    \group_begin:
-    \afterassignment \ducksay_eat_argument_vbox_inner:w
-    \let \l_ducksay_nothing =
-  }
-%    \end{macrocode}
-% \end{macro}^^A<<<
-%
-% \begin{macro}{\ducksay_eat_argument_vbox_inner:w}^^A>>>
-%    \begin{macrocode}
-\cs_new_protected_nopar:Npn \ducksay_eat_argument_vbox_inner:w
-  {
-    \group_end:
-    \setbox \l_ducksay_msg_box \vbox \c_group_begin_token
-      \hsize \l_ducksay_msg_width_dim
-      \linewidth \hsize
-      \group_insert_after:N \ducksay_shipout:
-      \l_ducksay_msg_fount_tl
-      \l_ducksay_msg_align_vbox_tl
-      \@afterindentfalse
-      \@afterheading
+    \bool_if:NTF \l_ducksay_msg_strip_spaces_bool
+      { \grabbox }
+      { \grabbox* }
+      \l_ducksay_msg_box
+      [
+        \hsize \l_ducksay_msg_width_dim
+        \linewidth \hsize
+        \l_ducksay_msg_fount_tl
+        \l_ducksay_msg_align_vbox_tl
+        \@afterindentfalse
+        \@afterheading
+      ]
+      \vbox \ducksay_shipout:
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
