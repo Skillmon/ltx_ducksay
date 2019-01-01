@@ -74,7 +74,7 @@ and the derived files           ducksay.pdf
   {%
     \href{https://ctan.org/pkg/l3kernel}{\file{interface3.pdf}} and the
     documentation of \href{https://ctan.org/pkg/xcoffins}{\pkg{xcoffins}} for
-    information about coffin poles.%
+    information about coffin poles%
   }
 \usepackage{enumitem}
 \newenvironment{options}[1][]
@@ -187,8 +187,8 @@ and the derived files           ducksay.pdf
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xparse,l3keys2e}
 
-\def\ducksay@version{2.1}
-\def\ducksay@date{2018/10/19}
+\def\ducksay@version{2.2}
+\def\ducksay@date{2018-12-29}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
@@ -571,8 +571,8 @@ and the derived files           ducksay.pdf
 %         the argument is read in either as a \cs{hbox} or a \cs{vbox} (the
 %         latter if a fixed width is specified with either |wd| or |wd*|). Note
 %         that in this mode any arguments relying on category code changes like
-%         e.g.\@ \cs{verb} will work (provided that you don't use \cs{ducksay} or
-%         \cs{duckthink} inside of an argument of another macro of course).
+%         e.g.\@ \cs{verb} will work (provided that you don't use \cs{ducksay}
+%         or \cs{duckthink} inside of an argument of another macro of course).
 %       \item[tab]
 %         the argument is read in as the contents of a \env{tabular}. Note that
 %         in this mode any arguments relying on category code changes like
@@ -699,32 +699,35 @@ and the derived files           ducksay.pdf
 %   \item[msg-align-c=\meta{token list}]
 %     set the \meta{token list} which is responsible to typeset the message
 %     centred if the option |msg-align=c| is used. It is used independent of the
-%     |arg| key. For |arg=tab| and |arg=tab*| the macro \cs{arraybackslash}
-%     provided by \pkg{array} is used afterwards. The package default is
-%     |\centering|. It might be useful if you want to use \pkg{ragged2e}'s
-%     \cs{Centering} for example.
+%     |arg| key. For |arg=tab| and |arg=tab*| it is only used if a fixed width
+%     is specified and the macro \cs{arraybackslash} provided by \pkg{array} is
+%     used afterwards. The package default is |\centering|. It might be useful
+%     if you want to use \pkg{ragged2e}'s \cs{Centering} for example.
 %   \item[msg-align-j=\meta{token list}]
 %     set the \meta{token list} which is responsible to typeset the message
 %     justified if the option |msg-align=j| is used. It is used independent of
-%     the |arg| key. For |arg=tab| and |arg=tab*| the macro \cs{arraybackslash}
-%     provided by \pkg{array} is used afterwards. The package default is
-%     empty as justification is the default behaviour of contents of a |p|
-%     column and of a \cs{vbox}. It might be useful if you want to use
-%     \pkg{ragged2e}'s \cs{justifying} for example.
+%     the |arg| key. For |arg=tab| and |arg=tab*| it is only used if a fixed
+%     width is specified and the macro \cs{arraybackslash} provided by
+%     \pkg{array} is used afterwards. The package default is empty as
+%     justification is the default behaviour of contents of a |p| column and of
+%     a \cs{vbox}. It might be useful if you want to use \pkg{ragged2e}'s
+%     \cs{justifying} for example.
 %   \item[msg-align-l=\meta{token list}]
 %     set the \meta{token list} which is responsible to typeset the message
 %     flushed left if the option |msg-align=l| is used. It is used independent
-%     of the |arg| key. For |arg=tab| and |arg=tab*| the macro
-%     \cs{arraybackslash} provided by \pkg{array} is used afterwards. The
-%     package default is |\raggedright|. It might be useful if you want to use
-%     \pkg{ragged2e}'s \cs{RaggedRight} for example.
+%     of the |arg| key. For |arg=tab| and |arg=tab*| it is only used if a fixed
+%     width is specified and the macro \cs{arraybackslash} provided by
+%     \pkg{array} is used afterwards. The package default is |\raggedright|. It
+%     might be useful if you want to use \pkg{ragged2e}'s \cs{RaggedRight} for
+%     example.
 %   \item[msg-align-r=\meta{token list}]
 %     set the \meta{token list} which is responsible to typeset the message
 %     flushed right if the option |msg-align=r| is used. It is used independent
-%     of the |arg| key. For |arg=tab| and |arg=tab*| the macro
-%     \cs{arraybackslash} provided by \pkg{array} is used afterwards. The
-%     package default is |\raggedleft|. It might be useful if you want to use
-%     \pkg{ragged2e}'s \cs{RaggedLeft} for example.
+%     of the |arg| key. For |arg=tab| and |arg=tab*| it is only used if a fixed
+%     width is specified and the macro \cs{arraybackslash} provided by
+%     \pkg{array} is used afterwards. The package default is |\raggedleft|. It
+%     might be useful if you want to use \pkg{ragged2e}'s \cs{RaggedLeft} for
+%     example.
 %   \item[msg-to-bubble=\meta{pole}]
 %     defines the horizontal coffin \meta{pole} to be used as the reference
 %     point for the placement of the \anml\ beneath the \msg. See \PolesInfo.
@@ -936,6 +939,9 @@ and the derived files           ducksay.pdf
 \regex_const:Nn \c_ducksay_second_regex { \A(.[^\c{null}]*\c{null}\s*)\\ }
 \regex_const:Nn \c_ducksay_third_regex  {
   \A(.[^\c{null}]*\c{null}[^\c{null}]*\c{null}\s*)\\ }
+%    \end{macrocode}
+% And for \cs{AddColoredAnimal}
+%    \begin{macrocode}
 \regex_const:Nn \c_ducksay_textcolor_regex
   { \cO(?:\\textcolor\{(.*?)\}\{(.*?)\}) }
 \regex_const:Nn \c_ducksay_color_delim_regex
@@ -1529,6 +1535,21 @@ and the derived files           ducksay.pdf
 %
 % \paragraph{Internal}^^A>>>
 %
+% \begin{macro}{\ducksay_evaluate_message_alignment_fixed_width_common:}^^A>>>
+%    \begin{macrocode}
+\cs_new:Npn \ducksay_evaluate_message_alignment_fixed_width_common:
+  {
+    \str_case:Vn \l_ducksay_msg_align_tl
+      {
+        { l } { \exp_not:N \l_ducksay_msg_align_l_tl }
+        { c } { \exp_not:N \l_ducksay_msg_align_c_tl }
+        { r } { \exp_not:N \l_ducksay_msg_align_r_tl }
+        { j } { \exp_not:N \l_ducksay_msg_align_j_tl }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
 % \begin{macro}{\ducksay_evaluate_message_alignment_fixed_width_tabular:}^^A>>>
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_evaluate_message_alignment_fixed_width_tabular:
@@ -1539,13 +1560,7 @@ and the derived files           ducksay.pdf
           {
             >
             {
-              \str_case:Vn \l_ducksay_msg_align_tl
-                {
-                  { l } { \exp_not:N \l_ducksay_msg_align_l_tl }
-                  { c } { \exp_not:N \l_ducksay_msg_align_c_tl }
-                  { r } { \exp_not:N \l_ducksay_msg_align_r_tl }
-                  { j } { \exp_not:N \l_ducksay_msg_align_j_tl }
-                }
+              \ducksay_evaluate_message_alignment_fixed_width_common:
               \exp_not:N \arraybackslash
             }
             p { \exp_not:N \l_ducksay_msg_width_dim }
@@ -1560,15 +1575,7 @@ and the derived files           ducksay.pdf
 \cs_new:Npn \ducksay_evaluate_message_alignment_fixed_width_vbox:
   {
     \tl_set:Nx \l_ducksay_msg_align_vbox_tl
-      {
-        \str_case:Vn \l_ducksay_msg_align_tl
-          {
-            { l } { \exp_not:N \l_ducksay_msg_align_l_tl }
-            { c } { \exp_not:N \l_ducksay_msg_align_c_tl }
-            { r } { \exp_not:N \l_ducksay_msg_align_r_tl }
-            { j } { \exp_not:N \l_ducksay_msg_align_j_tl }
-          }
-      }
+      { \ducksay_evaluate_message_alignment_fixed_width_common: }
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -1918,7 +1925,6 @@ and the derived files           ducksay.pdf
     \bool_if:NTF \l_ducksay_msg_strip_spaces_bool
       { \grabbox }
       { \grabbox* }
-      \l_ducksay_msg_box
       [
         \hsize \l_ducksay_msg_width_dim
         \linewidth \hsize
@@ -1927,6 +1933,7 @@ and the derived files           ducksay.pdf
         \@afterindentfalse
         \@afterheading
       ]
+      \l_ducksay_msg_box
       \vbox \ducksay_shipout:
   }
 %    \end{macrocode}
