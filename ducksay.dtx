@@ -1894,7 +1894,16 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \NewDocumentCommand \ducksay_eat_argument_tabular_verb:w
   { >{ \ducksay_process_verb_newline:nnn { ~ } { ~ \par } } +v }
-  { \ducksay_eat_argument_tabular_inner:w { \scantokens { #1 } } }
+  {
+    \ducksay_eat_argument_tabular_inner:w
+      {
+        \group_begin:
+          \tex_everyeof:D { \exp_not:N }
+          \exp_after:wN
+        \group_end:
+        \tex_scantokens:D { #1 }
+      }
+  }
 %    \end{macrocode}
 % \end{macro}^^A<<<
 %
