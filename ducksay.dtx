@@ -263,7 +263,7 @@ and the derived files           ducksay.pdf
 %     with v2.3. In future versions it will be removed.
 % \end{itemize}^^A<<<
 %
-% \subsection{Shared between versions}
+% \subsection{Shared between versions}^^A>>>
 %
 % \subsubsection{Macros}\label{sec:macros}^^A>>>
 % \marginpar^^A>>>
@@ -391,6 +391,8 @@ and the derived files           ducksay.pdf
 %     dedicated description of each version look into \autoref{sec:v1} and
 %     \autoref{sec:v2}. The package author would choose |version=2|, the other
 %     version is mostly for legacy reasons. The default is |2|.
+%   \item[add-think=\meta{bool}]
+%     deprecated; will throw an error
 %   \item[\anml] 
 %     One of the animals listed in \autoref{sec:animals} or any of the ones
 %     added with \cs{AddAnimal}. Not useable as package option. Also don't use
@@ -413,8 +415,10 @@ and the derived files           ducksay.pdf
 %     regular expression. This means that this option is not fully
 %     downward compatible with older versions. The speed gain however seems
 %     worth it (and I hope the affected documents are few).
-%   \item[add-think=\meta{bool}]
-%     deprecated; will throw an error
+%   \item[no-tail]
+%     Sets |tail-1| and |tail-2| to be a space.
+%   \item[say]
+%     Sets |tail-1| and |tail-2| as backslashes.
 %   \item[tail-1=\meta{token list}]
 %     Sets the first tail symbol in the output to be \meta{token list}. If set
 %     outside of \cs{ducksay} and \cs{duckthink} it will be overwritten inside
@@ -423,10 +427,6 @@ and the derived files           ducksay.pdf
 %     Sets every other tail symbol except the first one in the output to be
 %     \meta{token list}. If set outside of \cs{ducksay} and \cs{duckthink} it
 %     will be overwritten inside of \cs{duckthink} to be |o|.
-%   \item[no-tail]
-%     Sets |tail-1| and |tail-2| to be a space.
-%   \item[say]
-%     Sets |tail-1| and |tail-2| as backslashes.
 %   \item[think]
 %     Sets |tail-1=O| and |tail-2=o|.
 % \end{options}
@@ -446,8 +446,10 @@ and the derived files           ducksay.pdf
 % \end{options}
 %^^A<<<
 %
+%^^A<<<
+%
 % \SetVersion{1}%
-% \subsection{Version 1}\label{sec:v1}
+% \subsection{Version 1}\label{sec:v1}^^A>>>
 %
 % \subsubsection{Introduction}^^A>>>
 %
@@ -545,8 +547,10 @@ and the derived files           ducksay.pdf
 %   \item no automatic line wrapping
 % \end{itemize}^^A<<<
 %
+%^^A<<<
+%
 % \SetVersion{2}%
-% \subsection{Version 2}\label{sec:v2}
+% \subsection{Version 2}\label{sec:v2}^^A>>>
 % \marginpar^^A>>>
 %   {
 %     \fontsize{3.5pt}{3.5pt}\selectfont
@@ -555,15 +559,16 @@ and the derived files           ducksay.pdf
 %
 % \subsubsection{Introduction}^^A>>>
 %
-% Version 2 is the current version of \pkg{ducksay}. It features automatic line
+% Version~2 is the current version of \pkg{ducksay}. It features automatic line
 % wrapping (if you specify a fixed width) and in general more options (with some
 % nasty argument parsing).
 %
-% If you're already used to version 1 you should note one important thing: You
-% should only specify the |version|, the |ligatures| and |add-think| during
-% package load time as arguments to \cs{usepackage}. The other keys might not
-% work or do unintended things and only don't throw errors or warnings because
-% of the legacy support of version 1.
+% If you're already used to version~1 you should note one important thing: You
+% should only specify the |version| and the |ligatures| during package load time
+% as arguments to \cs{usepackage}. The other keys might not work or do
+% unintended things and only don't throw errors or warnings because of the
+% legacy support of version~1. After the package is loaded, keys only used for
+% version~1 will throw an error.
 %
 %^^A<<<
 %
@@ -782,9 +787,12 @@ and the derived files           ducksay.pdf
 %     \pkg{array} is used afterwards. The package default is |\raggedleft|. It
 %     might be useful if you want to use \pkg{ragged2e}'s \cs{RaggedLeft} for
 %     example.
-%   \item[msg-to-bubble=\meta{pole}]
+%   \item[msg-to-body=\meta{pole}]
 %     defines the horizontal coffin \meta{pole} to be used as the reference
 %     point for the placement of the \anml\ beneath the \msg. See \PolesInfo.
+%   \item[no-bubble=\meta{bool}]
+%     If |true| the \msg\ will not be surrounded by a bubble. Package default is
+%     of course |false|.
 %   \item[none=\meta{bool}]
 %     One could say this is a special animal. If |true| no animal body will be
 %     used (resulting in just the speech bubble). Package default is of course
@@ -829,6 +837,8 @@ and the derived files           ducksay.pdf
 %     |wd| is not smaller than 0 and |wd*| is not smaller than 0pt, |wd*| will
 %     take precedence.
 % \end{options}
+%
+%^^A<<<
 %
 %^^A<<<
 %
@@ -1038,7 +1048,6 @@ and the derived files           ducksay.pdf
     ,rel-align .value_required:n = true
     ,ligatures .tl_set:N   = \l_ducksay_ligatures_tl
     ,ligatures .initial:n  = { `<>,'- }
-    ,add-think .code:n     = \msg_error:nn { ducksay } { deprecated-key }
     ,tail-1    .tl_set:N   = \l_ducksay_tail_symbol_out_one_tl
     ,tail-1    .initial:x  = \c_backslash_str
     ,tail-2    .tl_set:N   = \l_ducksay_tail_symbol_out_two_tl
@@ -1062,6 +1071,7 @@ and the derived files           ducksay.pdf
         \bool_set_true:N  \l_ducksay_version_two_bool
       }
     ,version   .initial:n  = 2
+    ,add-think .code:n     = \msg_error:nn { ducksay } { deprecated-key }
   }
 %    \end{macrocode}
 %
@@ -1503,6 +1513,8 @@ and the derived files           ducksay.pdf
     The~specified~message~alignment~`\exp_not:n { #1 }`~is~unknown.~
     `l`~is~used~as~fallback.
   }
+\msg_new:nnn { ducksay } { v1-key-only }
+  { The~`\l_keys_key_tl`~key~is~only~available~for~`version=1`. }
 %    \end{macrocode}
 %^^A<<<
 %
@@ -1566,6 +1578,7 @@ and the derived files           ducksay.pdf
     ,wd* .initial:n = -\c_max_dim
     ,wd* .value_required:n = true
     ,none          .bool_set:N = \l_ducksay_no_body_bool
+    ,no-bubble     .bool_set:N = \l_ducksay_no_bubble_bool
     ,body-mirrored .bool_set:N = \l_ducksay_mirrored_body_bool
     ,ignore-body   .bool_set:N = \l_ducksay_ignored_body_bool
     ,body-x      .dim_set:N = \l_ducksay_body_x_offset_dim
@@ -1650,6 +1663,18 @@ and the derived files           ducksay.pdf
     ,strip-spaces .bool_set:N  = \l_ducksay_msg_strip_spaces_bool
   }
 %    \end{macrocode}
+%
+% Redefine keys only intended for version~1 to throw an error:
+%
+%    \begin{macrocode}
+\clist_map_inline:nn
+  { align, rel-align }
+  {
+    \keys_define:nn { ducksay }
+      { ##1 .code:n = \msg_error:nn { ducksay } { v1-key-only } }
+  }
+%    \end{macrocode}
+%
 %
 %^^A<<<
 %
@@ -1830,88 +1855,119 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_new_protected:Npn \ducksay_shipout:
   {
-    \hbox_set:Nn \l_ducksay_tmpa_box
-      { \l_ducksay_bubble_fount_tl \l_ducksay_bubble_delim_top_tl }
-    \int_set:Nn \l_ducksay_msg_width_int
+    \hcoffin_set:Nn \l_ducksay_msg_coffin { \box_use:N \l_ducksay_msg_box }
+    \bool_if:NF \l_ducksay_no_bubble_bool
       {
-        \fp_eval:n
-          {
-            ceil 
-              ( \box_wd:N \l_ducksay_msg_box / \box_wd:N \l_ducksay_tmpa_box )
-          }
-      }
-    \group_begin:
-    \l_ducksay_bubble_fount_tl
-    \exp_args:NNNx
-    \group_end:
-    \int_set:Nn \l_ducksay_msg_height_int
-      {
-        \int_max:nn
+        \hbox_set:Nn \l_ducksay_tmpa_box
+          { \l_ducksay_bubble_fount_tl \l_ducksay_bubble_delim_top_tl }
+        \int_set:Nn \l_ducksay_msg_width_int
           {
             \fp_eval:n
               {
-                ceil
+                ceil 
                   (
-                    (
-                      \box_ht:N \l_ducksay_msg_box
-                      + \box_dp:N \l_ducksay_msg_box
-                    )
-                    / ( \arraystretch * \baselineskip )
+                    \box_wd:N \l_ducksay_msg_box / \box_wd:N \l_ducksay_tmpa_box
                   )
               }
-            + \l_ducksay_vpad_int
           }
-          { \l_ducksay_msg_height_int }
-      }
-    \hcoffin_set:Nn \l_ducksay_bubble_open_coffin
-      {
+        \group_begin:
         \l_ducksay_bubble_fount_tl
-        \begin{tabular}{@{}l@{}}
-          \int_compare:nNnTF { \l_ducksay_msg_height_int } = { \c_one_int }
-            {
-              \l_ducksay_bubble_delim_left_a_tl
-            }
-            {
-              \l_ducksay_bubble_delim_left_b_tl\\
-              \int_step_inline:nnn
-                { 3 } { \l_ducksay_msg_height_int }
+        \exp_args:NNNx
+        \group_end:
+        \int_set:Nn \l_ducksay_msg_height_int
+          {
+            \int_max:nn
+              {
+                \fp_eval:n
+                  {
+                    ceil
+                      (
+                        (
+                          \box_ht:N \l_ducksay_msg_box
+                          + \box_dp:N \l_ducksay_msg_box
+                        )
+                        / ( \arraystretch * \baselineskip )
+                      )
+                  }
+                + \l_ducksay_vpad_int
+              }
+              { \l_ducksay_msg_height_int }
+          }
+        \hcoffin_set:Nn \l_ducksay_bubble_open_coffin
+          {
+            \l_ducksay_bubble_fount_tl
+            \begin{tabular}{@{}l@{}}
+              \int_compare:nNnTF { \l_ducksay_msg_height_int } = { \c_one_int }
                 {
-                  \kern-\l_ducksay_bubble_side_kern_tl
-                  \l_ducksay_bubble_delim_left_c_tl
-                  \\
+                  \l_ducksay_bubble_delim_left_a_tl
                 }
-              \l_ducksay_bubble_delim_left_d_tl
-            }
-        \end{tabular}
-      }
-    \hcoffin_set:Nn \l_ducksay_bubble_close_coffin
-      {
-        \l_ducksay_bubble_fount_tl
-        \begin{tabular}{@{}r@{}}
-          \int_compare:nNnTF { \l_ducksay_msg_height_int } = { \c_one_int }
-            {
-              \l_ducksay_bubble_delim_right_a_tl
-            }
-            {
-              \l_ducksay_bubble_delim_right_b_tl \\
-              \int_step_inline:nnn
-                { 3 } { \l_ducksay_msg_height_int }
                 {
-                  \l_ducksay_bubble_delim_right_c_tl
-                  \kern-\l_ducksay_bubble_side_kern_tl
-                  \\
+                  \l_ducksay_bubble_delim_left_b_tl\\
+                  \int_step_inline:nnn
+                    { 3 } { \l_ducksay_msg_height_int }
+                    {
+                      \kern-\l_ducksay_bubble_side_kern_tl
+                      \l_ducksay_bubble_delim_left_c_tl
+                      \\
+                    }
+                  \l_ducksay_bubble_delim_left_d_tl
                 }
-              \l_ducksay_bubble_delim_right_d_tl
-            }
-        \end{tabular}
+            \end{tabular}
+          }
+        \hcoffin_set:Nn \l_ducksay_bubble_close_coffin
+          {
+            \l_ducksay_bubble_fount_tl
+            \begin{tabular}{@{}r@{}}
+              \int_compare:nNnTF { \l_ducksay_msg_height_int } = { \c_one_int }
+                {
+                  \l_ducksay_bubble_delim_right_a_tl
+                }
+                {
+                  \l_ducksay_bubble_delim_right_b_tl \\
+                  \int_step_inline:nnn
+                    { 3 } { \l_ducksay_msg_height_int }
+                    {
+                      \l_ducksay_bubble_delim_right_c_tl
+                      \kern-\l_ducksay_bubble_side_kern_tl
+                      \\
+                    }
+                  \l_ducksay_bubble_delim_right_d_tl
+                }
+            \end{tabular}
+          }
+        \hcoffin_set:Nn \l_ducksay_bubble_top_coffin
+          {
+            \l_ducksay_bubble_fount_tl
+            \int_step_inline:nn
+              { \l_ducksay_msg_width_int + \l_ducksay_hpad_int }
+              { \l_ducksay_bubble_delim_top_tl }
+          }
+        \dim_set:Nn \l_ducksay_hpad_dim
+          {
+            (
+              \coffin_wd:N \l_ducksay_bubble_top_coffin
+              - \coffin_wd:N \l_ducksay_msg_coffin
+            ) / 2
+          }
+        \coffin_join:NnnNnnnn
+          \l_ducksay_msg_coffin         { l } { vc }
+          \l_ducksay_bubble_open_coffin { r } { vc }
+          { - \l_ducksay_hpad_dim } { \c_zero_dim }
+        \coffin_join:NnnNnnnn
+          \l_ducksay_msg_coffin          { r } { vc }
+          \l_ducksay_bubble_close_coffin { l } { vc }
+          { \l_ducksay_hpad_dim } { \c_zero_dim }
+        \ducksay_set_bubble_top_kern:
+        \ducksay_set_bubble_bottom_kern:
+        \coffin_join:NnnNnnnn
+          \l_ducksay_msg_coffin        { hc } { t }
+          \l_ducksay_bubble_top_coffin { hc } { b }
+          { \c_zero_dim } { \l_ducksay_bubble_top_kern_dim }
+        \coffin_join:NnnNnnnn
+          \l_ducksay_msg_coffin        { hc } { b }
+          \l_ducksay_bubble_top_coffin { hc } { t }
+          { \c_zero_dim } { \l_ducksay_bubble_bottom_kern_dim }
       }
-    \hcoffin_set:Nn \l_ducksay_bubble_top_coffin
-      {
-        \l_ducksay_bubble_fount_tl
-        \int_step_inline:nn { \l_ducksay_msg_width_int + \l_ducksay_hpad_int }
-          { \l_ducksay_bubble_delim_top_tl }
-      }
-    \hcoffin_set:Nn \l_ducksay_msg_coffin { \box_use:N \l_ducksay_msg_box }
     \bool_if:NF \l_ducksay_no_body_bool
       {
         \hcoffin_set:Nn \l_ducksay_body_coffin
@@ -1932,34 +1988,6 @@ and the derived files           ducksay.pdf
                 { r } { \tl_set:Nn \l_ducksay_body_to_msg_align_body_tl { l } }
               }
           }
-      }
-    \dim_set:Nn \l_ducksay_hpad_dim
-      {
-        (
-          \coffin_wd:N \l_ducksay_bubble_top_coffin
-          - \coffin_wd:N \l_ducksay_msg_coffin
-        ) / 2
-      }
-    \coffin_join:NnnNnnnn
-      \l_ducksay_msg_coffin         { l } { vc }
-      \l_ducksay_bubble_open_coffin { r } { vc }
-      { - \l_ducksay_hpad_dim } { \c_zero_dim }
-    \coffin_join:NnnNnnnn
-      \l_ducksay_msg_coffin          { r } { vc }
-      \l_ducksay_bubble_close_coffin { l } { vc }
-      { \l_ducksay_hpad_dim } { \c_zero_dim }
-    \ducksay_set_bubble_top_kern:
-    \ducksay_set_bubble_bottom_kern:
-    \coffin_join:NnnNnnnn
-      \l_ducksay_msg_coffin        { hc } { t }
-      \l_ducksay_bubble_top_coffin { hc } { b }
-      { \c_zero_dim } { \l_ducksay_bubble_top_kern_dim }
-    \coffin_join:NnnNnnnn
-      \l_ducksay_msg_coffin        { hc } { b }
-      \l_ducksay_bubble_top_coffin { hc } { t }
-      { \c_zero_dim } { \l_ducksay_bubble_bottom_kern_dim }
-    \bool_if:NF \l_ducksay_no_body_bool
-      {
         \bool_if:NTF \l_ducksay_ignored_body_bool
           { \coffin_attach:NVnNVnnn }
           { \coffin_join:NVnNVnnn   }
