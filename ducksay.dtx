@@ -105,6 +105,16 @@ and the derived files           ducksay.pdf
   }
   {\end{description}}
 \makeatletter
+\renewcommand*\paragraph
+  {%
+    \@startsection
+      {paragraph}
+      {4}
+      {\z@}
+      {-3.25ex \@plus -1ex \@minus -.2ex}
+      {1ex \@plus .2ex}
+      {\normalfont\normalsize\bfseries}%
+  }
 \newcommand*\availableAnimal[1]
   {%
     \@for\cs:=#1\do
@@ -347,15 +357,6 @@ and the derived files           ducksay.pdf
 %   normal \cs{AddAnimal}.
 % \end{function}^^A<<<
 %
-% \begin{function}{\AddAnimalOptions}^^A>>>
-%   \begin{syntax}
-%     \cs{AddAnimalOptions}\marg{options}
-%   \end{syntax}
-%   With this macro you can set the \meta{options} exclusive to \cs{AddAnimal}
-%   and \cs{AddColoredAnimal} outside of those macros. For the available options
-%   take a look at \autoref{sec:addoptions}.
-% \end{function}^^A<<<
-%
 % \begin{function}{\AnimalOptions}^^A>>>
 %   \begin{syntax}
 %     \cs{AnimalOptions}\meta{*}\marg{animal}\marg{options}
@@ -391,8 +392,6 @@ and the derived files           ducksay.pdf
 %     dedicated description of each version look into \autoref{sec:v1} and
 %     \autoref{sec:v2}. The package author would choose |version=2|, the other
 %     version is mostly for legacy reasons. The default is |2|.
-%   \item[add-think=\meta{bool}]
-%     deprecated; will throw an error
 %   \item[\anml] 
 %     One of the animals listed in \autoref{sec:animals} or any of the ones
 %     added with \cs{AddAnimal}. Not useable as package option. Also don't use
@@ -432,8 +431,8 @@ and the derived files           ducksay.pdf
 % \end{options}
 %
 % \paragraph{Options for \cs{AddAnimal}}\label{sec:addoptions}
-% The options described here are only available in \cs{AddAnimal},
-% \cs{AddColoredAnimal} and \cs{AddAnimalOptions}.
+% The options described here are only available in \cs{AddAnimal} and
+% \cs{AddColoredAnimal}.
 % \begin{options}
 %   \item[tail-count=\meta{int}]
 %     sets the number of tail symbols to be replaced in \cs{AddAnimal} and
@@ -1112,6 +1111,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_generate_variant:Nn \tl_if_eq:nnT { VnT }
 \cs_generate_variant:Nn \tl_replace_once:Nnn { NVn }
+\cs_generate_variant:Nn \tl_replace_all:Nnn { NVn }
 %    \end{macrocode}
 %^^A<<<
 %
@@ -1152,7 +1152,7 @@ and the derived files           ducksay.pdf
 \cs_new_protected:Npn \ducksay_add_animal_inner:nnnn #1 #2 #3 #4
   {
     \group_begin:
-      \AddAnimalOptions { #1 }
+      \keys_set:nn { ducksay / add-animal } { #1 }
       \tl_set:Nn \l_ducksay_tmpa_tl { \ #3 }
       \int_compare:nNnTF { \l_ducksay_tail_symbol_count_int } < { \c_zero_int }
         {
@@ -1227,15 +1227,6 @@ and the derived files           ducksay.pdf
 \NewDocumentCommand \DucksayOptions { m }
   {
     \keys_set:nn { ducksay } { #1 }
-  }
-%    \end{macrocode}
-% \end{macro}^^A<<<
-%
-% \begin{macro}{\AddAnimalOptions}^^A>>>
-%    \begin{macrocode}
-\NewDocumentCommand \AddAnimalOptions { m }
-  {
-    \keys_set:nn { ducksay / add-animal } { #1 }
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -1442,16 +1433,19 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A<<<
 %
-% \begin{macro}{\ducksay_prepare_say_and_think:n}^^A>>>
+% \begin{macro}{\ducksay_say_and_think:nn}^^A>>>
 %   Reset some variables
 %    \begin{macrocode}
-\cs_new:Npn \ducksay_prepare_say_and_think:n #1
+\cs_new:Npn \ducksay_say_and_think:nn #1 #2
   {
-    \int_set:Nn \l_ducksay_msg_width_int  { -\c_max_int }
-    \int_set:Nn \l_ducksay_msg_height_int { -\c_max_int }
-    \keys_set:nn { ducksay } { #1 }
-    \tl_if_empty:NT \l_ducksay_animal_tl
-      { \keys_set:nn { ducksay } { default_animal } }
+    \group_begin:
+      \int_set:Nn \l_ducksay_msg_width_int  { -\c_max_int }
+      \int_set:Nn \l_ducksay_msg_height_int { -\c_max_int }
+      \keys_set:nn { ducksay } { #1 }
+      \tl_if_empty:NT \l_ducksay_animal_tl
+        { \keys_set:nn { ducksay } { default_animal } }
+      \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
+    \group_end:
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -1463,10 +1457,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \NewDocumentCommand \ducksay { O{} m }
   {
-    \group_begin:
-      \ducksay_prepare_say_and_think:n { #1 }
-      \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
-    \group_end:
+    \ducksay_say_and_think:nn { #1 } { #2 }
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -1475,10 +1466,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \NewDocumentCommand \duckthink { O{} m }
   {
-    \group_begin:
-      \ducksay_prepare_say_and_think:n { think, #1 }
-      \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
-    \group_end:
+    \ducksay_say_and_think:nn { think, #1 } { #2 }
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -1765,6 +1753,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_digest_options:n #1
   {
+    \group_begin:
     \keys_set:nn { ducksay } { #1 }
     \tl_if_empty:NT \l_ducksay_animal_tl
       { \keys_set:nn { ducksay } { default_animal } }
@@ -1819,6 +1808,7 @@ and the derived files           ducksay.pdf
           }
         \cs_set_eq:NN \ducksay_eat_argument:w \ducksay_eat_argument_tabular:w
       }
+    \ducksay_eat_argument:w
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -2121,9 +2111,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \NewDocumentCommand \ducksay { O{} }
   {
-    \group_begin:
-      \ducksay_digest_options:n { #1 }
-      \ducksay_eat_argument:w
+    \ducksay_digest_options:n { #1 }
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -2132,9 +2120,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \NewDocumentCommand \duckthink { O{} }
   {
-    \group_begin:
-      \ducksay_digest_options:n { think, #1 }
-      \ducksay_eat_argument:w
+    \ducksay_digest_options:n { think, #1 }
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -2430,7 +2416,10 @@ and the derived files           ducksay.pdf
 \AddAnimal[tail-symbol=|,tail-count=1]{crusader}%>>>
 { |
 \[T]/}
-\AnimalOptions{crusader}{tail-1=|,body-align=c}%<<<
+\csname bool_if:cT\endcsname {l_ducksay_version_one_bool}
+  {\AnimalOptions{crusader}{tail-1=|,rel-align=c}}
+\csname bool_if:cT\endcsname {l_ducksay_version_two_bool}
+  {\AnimalOptions{crusader}{tail-1=|,body-align=c}}%<<<
 %^^A http://ascii.co.uk/art/knights
 \AddAnimal[tail-count=3]{knight}%>>>
 {     \
