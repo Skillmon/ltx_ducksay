@@ -63,6 +63,8 @@ and the derived files           ducksay.pdf
 \ProvidesFile{ducksay.dtx}
   [\csname ducksay@date\endcsname\ cowsay for LaTeX]
 \documentclass{l3doc}
+% silence the false positives about internal control sequences in the animals 
+\csname msg_redirect_name:nnn\endcsname{l3doc}{foreign-internal}{none}
 \usepackage[version=2]{ducksay}
 \usepackage{marginnote}
 \newcommand\inversion[1]
