@@ -64,6 +64,9 @@ and the derived files           ducksay.pdf
   [\csname ducksay@date\endcsname\ cowsay for LaTeX]
 \documentclass{l3doc}
 \usepackage[version=2]{ducksay}
+\usepackage{marginnote}
+\newcommand\inversion[1]
+  {\marginnote{\footnotesize\textsf{v#1}\kern-\marginparsep}}
 \let\metaORIG\meta
 \protected\def\meta #1{\texttt{\metaORIG{#1}}}
 \DucksayOptions{arg=tab,msg-align=l,vpad=1}
@@ -187,8 +190,8 @@ and the derived files           ducksay.pdf
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xparse,l3keys2e}
 
-\def\ducksay@version{2.2.1}
-\def\ducksay@date{2019-01-08}
+\def\ducksay@version{2.3}
+\def\ducksay@date{2019-01-12}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
@@ -231,7 +234,7 @@ and the derived files           ducksay.pdf
 %
 % \section{Documentation}\def\DocImp{Documentation}%
 %
-% \subsection{Downward Compatibility Issues}
+% \subsection{Downward Compatibility Issues}\label{sec:down}^^A>>>
 % \marginpar^^A>>>
 %   {
 %     \tiny
@@ -239,18 +242,30 @@ and the derived files           ducksay.pdf
 %   }^^A<<<
 %
 % \begin{itemize}
-%   \item Versions prior to v2.0 did use a regular expression for the option
+%   \item
+%     \inversion{2.0}
+%     Versions prior to v2.0 did use a regular expression for the option
 %     |ligatures|, see \autoref{sec:options} for more on this issue. With v2.0
 %     I do refer to the package's version, not the code variant which can be
 %     selected with the |version| option.
 %   \item In a document created with package versions prior to v2.0 you'll have
 %     to specify the option |version=1| in newer versions to make those old
 %     documents behave like they used to. 
-% \end{itemize}
+%   \item
+%     \inversion{2.3}
+%     Since v2.3 \cs{AddAnimal} and \cs{AddColoredAnimal} behave
+%     differently. You no longer have to make sure that in the first three lines
+%     every backslash which is only preceded by spaces is the bubble's tail.
+%     Instead you can specify which symbol should be the tail and how many of
+%     such symbols there are. See \autoref{sec:macros} for more information
+%     about the current behaviour.
+%   \item The |add-think| key is deprecated and will throw an error starting
+%     with v2.3. In future versions it will be removed.
+% \end{itemize}^^A<<<
 %
 % \subsection{Shared between versions}
 %
-% \subsubsection{Macros}^^A>>>
+% \subsubsection{Macros}\label{sec:macros}^^A>>>
 % \marginpar^^A>>>
 %   {
 %     \tiny
@@ -284,34 +299,33 @@ and the derived files           ducksay.pdf
 %
 % \begin{function}{\AddAnimal}^^A>>>
 %   \begin{syntax}
-%     \cs{AddAnimal}\meta{*}\marg{animal}\meta{ascii-art}
+%     \cs{AddAnimal}\meta{*}\oarg{options}\marg{animal}\meta{ascii-art}
 %   \end{syntax}
 %   adds \anml\ to the known animals. \meta{ascii-art} is multi-line verbatim
 %   and therefore should be delimited either by matching braces or by anything
 %   that works for \cs{verb}. If the star is given \anml\ is the new default.
 %   One space is added to the begin of \anml\ (compensating the opening symbol).
-%   For example, |snowman| is added with:\\[1ex]
+%   The symbols signalizing the speech bubble's tail (in the |hedgehog| example
+%   below the two |s|) can be set using the |tail-symbol| option and only the
+%   first |tail-count| occurrences will be substituted (see
+%   \autoref{sec:addoptions} for more info about these options). For example,
+%   |hedgehog| is added with:\\[1ex]
 %   \begin{minipage}{\linewidth}
 %\begin{verbatim}
-% \AddAnimal{snowman}
-% {  \
-%     \ _[_]_
-%        (")
-%     >-( : )-<
-%      (__:__)}
+% \AddAnimal[tail-symbol=s]{hedgehog}
+% {  s    .\|//||\||.
+%     s  |/\/||/|//|/|
+%       /. `|/\\|/||/||
+%      o__,_|//|/||\||'}
 %\end{verbatim}
-%   \end{minipage}
+%   \end{minipage}\\[1ex]
 %   It is not checked whether the animal already exists, you could therefore
-%   redefine existing animals with this macro.\\
-%   The symbols signalizing the speech (in the |snowman| example above the two
-%   backslashes) should at most be used in the first three lines, as they get
-%   replaced by |O| and |o| for \cs{duckthink}. They also shouldn't be preceded
-%   by anything other than a space in that line.
+%   redefine existing animals with this macro.
 % \end{function}^^A<<<
 %
 % \begin{function}{\AddColoredAnimal}^^A>>>
 %   \begin{syntax}
-%     \cs{AddColoredAnimal}\meta{*}\marg{animal}\meta{ascii-art}
+%     \cs{AddColoredAnimal}\meta{*}\oarg{options}\marg{animal}\meta{ascii-art}
 %   \end{syntax}
 %   It does the same as \cs{AddAnimal} but allows three different colouring
 %   syntaxes. You can use \cs{textcolor} in the \meta{ascii-art} with the syntax
@@ -324,13 +338,35 @@ and the derived files           ducksay.pdf
 %   |\bgroup\color{red}RedText\egroupOtherText| is valid syntax). You can't nest
 %   delimited \cs{color}s.\\
 %   Also you can use an undelimited \cs{color}. It affects anything until the
-%   end of the current line (or, if used inside of the \meta{text} of an
+%   end of the current line (or, if used inside of the \meta{text} of a
 %   delimited \cs{color}, anything until the end of that delimited \cs{color}'s
 %   \meta{text}). The syntax would be \cs{color}\marg{color}.\\
 %   The package doesn't load anything providing those colouring commands for you
 %   and it doesn't provide any coloured animals. The parsing is done using
 %   regular expressions provided by \LaTeX3. It is therefore slower than the
 %   normal \cs{AddAnimal}.
+% \end{function}^^A<<<
+%
+% \begin{function}{\AddAnimalOptions}^^A>>>
+%   \begin{syntax}
+%     \cs{AddAnimalOptions}\marg{options}
+%   \end{syntax}
+%   With this macro you can set the \meta{options} exclusive to \cs{AddAnimal}
+%   and \cs{AddColoredAnimal} outside of those macros. For the available options
+%   take a look at \autoref{sec:addoptions}.
+% \end{function}^^A<<<
+%
+% \begin{function}{\AnimalOptions}^^A>>>
+%   \begin{syntax}
+%     \cs{AnimalOptions}\meta{*}\marg{animal}\marg{options}
+%   \end{syntax}
+%   With this macro you can set \anml\ specific \meta{options}. If the star is
+%   given any currently set options for this \anml\ are dropped and only the
+%   ones specified in \meta{options} will be applied, else \meta{options} will
+%   be added to the set options for this \anml. The set \meta{options} can
+%   set the |tail-1| and |tail-2| options and therefore overwrite the effects of
+%   \cs{duckthink}, as \cs{duckthink} really is just \cs{ducksay} with the
+%   |think| option.
 % \end{function}^^A<<<
 %
 %^^A<<<
@@ -378,24 +414,49 @@ and the derived files           ducksay.pdf
 %     downward compatible with older versions. The speed gain however seems
 %     worth it (and I hope the affected documents are few).
 %   \item[add-think=\meta{bool}]
-%     by default the animals for \cs{duckthink} are not created during package
-%     load time, but only when they are really used -- but then they are created
-%     globally so it just has to be done once. This is done because they rely on
-%     a rather slow regular expression. If you set this key to |true| each
-%     \cs{AddAnimal} will also create the corresponding \cs{duckthink} variant
-%     immediately.
+%     deprecated; will throw an error
+%   \item[tail-1=\meta{token list}]
+%     Sets the first tail symbol in the output to be \meta{token list}. If set
+%     outside of \cs{ducksay} and \cs{duckthink} it will be overwritten inside
+%     of \cs{duckthink} to be |O|.
+%   \item[tail-2=\meta{token list}]
+%     Sets every other tail symbol except the first one in the output to be
+%     \meta{token list}. If set outside of \cs{ducksay} and \cs{duckthink} it
+%     will be overwritten inside of \cs{duckthink} to be |o|.
+%   \item[no-tail]
+%     Sets |tail-1| and |tail-2| to be a space.
+%   \item[say]
+%     Sets |tail-1| and |tail-2| as backslashes.
+%   \item[think]
+%     Sets |tail-1=O| and |tail-2=o|.
+% \end{options}
+%
+% \paragraph{Options for \cs{AddAnimal}}\label{sec:addoptions}
+% The options described here are only available in \cs{AddAnimal},
+% \cs{AddColoredAnimal} and \cs{AddAnimalOptions}.
+% \begin{options}
+%   \item[tail-count=\meta{int}]
+%     sets the number of tail symbols to be replaced in \cs{AddAnimal} and
+%     \cs{AddColoredAnimal}. Initial value is 2. If the value is negative every
+%     occurrence of |tail-symbol| will be replaced.
+%   \item[tail-symbol=\meta{str}]
+%     the symbol used in \cs{AddAnimal} and \cs{AddColoredAnimal} to mark the
+%     bubble's tail. The argument gets \cs{detokenize}d. Initially a single
+%     backslash.
 % \end{options}
 %^^A<<<
 %
 % \SetVersion{1}%
 % \subsection{Version 1}\label{sec:v1}
 %
-% \subsubsection{Introduction}
+% \subsubsection{Introduction}^^A>>>
 %
 % This version is included for legacy support (old documents should behave the
 % same without any change to them -- except the usage of |version=1| as an
-% option). For the bleeding edge version of \pkg{ducksay} skip this subsection
-% and read \autoref{sec:v2}.
+% option, for a more or less complete list of downward compatibility related
+% problems see \autoref{sec:down}). For the bleeding edge version of
+% \pkg{ducksay} skip this subsection and read \autoref{sec:v2}.
+%^^A<<<
 %
 % \subsubsection{Macros}\label{sec:macros1}^^A>>>
 % \marginpar
@@ -426,11 +487,9 @@ and the derived files           ducksay.pdf
 %   \end{syntax}
 %   options might include any of the options described in \autoref{sec:options}
 %   and \autoref{sec:options1} if not otherwise specified. Prints an \anml\
-%   thinking \msg. \msg\ is not read in verbatim. It is implemented using
-%   regular expressions replacing a |\| which is only preceded by |\s*| in the
-%   first three lines with |O| and |o|. It is therefore slower than
-%   \cs{ducksay}. Multi-line \msg s are possible using |\\|. |\\| should not be
-%   contained in a macro definition but at toplevel. Else use the option |ht|.
+%   thinking \msg. \msg\ is not read in verbatim. Multi-line \msg s are possible
+%   using |\\|. |\\| should not be contained in a macro definition but at
+%   toplevel. Else use the option |ht|.
 % \end{function}^^A<<<
 %^^A<<<
 %
@@ -543,11 +602,6 @@ and the derived files           ducksay.pdf
 %   \end{syntax}
 %   The only difference to \cs{ducksay} is that in \cs{duckthink} the \anml s
 %   think the \msg\ and don't say it.\\
-%   It is implemented using regular expressions replacing a |\| which is only
-%   preceded by |\s*| (any number of space tokens) in the first three lines with
-%   |O| and |o|. It's first use per \anml\ might therefore be slower than
-%   \cs{ducksay} depending on the |add-think| key (see its description in
-%   \autoref{sec:options}).
 % \end{function}^^A<<<
 %
 %^^A<<<
@@ -805,10 +859,12 @@ and the derived files           ducksay.pdf
 %     \hfill
 %     \makebox[8em][r]
 %       {%
-%         \ducksay[whale,MSG=\footnotesize,align=t]
-%           {I'm the\\new one.}%
+%         \ducksay[knight,MSG=\footnotesize,t]
+%           {I'm the\\new one.}\\
+%         \ducksay[crusader,MSG=\footnotesize,body=\normalsize,t]
+%           {Deus\\vult!\rlap{\footnotemark}}%
 %       }%
-%   }
+%   }\footnotetext{Latin; ``I'm new, too.''}
 % The following animals are provided by this package. I did not create them (but
 % altered some), they belong to their original creators.
 % \bgroup
@@ -837,7 +893,9 @@ and the derived files           ducksay.pdf
 %   ,rabbit^^A
 %   ,snail^^A
 %   ,whale^^A
+%   ,crusader^^A
 %   ,unicorn^^A
+%   ,knight^^A
 % }\end{multicols}\begin{multicols}{2}
 % \availableAnimal{^^A
 %   ,r2d2^^A
@@ -904,6 +962,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \int_new:N \l_ducksay_msg_width_int
 \int_new:N \l_ducksay_msg_height_int
+\int_new:N \l_ducksay_tail_symbol_count_int
 %    \end{macrocode}
 % \paragraph{Sequences}
 %    \begin{macrocode}
@@ -911,17 +970,18 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \paragraph{Token lists}
 %    \begin{macrocode}
-\tl_new:N \l_ducksay_say_or_think_tl
 \tl_new:N \l_ducksay_align_tl
 \tl_new:N \l_ducksay_msg_align_tl
 \tl_new:N \l_ducksay_animal_tl
 \tl_new:N \l_ducksay_body_tl
 \tl_new:N \l_ducksay_bubble_tl
 \tl_new:N \l_ducksay_tmpa_tl
+\tl_new:N \l_ducksay_tail_symbol_out_one_tl
+\tl_new:N \l_ducksay_tail_symbol_out_two_tl
+\tl_new:N \l_ducksay_tail_symbol_in_tl
 %    \end{macrocode}
 % \paragraph{Boolean}
 %    \begin{macrocode}
-\bool_new:N \l_ducksay_also_add_think_bool
 \bool_new:N \l_ducksay_version_one_bool
 \bool_new:N \l_ducksay_version_two_bool
 %    \end{macrocode}
@@ -933,14 +993,7 @@ and the derived files           ducksay.pdf
 %^^A<<<
 %
 % \subsubsection{Regular Expressions}^^A>>>
-% Regular expressions for \cs{duckthink}
-%    \begin{macrocode}
-\regex_const:Nn \c_ducksay_first_regex  { \A(.\s*)\\ }
-\regex_const:Nn \c_ducksay_second_regex { \A(.[^\c{null}]*\c{null}\s*)\\ }
-\regex_const:Nn \c_ducksay_third_regex  {
-  \A(.[^\c{null}]*\c{null}[^\c{null}]*\c{null}\s*)\\ }
-%    \end{macrocode}
-% And for \cs{AddColoredAnimal}
+% Regular expressions for \cs{AddColoredAnimal}
 %    \begin{macrocode}
 \regex_const:Nn \c_ducksay_textcolor_regex
   { \cO(?:\\textcolor\{(.*?)\}\{(.*?)\}) }
@@ -955,6 +1008,8 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \msg_new:nnn { ducksay } { load-time-only }
   { The~`#1`~key~is~to~be~used~only~during~package~load~time. }
+\msg_new:nnn { ducksay } { deprecated-key }
+  { The~`\l_keys_key_tl`~key~is~deprecated.~Sorry~for~the~inconvenience. }
 %    \end{macrocode}
 %^^A<<<
 %
@@ -983,7 +1038,18 @@ and the derived files           ducksay.pdf
     ,rel-align .value_required:n = true
     ,ligatures .tl_set:N   = \l_ducksay_ligatures_tl
     ,ligatures .initial:n  = { `<>,'- }
-    ,add-think .bool_set:N = \l_ducksay_also_add_think_bool
+    ,add-think .code:n     = \msg_error:nn { ducksay } { deprecated-key }
+    ,tail-1    .tl_set:N   = \l_ducksay_tail_symbol_out_one_tl
+    ,tail-1    .initial:x  = \c_backslash_str
+    ,tail-2    .tl_set:N   = \l_ducksay_tail_symbol_out_two_tl
+    ,tail-2    .initial:x  = \c_backslash_str
+    ,no-tail   .meta:n     = { tail-1 = { ~ }, tail-2 = { ~ } }
+    ,think     .meta:n     = { tail-1 = { O }, tail-2 = { o } }
+    ,say       .code:n     =
+      {
+        \exp_args:Nx \DucksayOptions
+          { tail-1 = { \c_backslash_str }, tail-2 = { \c_backslash_str } }
+      }
     ,version   .choice:
     ,version / 1 .code:n   = 
       {
@@ -1011,6 +1077,22 @@ and the derived files           ducksay.pdf
   }
 %    \end{macrocode}
 %
+% \paragraph{Keys for \cs{AddAnimal}}^^A>>>
+% Define keys meant for \cs{AddAnimal} and \cs{AddColoredAnimal} only in their
+% own regime:
+%    \begin{macrocode}
+\keys_define:nn { ducksay / add-animal }
+  {
+    ,tail-symbol .code:n    =
+      \tl_set:Nx \l_ducksay_tail_symbol_in_tl { \tl_to_str:n { #1 } }
+    ,tail-symbol .initial:o = \c_backslash_str
+    ,tail-count  .int_set:N = \l_ducksay_tail_symbol_count_int
+    ,tail-count  .initial:n = 2
+  }
+%    \end{macrocode}
+%
+%^^A<<<
+%
 %^^A<<<
 %
 % \subsubsection{Functions}^^A>>>
@@ -1019,25 +1101,11 @@ and the derived files           ducksay.pdf
 %
 %    \begin{macrocode}
 \cs_generate_variant:Nn \tl_if_eq:nnT { VnT }
+\cs_generate_variant:Nn \tl_replace_once:Nnn { NVn }
 %    \end{macrocode}
 %^^A<<<
 %
 % \paragraph{Internal}^^A>>>
-%
-% \begin{macro}{\ducksay_create_think_animal:n}^^A>>>
-%    \begin{macrocode}
-\cs_new_protected:Npn \ducksay_create_think_animal:n #1
-  {
-    \group_begin:
-      \tl_set_eq:Nc \l_ducksay_tmpa_tl { g_ducksay_animal_say_#1_tl }
-      \regex_replace_once:NnN \c_ducksay_first_regex  { \1O } \l_ducksay_tmpa_tl
-      \regex_replace_once:NnN \c_ducksay_second_regex { \1o } \l_ducksay_tmpa_tl
-      \regex_replace_once:NnN \c_ducksay_third_regex  { \1o } \l_ducksay_tmpa_tl
-      \tl_gset_eq:cN { g_ducksay_animal_think_#1_tl } \l_ducksay_tmpa_tl
-    \group_end:
-  }
-%    \end{macrocode}
-% \end{macro}^^A<<<
 %
 % \begin{macro}{\ducksay_replace_verb_newline:Nn}^^A>>>
 %    \begin{macrocode}
@@ -1069,27 +1137,65 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A<<<
 %
-% \begin{macro}{\ducksay_add_animal_inner:nn}^^A>>>
+% \begin{macro}{\ducksay_add_animal_inner:nnnn}^^A>>>
 %    \begin{macrocode}
-\cs_new_protected:Npn \ducksay_add_animal_inner:nn #1 #2
+\cs_new_protected:Npn \ducksay_add_animal_inner:nnnn #1 #2 #3 #4
   {
-    \tl_set:Nn \l_ducksay_tmpa_tl { \ #2 }
+    \group_begin:
+      \AddAnimalOptions { #1 }
+      \tl_set:Nn \l_ducksay_tmpa_tl { \ #3 }
+      \int_compare:nNnTF { \l_ducksay_tail_symbol_count_int } < { \c_zero_int }
+        {
+          \tl_replace_once:NVn
+            \l_ducksay_tmpa_tl
+            \l_ducksay_tail_symbol_in_tl
+            \l_ducksay_tail_symbol_out_one_tl
+          \tl_replace_all:NVn
+            \l_ducksay_tmpa_tl
+            \l_ducksay_tail_symbol_in_tl
+            \l_ducksay_tail_symbol_out_two_tl
+        }
+        {
+          \int_compare:nNnT { \l_ducksay_tail_symbol_count_int } >
+            { \c_zero_int }
+            {
+              \tl_replace_once:NVn
+                \l_ducksay_tmpa_tl
+                \l_ducksay_tail_symbol_in_tl
+                \l_ducksay_tail_symbol_out_one_tl
+              \int_step_inline:nnn { 2 } { \l_ducksay_tail_symbol_count_int }
+                {
+                  \tl_replace_once:NVn
+                    \l_ducksay_tmpa_tl
+                    \l_ducksay_tail_symbol_in_tl
+                    \l_ducksay_tail_symbol_out_two_tl
+                }
+            }
+        }
+      \exp_args:NNNV
+    \group_end:
+    \tl_set:Nn \l_ducksay_tmpa_tl \l_ducksay_tmpa_tl
     \tl_map_inline:Nn \l_ducksay_ligatures_tl
       { \tl_replace_all:Nnn \l_ducksay_tmpa_tl { ##1 } { { ##1 } } }
     \ducksay_replace_verb_newline:Nn \l_ducksay_tmpa_tl { \tabularnewline\null }
-    \tl_gset_eq:cN { g_ducksay_animal_say_#1_tl } \l_ducksay_tmpa_tl
-    \keys_define:nn { ducksay }
+    \tl_gset_eq:cN { g_ducksay_animal_#2_tl } \l_ducksay_tmpa_tl
+    \exp_args:Nnx \keys_define:nn { ducksay }
       {
-        #1 .code:n =
+        #2 .code:n =
           {
-            \tl_if_exist:cF
-              { g_ducksay_animal_ \l_ducksay_say_or_think_tl _#1_tl }
-              { \ducksay_create_think_animal:n { #1 } }
-            \tl_set_eq:Nc \l_ducksay_animal_tl
-              { g_ducksay_animal_ \l_ducksay_say_or_think_tl _#1_tl }
+            \exp_not:n { \tl_set_eq:NN \l_ducksay_animal_tl }
+            \exp_after:wN \exp_not:N \cs:w g_ducksay_animal_#2_tl \cs_end:
+            \exp_not:n { \exp_args:NV \DucksayOptions }
+            \exp_after:wN
+              \exp_not:N \cs:w l_ducksay_animal_#2_options_tl \cs_end:
           }
       }
+    \tl_if_exist:cF { l_ducksay_animal_#2_options_tl }
+      { \tl_new:c { l_ducksay_animal_#2_options_tl } }
+    \IfBooleanT { #4 }
+      { \keys_define:nn { ducksay } { default_animal .meta:n = { #2 } } }
   }
+\cs_generate_variant:Nn \ducksay_add_animal_inner:nnnn { nnVn }
 %    \end{macrocode}
 % \end{macro}^^A<<<
 %
@@ -1115,37 +1221,55 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A<<<
 %
+% \begin{macro}{\AddAnimalOptions}^^A>>>
+%    \begin{macrocode}
+\NewDocumentCommand \AddAnimalOptions { m }
+  {
+    \keys_set:nn { ducksay / add-animal } { #1 }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
 % \begin{macro}{\AddAnimal}^^A>>>
 %    \begin{macrocode}
-\NewDocumentCommand \AddAnimal { s m +v }
+\NewDocumentCommand \AddAnimal { s O{} m +v }
   {
-    \ducksay_add_animal_inner:nn { #2 } { #3 }
-    \bool_if:NT \l_ducksay_also_add_think_bool
-      { \ducksay_create_think_animal:n { #2 } }
-    \IfBooleanT{#1}
-      { \keys_define:nn { ducksay } { default_animal .meta:n = { #2 } } }
+    \ducksay_add_animal_inner:nnnn { #2 } { #3 } { #4 } { #1 }
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
 %
 % \begin{macro}{\AddColoredAnimal}^^A>>>
 %    \begin{macrocode}
-\NewDocumentCommand \AddColoredAnimal { s m +v }
+\NewDocumentCommand \AddColoredAnimal { s O{} m +v }
   {
-    \ducksay_add_animal_inner:nn { #2 } { #3 }
-    \regex_replace_all:Nnc \c_ducksay_color_delim_regex
+    \tl_set:Nn \l_ducksay_tmpa_tl { #4 }
+    \regex_replace_all:NnN \c_ducksay_color_delim_regex
       { \c{bgroup}\c{color}\cB\{\1\cE\}\2\c{egroup} }
-      { g_ducksay_animal_say_#2_tl }
-    \regex_replace_all:Nnc \c_ducksay_color_regex
+      \l_ducksay_tmpa_tl
+    \regex_replace_all:NnN \c_ducksay_color_regex
       { \c{color}\cB\{\1\cE\} }
-      { g_ducksay_animal_say_#2_tl }
-    \regex_replace_all:Nnc \c_ducksay_textcolor_regex
+      \l_ducksay_tmpa_tl
+    \regex_replace_all:NnN \c_ducksay_textcolor_regex
       { \c{textcolor}\cB\{\1\cE\}\cB\{\2\cE\} }
-      { g_ducksay_animal_say_#2_tl }
-    \bool_if:NT \l_ducksay_also_add_think_bool
-      { \ducksay_create_think_animal:n { #2 } }
-    \IfBooleanT{#1}
-      { \keys_define:nn { ducksay } { default_animal .meta:n = { #2 } } }
+      \l_ducksay_tmpa_tl
+    \ducksay_add_animal_inner:nnVn { #2 } { #3 } \l_ducksay_tmpa_tl { #1 }
+  }
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\AnimalOptions}^^A>>>
+%    \begin{macrocode}
+\NewDocumentCommand \AnimalOptions { s m m }
+  {
+    \tl_if_exist:cTF { l_ducksay_animal_#2_options_tl }
+      {
+        \IfBooleanTF { #1 }
+          { \tl_set:cn }
+          { \tl_put_right:cn }
+      }
+      { \tl_set:cn }
+    { l_ducksay_animal_#2_options_tl } { #3, }
   }
 %    \end{macrocode}
 % \end{macro}^^A<<<
@@ -1330,7 +1454,6 @@ and the derived files           ducksay.pdf
 \NewDocumentCommand \ducksay { O{} m }
   {
     \group_begin:
-      \tl_set:Nn \l_ducksay_say_or_think_tl { say }
       \ducksay_prepare_say_and_think:n { #1 }
       \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
     \group_end:
@@ -1343,8 +1466,7 @@ and the derived files           ducksay.pdf
 \NewDocumentCommand \duckthink { O{} m }
   {
     \group_begin:
-      \tl_set:Nn \l_ducksay_say_or_think_tl { think }
-      \ducksay_prepare_say_and_think:n { #1 }
+      \ducksay_prepare_say_and_think:n { think, #1 }
       \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
     \group_end:
   }
@@ -1505,7 +1627,7 @@ and the derived files           ducksay.pdf
     ,bubble-bot-kern  .initial:n = { .2ex }
     ,bubble-bot-kern  .value_required:n = true
     ,bubble-side-kern .tl_set:N  = \l_ducksay_bubble_side_kern_tl
-    ,bubble-side-kern .initial:n = { 0.2em }
+    ,bubble-side-kern .initial:n = { .2em }
     ,bubble-side-kern .value_required:n = true
     ,bubble-delim-top     .tl_set:N  = \l_ducksay_bubble_delim_top_tl
     ,bubble-delim-left-1  .tl_set:N  = \l_ducksay_bubble_delim_left_a_tl
@@ -1972,7 +2094,6 @@ and the derived files           ducksay.pdf
 \NewDocumentCommand \ducksay { O{} }
   {
     \group_begin:
-      \tl_set:Nn \l_ducksay_say_or_think_tl { say }
       \ducksay_digest_options:n { #1 }
       \ducksay_eat_argument:w
   }
@@ -1984,8 +2105,7 @@ and the derived files           ducksay.pdf
 \NewDocumentCommand \duckthink { O{} }
   {
     \group_begin:
-      \tl_set:Nn \l_ducksay_say_or_think_tl { think }
-      \ducksay_digest_options:n { #1 }
+      \ducksay_digest_options:n { think, #1 }
       \ducksay_eat_argument:w
   }
 %    \end{macrocode}
@@ -2077,9 +2197,9 @@ and the derived files           ducksay.pdf
       (")
    >-( : )-<
     (__:__)}%<<<
-\AddAnimal{hedgehog}%>>>
-{  \    .\|//||\||.
-    \  |/\/||/|//|/|
+\AddAnimal[tail-symbol=s]{hedgehog}%>>>
+{  s    .\|//||\||.
+    s  |/\/||/|//|/|
       /. `|/\\|/||/||
      o__,_|//|/||\||'}%<<<
 \AddAnimal{kangaroo}%>>>
@@ -2091,10 +2211,10 @@ and the derived files           ducksay.pdf
             //   \\
           ,/'     `\_,}%<<<
 %^^A http://chris.com/ascii/index.php?art=animals/rabbits
-\AddAnimal{rabbit}%>>>
-{ \     / \`\         __
-   \   |  \ `\      /`/ \
-    \  \_/`\  \-"-/` /\  \
+\AddAnimal[tail-symbol=s,tail-count=3]{rabbit}%>>>
+{ s     / \`\         __
+   s   |  \ `\      /`/ \
+    s  \_/`\  \-"-/` /\  \
             |       |  \  |
             (d     b)   \_/
             /       \
@@ -2117,10 +2237,10 @@ and the derived files           ducksay.pdf
     \ _//
      (')---.
       _/-_( )o}%<<<
-\AddAnimal{dragon}%>>>
-{     \                    / \  //\
-       \    |\___/|      /   \//  \\
-        \   /0  0  \__  /    //  | \ \    
+\AddAnimal[tail-symbol=s,tail-count=3]{dragon}%>>>
+{     s                   / \  //\
+       s    |\___/|      /   \//  \\
+        s   /0  0  \__  /    //  | \ \    
            /     /  \/_/    //   |  \  \  
            @_^_@'/   \/_   //    |   \   \ 
            //_^_/     \/_ //     |    \    \
@@ -2179,15 +2299,15 @@ and the derived files           ducksay.pdf
                                          _//       _//
                                        /_|       /_|}%<<<
 %^^A https://asciiart.website//index.php?art=animals/other%20(water)
-\AddAnimal{whale}%>>>
-{  \                |-.
-    \    .-""-._     \ \.--|
-     \  /       `-..__)  ,-'
+\AddAnimal[tail-count=3,tail-symbol=s]{whale}%>>>
+{  s                |-.
+    s    .-""-._     \ \.--|
+     s  /       `-..__)  ,-'
        |     .          /
         \--.__,   .__.,'
          `-.___'._\_.'}%<<<
 %^^A from http://www.ascii-art.de/ascii/s/starwars.txt :
-\AddAnimal{yoda}%>>>
+\AddAnimal[tail-count=3]{yoda}%>>>
 {   \
      \             ____
       \         _.' :  `._
@@ -2224,7 +2344,7 @@ and the derived files           ducksay.pdf
          :-""-.`./-.'     /    `.___.'
                \ `t  ._  /
                 "-.t-._:'}%<<<
-\AddAnimal{yoda-head}%>>>
+\AddAnimal[tail-count=3]{yoda-head}%>>>
 {   \
      \             ____
       \         _.' :  `._
@@ -2279,6 +2399,33 @@ and the derived files           ducksay.pdf
 /_        \O========O/        _\
   `--...__|`-._  _.-'|__...--'
           |    `'    |}%<<<
+\AddAnimal[tail-symbol=|,tail-count=1]{crusader}%>>>
+{ |
+\[T]/}
+\AnimalOptions{crusader}{tail-1=|,body-align=c}%<<<
+%^^A http://ascii.co.uk/art/knights
+\AddAnimal[tail-count=3]{knight}%>>>
+{     \
+       \   ,-"""-.
+        \  | === |
+           )  |  (
+        .=='\" "/`==.
+      .'\   (`:')   /`.
+    _/_ |_.-' : `-._|__\_
+   <___>'\    :   / `<___>
+   /  /   >=======<  /  /
+ _/ .'   /  ,-:-.  \/=,'
+/ _/    |__/v^v^v\__) \
+\(\)     |V^V^V^V^V|\_/
+ (\\     \`---|---'/
+   \\     \-._|_,-/
+    \\     |__|__|
+     \\   <___X___>
+      \\   \..|../
+       \\   \ | /
+        \\  /V|V\
+         \|/  |  \
+          '--' `--`}%<<<
 %</animals>
 %    \end{macrocode}^^A<<<
 %
