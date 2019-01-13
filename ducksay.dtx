@@ -167,7 +167,7 @@ and the derived files           ducksay.pdf
         \hfil
         \makebox[.\marginparwidth][l]
           {%
-            \ducksay[head-in,MSG=\footnotesize,msg-align=c,align=t]
+            \ducksay[head-in,MSG=\footnotesize,msg-align=c]
               {It's always\\good to\\keep the\\overview!}%
           }%
       }%
@@ -188,7 +188,7 @@ and the derived files           ducksay.pdf
     \smash
       {%
         \footnotesize
-        \ducksay[small-yoda,wd=39,ht=3,msg-align=c,rel-align=r]
+        \ducksay[small-yoda,wd=39,ht=3,msg-align=c,body-align=r]
           {Hosted at\\\url{https://github.com/Skillmon/ltx_ducksay}\\it is.}%
       }
     \egroup
@@ -250,7 +250,7 @@ and the derived files           ducksay.pdf
 % \marginpar^^A>>>
 %   {
 %     \tiny
-%     \ducksay[snail,MSG=\footnotesize,align=t]{Yep, I screwed up!}
+%     \ducksay[snail,MSG=\footnotesize]{Yep, I screwed up!}
 %   }^^A<<<
 %
 % \begin{itemize}
@@ -282,7 +282,7 @@ and the derived files           ducksay.pdf
 %   {
 %     \tiny
 %     \hfill
-%     \ducksay[bunny,MSG=\footnotesize,align=t,body-mirrored]
+%     \ducksay[bunny,MSG=\footnotesize,body-mirrored]
 %       {Macros for everyone!}
 %   }^^A<<<
 %
@@ -378,7 +378,7 @@ and the derived files           ducksay.pdf
 % \marginpar
 %   {%
 %     \vspace*{-2em}\tiny
-%     \ducksay[pig,MSG=\footnotesize,align=t]{Options.\\For every occasion}%
+%     \ducksay[pig,MSG=\footnotesize]{Options.\\For every occasion}%
 %   }
 % The following options are available independent on the used code variant (the
 % value of the |version| key). They might be used as package options -- unless
@@ -467,7 +467,7 @@ and the derived files           ducksay.pdf
 %     \rlap
 %       {%
 %         \tiny
-%         \ducksay[yoda,MSG=\footnotesize,align=t]{Use those, you might}%
+%         \ducksay[yoda,MSG=\footnotesize]{Use those, you might}%
 %       }%
 %   }
 % The following is the description of macros which differ in behaviour from
@@ -501,7 +501,7 @@ and the derived files           ducksay.pdf
 %   {%
 %     \vspace*{-2em}\tiny
 %     \hfill
-%     \ducksay[hedgehog,MSG=\footnotesize,align=t]{Everyone likes\\options}%
+%     \ducksay[hedgehog,MSG=\footnotesize]{Everyone likes\\options}%
 %   }
 % The following options are available to \cs{ducksay}, \cs{duckthink}, and
 % \cs{DucksayOptions} and if not otherwise specified also as package options:
@@ -542,7 +542,7 @@ and the derived files           ducksay.pdf
 % \begingroup
 %   \reversemarginpar
 %   \marginpar
-%     {\tiny\hfill\ducksay[frog,MSG=\footnotesize,align=t]{Ohh, no!}}
+%     {\tiny\hfill\ducksay[frog,MSG=\footnotesize,t]{Ohh, no!}}
 % \endgroup
 % \begin{itemize}
 %   \item no automatic line wrapping
@@ -555,7 +555,8 @@ and the derived files           ducksay.pdf
 % \marginpar^^A>>>
 %   {
 %     \fontsize{3.5pt}{3.5pt}\selectfont
-%     \ducksay[unicorn,MSG=\footnotesize,align=t]{Here's all the good stuff!}
+%     \makebox[\marginparwidth]
+%       {\ducksay[unicorn,MSG=\footnotesize]{Here's all the good stuff!}}%
 %   }^^A<<<
 %
 % \subsubsection{Introduction}^^A>>>
@@ -577,7 +578,7 @@ and the derived files           ducksay.pdf
 % \marginpar^^A>>>
 %   {
 %     \tiny
-%     \ducksay[duck-family,MSG=\footnotesize,align=t,body-mirrored]
+%     \ducksay[duck-family,MSG=\footnotesize,t,body-mirrored]
 %       {Look at those, kids!}
 %   }^^A<<<
 %
@@ -616,7 +617,7 @@ and the derived files           ducksay.pdf
 % \marginpar^^A>>>
 %   {
 %     \tiny
-%     \hfill\ducksay[small-rabbit,MSG=\footnotesize,align=t]
+%     \hfill\ducksay[small-rabbit,MSG=\footnotesize]
 %       {Fast, use options!}
 %   }^^A<<<
 % In version 2 the following options are available. Keep in mind that you
@@ -852,7 +853,7 @@ and the derived files           ducksay.pdf
 %       {%
 %         \ducksay
 %           [
-%             kangaroo,MSG=\footnotesize,align=t
+%             kangaroo,MSG=\footnotesize
 %             ,body-mirrored,body-to-msg=r,msg-to-body=hc
 %           ]
 %           {We rely on you}%
@@ -925,7 +926,7 @@ and the derived files           ducksay.pdf
 %     \rlap
 %       {%
 %         \tiny
-%         \ducksay[squirrel,MSG=\footnotesize,align=t]
+%         \ducksay[squirrel,MSG=\footnotesize,t]
 %           {WTFPL would be a\\better license.}%
 %       }%
 %   }
@@ -953,7 +954,7 @@ and the derived files           ducksay.pdf
 %       {%
 %         \tiny
 %         \ducksay
-%           [vader,MSG=\footnotesize,align=t,arg=tab,msg-align=c]
+%           [vader,MSG=\footnotesize,arg=tab,msg-align=c,body-align=c]
 %           {%
 %             Only rebel scum reads\\documentation!\\
 %             Join the dark side,\\read the implementation.%
@@ -1111,7 +1112,6 @@ and the derived files           ducksay.pdf
 % \paragraph{Generating Variants of External Functions}^^A>>>
 %
 %    \begin{macrocode}
-\cs_generate_variant:Nn \tl_if_eq:nnT { VnT }
 \cs_generate_variant:Nn \tl_replace_once:Nnn { NVn }
 \cs_generate_variant:Nn \tl_replace_all:Nnn { NVn }
 %    \end{macrocode}
@@ -1661,7 +1661,7 @@ and the derived files           ducksay.pdf
   { align, rel-align }
   {
     \keys_define:nn { ducksay }
-      { ##1 .code:n = \msg_error:nn { ducksay } { v1-key-only } }
+      { #1 .code:n = \msg_error:nn { ducksay } { v1-key-only } }
   }
 %    \end{macrocode}
 %
@@ -2098,9 +2098,7 @@ and the derived files           ducksay.pdf
 \cs_generate_variant:Nn \coffin_join:NnnNnnnn { NVnNVnnn }
 \cs_generate_variant:Nn \coffin_attach:NnnNnnnn { NVnNVnnn }
 \cs_generate_variant:Nn \coffin_typeset:Nnnnn { NVVnn }
-\cs_generate_variant:Nn \tl_if_eq:nnT { VnT }
 \cs_generate_variant:Nn \str_case:nn { Vn }
-\cs_generate_variant:Nn \regex_replace_all:NnN { Nnc }
 %    \end{macrocode}
 %
 %^^A<<<
