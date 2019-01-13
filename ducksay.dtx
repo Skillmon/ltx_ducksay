@@ -67,7 +67,7 @@ and the derived files           ducksay.pdf
 \csname msg_redirect_name:nnn\endcsname{l3doc}{foreign-internal}{none}
 \usepackage[version=2]{ducksay}
 \usepackage{marginnote}
-\newcommand\inversion[1]
+\newcommand\sinceversion[1]
   {\marginnote{\footnotesize\textsf{v#1}\kern-\marginparsep}}
 \let\metaORIG\meta
 \protected\def\meta #1{\texttt{\metaORIG{#1}}}
@@ -203,7 +203,7 @@ and the derived files           ducksay.pdf
 \RequirePackage{xparse,l3keys2e}
 
 \def\ducksay@version{2.3}
-\def\ducksay@date{2019-01-12}
+\def\ducksay@date{2019-01-13}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
@@ -255,7 +255,7 @@ and the derived files           ducksay.pdf
 %
 % \begin{itemize}
 %   \item
-%     \inversion{2.0}
+%     \sinceversion{2.0}
 %     Versions prior to v2.0 did use a regular expression for the option
 %     |ligatures|, see \autoref{sec:options} for more on this issue. With v2.0
 %     I do refer to the package's version, not the code variant which can be
@@ -264,13 +264,13 @@ and the derived files           ducksay.pdf
 %     to specify the option |version=1| in newer versions to make those old
 %     documents behave like they used to. 
 %   \item
-%     \inversion{2.3}
+%     \sinceversion{2.3}
 %     Since v2.3 \cs{AddAnimal} and \cs{AddColoredAnimal} behave
 %     differently. You no longer have to make sure that in the first three lines
 %     every backslash which is only preceded by spaces is the bubble's tail.
 %     Instead you can specify which symbol should be the tail and how many of
-%     such symbols there are. See \autoref{sec:macros} for more information
-%     about the current behaviour.
+%     such symbols there are. See \autoref{sec:macros} for more about the
+%     current behaviour.
 %   \item The |add-think| key is deprecated and will throw an error starting
 %     with v2.3. In future versions it will be removed.
 % \end{itemize}^^A<<<
@@ -320,7 +320,7 @@ and the derived files           ducksay.pdf
 %   The symbols signalizing the speech bubble's tail (in the |hedgehog| example
 %   below the two |s|) can be set using the |tail-symbol| option and only the
 %   first |tail-count| occurrences will be substituted (see
-%   \autoref{sec:addoptions} for more info about these options). For example,
+%   \autoref{sec:addoptions} for more about these options). For example,
 %   |hedgehog| is added with:\\[1ex]
 %   \begin{minipage}{\linewidth}
 %\begin{verbatim}
@@ -408,9 +408,9 @@ and the derived files           ducksay.pdf
 %     |}| so that they can't form ligatures. Giving no argument (or an empty
 %     one) might enhance compilation speed by disabling this replacement. The
 %     formation of ligatures was only observed in combination with
-%     \verb|\usepackage[T1]{fontenc}| by the author of this package. Therefore
-%     giving the option |ligatures| without an argument might enhance the
-%     compilation speed for you without any drawbacks. Initially this is set to
+%     |\usepackage[T1]{fontenc}| by the author of this package. Therefore giving
+%     the option |ligatures| without an argument might enhance the compilation
+%     speed for you without any drawbacks. Initially this is set to
 %     \texttt{\csuse{\detokenize{l_ducksay_ligatures_tl}}}.\\
 %     \textbf{Note:} In earlier releases this option's expected argument was a
 %     regular expression. This means that this option is not fully
@@ -514,7 +514,7 @@ and the derived files           ducksay.pdf
 %     use \meta{code} in a group right before the body (meaning the \anml).
 %     Might be used as a package option but not all control sequences work out
 %     of the box there. E.g.\@ to right-align the \anml\ to the bubble, use
-%     \verb|body=\hfill|.
+%     |body=\hfill|.
 %   \item[align=\meta{valign}]
 %     use \meta{valign} as the vertical alignment specifier given to the
 %     \env{tabular} which is around the contents of \cs{ducksay} and
@@ -1184,22 +1184,22 @@ and the derived files           ducksay.pdf
                 }
             }
         }
-      \exp_args:NNNV
+      \tl_map_inline:Nn \l_ducksay_ligatures_tl
+        { \tl_replace_all:Nnn \l_ducksay_tmpa_tl { ##1 } { { ##1 } } }
+      \ducksay_replace_verb_newline:Nn \l_ducksay_tmpa_tl
+        { \tabularnewline\null }
+      \exp_args:NNnV
     \group_end:
-    \tl_set:Nn \l_ducksay_tmpa_tl \l_ducksay_tmpa_tl
-    \tl_map_inline:Nn \l_ducksay_ligatures_tl
-      { \tl_replace_all:Nnn \l_ducksay_tmpa_tl { ##1 } { { ##1 } } }
-    \ducksay_replace_verb_newline:Nn \l_ducksay_tmpa_tl { \tabularnewline\null }
-    \tl_gset_eq:cN { g_ducksay_animal_#2_tl } \l_ducksay_tmpa_tl
+    \tl_set:cn { l_ducksay_animal_#2_tl } \l_ducksay_tmpa_tl
     \exp_args:Nnx \keys_define:nn { ducksay }
       {
         #2 .code:n =
           {
             \exp_not:n { \tl_set_eq:NN \l_ducksay_animal_tl }
-            \exp_after:wN \exp_not:N \cs:w g_ducksay_animal_#2_tl \cs_end:
+            \exp_after:wN \exp_not:N \cs:w l_ducksay_animal_#2_tl \cs_end:
             \exp_not:n { \exp_args:NV \DucksayOptions }
             \exp_after:wN
-              \exp_not:N \cs:w l_ducksay_animal_#2_options_tl \cs_end:
+            \exp_not:N \cs:w l_ducksay_animal_#2_options_tl \cs_end:
           }
       }
     \tl_if_exist:cF { l_ducksay_animal_#2_options_tl }
