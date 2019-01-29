@@ -1119,6 +1119,18 @@ and the derived files           ducksay.pdf
 %
 % \paragraph{Internal}^^A>>>
 %
+% \begin{macro}{\__ducksay_everyeof:w}^^A>>>
+%    \begin{macrocode}
+\cs_set_eq:NN \__ducksay_everyeof:w \tex_everyeof:D
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
+% \begin{macro}{\__ducksay_scantokens:w}^^A>>>
+%    \begin{macrocode}
+\cs_set_eq:NN \__ducksay_scantokens:w \tex_scantokens:D
+%    \end{macrocode}
+% \end{macro}^^A<<<
+%
 % \begin{macro}{\ducksay_replace_verb_newline:Nn}^^A>>>
 %    \begin{macrocode}
 \cs_new_protected:Npx \ducksay_replace_verb_newline:Nn #1 #2
@@ -2040,10 +2052,10 @@ and the derived files           ducksay.pdf
     \ducksay_eat_argument_tabular_inner:w
       {
         \group_begin:
-          \tex_everyeof:D { \exp_not:N }
+          \__ducksay_everyeof:w { \exp_not:N }
           \exp_after:wN
         \group_end:
-        \tex_scantokens:D { #1 }
+        \__ducksay_scantokens:w { #1 }
       }
   }
 %    \end{macrocode}
