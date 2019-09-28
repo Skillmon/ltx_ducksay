@@ -202,8 +202,8 @@ and the derived files           ducksay.pdf
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xparse,l3keys2e}
 
-\def\ducksay@version{2.4}
-\def\ducksay@date{2019-06-11}
+\def\ducksay@version{2.4.1}
+\def\ducksay@date{2019-09-28}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
@@ -1662,7 +1662,7 @@ and the derived files           ducksay.pdf
     ,body-align / r .meta:n = { body-to-msg = r , msg-to-body = r }
     ,body-align  .initial:n = l
     ,body-bigger .int_set:N = \l_ducksay_body_bigger_int
-    ,body-bigger .initial:n = \c_zero
+    ,body-bigger .initial:n = \c_zero_int
     ,msg-align   .choice:
     ,msg-align  / l .code:n = { \tl_set:Nn \l_ducksay_msg_align_tl { l } }
     ,msg-align  / c .code:n = { \tl_set:Nn \l_ducksay_msg_align_tl { c } }
