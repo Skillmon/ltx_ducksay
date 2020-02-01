@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% File: ducksay.dtx Copyright (C) 2017-2019 Jonathan P. Spratte
+% File: ducksay.dtx Copyright (C) 2017-2020 Jonathan P. Spratte
 %
 % This work  may be  distributed and/or  modified under  the conditions  of the
 % LaTeX Project Public License (LPPL),  either version 1.3c  of this license or
@@ -27,7 +27,7 @@ Released under the LaTeX Project Public License v1.3c or later
 See http://www.latex-project.org/lppl.txt
 --------------------------------------------------------------
 
-Copyright (C) 2017-2019 Jonathan P. Spratte
+Copyright (C) 2017-2020 Jonathan P. Spratte
 
 This  work may be  distributed and/or  modified under  the conditions  of the
 LaTeX Project Public License (LPPL),  either version 1.3c  of this license or
@@ -63,7 +63,7 @@ and the derived files           ducksay.pdf
 \ProvidesFile{ducksay.dtx}
   [\csname ducksay@date\endcsname\ cowsay for LaTeX]
 \documentclass{l3doc}
-% silence the false positives about internal control sequences in the animals 
+% silence the false positives about internal control sequences in the animals
 \csname msg_redirect_name:nnn\endcsname{l3doc}{foreign-internal}{none}
 \usepackage[version=2]{ducksay}
 \usepackage{marginnote}
@@ -158,7 +158,7 @@ and the derived files           ducksay.pdf
   }
 \makeatother
 \setcounter{secnumdepth}{5}
-\setcounter{tocdepth}{5}
+\setcounter{tocdepth}{3}
 \NewDocumentCommand \tocmsg {}
   {%
     \marginpar
@@ -202,8 +202,8 @@ and the derived files           ducksay.pdf
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xparse,l3keys2e}
 
-\def\ducksay@version{2.4.1}
-\def\ducksay@date{2019-09-28}
+\def\ducksay@version{2.5}
+\def\ducksay@date{2020-02-01}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
@@ -375,9 +375,10 @@ and the derived files           ducksay.pdf
 %   \texttt{\cs{textcolor}\marg{color}\marg{text}}. Note that you can't
 %   use braces in the arguments of \cs{textcolor}.\\
 %   You can also use a delimited \cs{color} of the form
-%   \texttt{\cs{bgroup}\bp\cs{color}\bp\marg{color}\bp\meta{text}\bp\cs{egroup}}, a space
-%   after that |\egroup| will be considered a space in the output, so you don't
-%   have to care for correct termination of the |\egroup| (so
+%   \texttt
+%     {\cs{bgroup}\bp\cs{color}\bp\marg{color}\bp\meta{text}\bp\cs{egroup}},
+%   a space after that |\egroup| will be considered a space in the output, so
+%   you don't have to care for correct termination of the |\egroup| (so
 %   \texttt{\cs{bgroup}\bp \cs{color}\bp\{red\}\bp RedText\bp
 %   \cs{egroup}OtherText} is valid syntax). You can't nest delimited
 %   \cs{color}s.\\
@@ -426,7 +427,7 @@ and the derived files           ducksay.pdf
 %     dedicated description of each version look into \autoref{sec:v1} and
 %     \autoref{sec:v2}. The package author would choose |version=2|, the other
 %     version is mostly for legacy reasons. The default is |2|.
-%   \item[\anml] 
+%   \item[\anml]
 %     One of the animals listed in \autoref{sec:animals} or any of the ones
 %     added with \cs{AddAnimal}. Not useable as package option. Also don't use
 %     it in \cs{DucksayOptions}, it'll break the default animal selection.
@@ -450,8 +451,16 @@ and the derived files           ducksay.pdf
 %     worth it (and I hope the affected documents are few).
 %   \item[no-tail]
 %     Sets |tail-1| and |tail-2| to be a space.
+%   \item[random=\meta{bool}]
+%     If |true| a random animal will be used instead of the default one on each
+%     usage of \cs{ducksay} or \cs{duckthink}. The initial value is false and it
+%     defaults to true.
 %   \item[say]
 %     Sets |tail-1| and |tail-2| as backslashes.
+%   \item[schroedinger]
+%     Sets randomly either |animal=schroedinger-alive| or
+%     |animal=schroedinger-dead| at the time of use. Both have the same size, so
+%     this doesn't affect the needed space.
 %   \item[tail-1=\meta{token list}]
 %     Sets the first tail symbol in the output to be \meta{token list}. If set
 %     outside of \cs{ducksay} and \cs{duckthink} it will be overwritten inside
@@ -889,6 +898,13 @@ and the derived files           ducksay.pdf
 %     definition uses a |p|-type column for |arg=tab| and |arg=tab*|. If both
 %     |wd| is not smaller than 0 and |wd*| is not smaller than 0pt, |wd*| will
 %     take precedence.
+%   \item[wd-eq-body=\meta{bool}]
+%     if this is |true|, |wd| is smaller than 0, and |wd*| is smaller than 0pt
+%     the \msg\ will be as wide as the \anml's body. Note that because the
+%     \anml\ bodies contain white space on their left end and due to the
+%     additional horizontal bubble delimiters the bubble will be wider than the
+%     \anml's body. If the |none| option was also used this option has no
+%     effect.
 % \end{options}
 %
 %^^A=<<
@@ -920,23 +936,15 @@ and the derived files           ducksay.pdf
 %   {%
 %     \tiny
 %     \hfill
-%     \makebox[8em][r]
-%       {%
-%         \rlap
-%           {
-%             \ducksay
-%               [
-%                 ghost,MSG=\footnotesize,b,body-mirrored,no-bubble,
-%                 body-bigger=10
-%               ]{}
-%           }
-%         \ducksay[fairy,MSG=\footnotesize,b,msg-to-body=r,body-to-msg=hc]
-%           {We're the\\new ones.}
-%         \rlap{\ducksay
-%           [crusader,MSG=\footnotesize,body=\normalsize,t,out-x=-4cm,out-y=2cm]
-%           {Deus\\vult!\rlap{\footnotemark}}}%
-%       }%
-%   }\footnotetext{Latin; ``I feeleth fusty already.''}
+%     \ducksay[snake,MSG=\footnotesize]{I'm zsse\\new one.}\\[\medskipamount]
+%     \duckthink[cat,MSG=\footnotesize,body-mirrored,body-to-msg=hc,msg-align=c]
+%       {I sneaked\\in, too.}\\[\medskipamount]
+%     \duckthink[sleepy-cat,MSG=\footnotesize,msg-align=c]
+%       {Better make a quick\\catnap, sneaking is\\tiring.}\\[\medskipamount]
+%     \rlap{\kern-1em\ducksay[schroedinger-alive,no-bubble,body-mirrored,b]{}}
+%     \ducksay[schroedinger-dead,MSG=\footnotesize,msg-align=c,body-align=r,b]
+%       {Hadn't you opened\\the documentation!}
+%   }
 % The following animals are provided by this package. I did not create them (but
 % altered some), they belong to their original creators.
 % \bgroup
@@ -965,6 +973,11 @@ and the derived files           ducksay.pdf
 %   ,rabbit^^A
 %   ,snail^^A
 %   ,whale^^A
+%   ,snake^^A
+%   ,cat^^A
+%   ,sleepy-cat^^A
+%   ,schroedinger-dead^^A
+%   ,schroedinger-alive^^A
 %   ,crusader^^A
 %   ,knight^^A
 %   ,fairy^^A
@@ -1043,6 +1056,7 @@ and the derived files           ducksay.pdf
 % \paragraph{Sequences}
 %    \begin{macrocode}
 \seq_new:N \l_ducksay_msg_lines_seq
+\seq_new:N \l_ducksay_defined_animals_seq
 %    \end{macrocode}
 % \paragraph{Token lists}
 %    \begin{macrocode}
@@ -1060,6 +1074,7 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \bool_new:N \l_ducksay_version_one_bool
 \bool_new:N \l_ducksay_version_two_bool
+\bool_new:N \l_ducksay_random_animal_bool
 %    \end{macrocode}
 % \paragraph{Boxes}
 %    \begin{macrocode}
@@ -1120,13 +1135,21 @@ and the derived files           ducksay.pdf
     ,tail-2    .initial:x  = \c_backslash_str
     ,no-tail   .meta:n     = { tail-1 = { ~ }, tail-2 = { ~ } }
     ,think     .meta:n     = { tail-1 = { O }, tail-2 = { o } }
+    ,random    .bool_set:N = \l_ducksay_random_animal_bool
     ,say       .code:n     =
       {
         \exp_args:Nx \DucksayOptions
           { tail-1 = { \c_backslash_str }, tail-2 = { \c_backslash_str } }
       }
+    ,schroedinger .code:n  =
+      {
+        \int_compare:nNnTF { \int_rand:n { 2 } } = \c_one_int
+          { \keys_set:nn { ducksay } { animal = schroedinger-dead } }
+          { \keys_set:nn { ducksay } { animal = schroedinger-alive } }
+      }
+    ,schroedinger .value_forbidden:n = true
     ,version   .choice:
-    ,version / 1 .code:n   = 
+    ,version / 1 .code:n   =
       {
         \bool_set_false:N \l_ducksay_version_two_bool
         \bool_set_true:N  \l_ducksay_version_one_bool
@@ -1177,24 +1200,25 @@ and the derived files           ducksay.pdf
 %    \begin{macrocode}
 \cs_generate_variant:Nn \tl_replace_once:Nnn { NVn }
 \cs_generate_variant:Nn \tl_replace_all:Nnn { NVn }
+\cs_generate_variant:Nn \keys_set:nn { nx }
 %    \end{macrocode}
 %^^A=<<
 %
 % \paragraph{Internal}^^A>>=
 %
-% \begin{macro}{\__ducksay_everyeof:w}^^A>>=
+% \begin{macro}[internal]{\__ducksay_everyeof:w}^^A>>=
 %    \begin{macrocode}
 \cs_set_eq:NN \__ducksay_everyeof:w \tex_everyeof:D
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\__ducksay_scantokens:w}^^A>>=
+% \begin{macro}[internal]{\__ducksay_scantokens:w}^^A>>=
 %    \begin{macrocode}
 \cs_set_eq:NN \__ducksay_scantokens:w \tex_scantokens:D
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_replace_verb_newline:Nn}^^A>>=
+% \begin{macro}[internal]{\ducksay_replace_verb_newline:Nn}^^A>>=
 %    \begin{macrocode}
 \cs_new_protected:Npx \ducksay_replace_verb_newline:Nn #1 #2
   {
@@ -1203,7 +1227,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_replace_verb_newline_newline:Nn}^^A>>=
+% \begin{macro}[internal]{\ducksay_replace_verb_newline_newline:Nn}^^A>>=
 %    \begin{macrocode}
 \cs_new_protected:Npx \ducksay_replace_verb_newline_newline:Nn #1 #2
   {
@@ -1213,7 +1237,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_process_verb_newline:nnn}^^A>>=
+% \begin{macro}[internal]{\ducksay_process_verb_newline:nnn}^^A>>=
 %    \begin{macrocode}
 \cs_new_protected:Npn \ducksay_process_verb_newline:nnn #1 #2 #3
   {
@@ -1224,7 +1248,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_add_animal_inner:nnnn}^^A>>=
+% \begin{macro}[internal]{\ducksay_add_animal_inner:nnnn}^^A>>=
 %    \begin{macrocode}
 \cs_new_protected:Npn \ducksay_add_animal_inner:nnnn #1 #2 #3 #4
   {
@@ -1271,20 +1295,38 @@ and the derived files           ducksay.pdf
         #2 .code:n =
           {
             \exp_not:n { \tl_set_eq:NN \l_ducksay_animal_tl }
-            \exp_after:wN \exp_not:N \cs:w l_ducksay_animal_#2_tl \cs_end:
+            \exp_not:c { l_ducksay_animal_#2_tl }
             \exp_not:n { \exp_args:NV \DucksayOptions }
-            \exp_after:wN
-            \exp_not:N \cs:w l_ducksay_animal_#2_options_tl \cs_end:
+            \exp_not:c { l_ducksay_animal_#2_options_tl }
           }
       }
     \tl_if_exist:cF { l_ducksay_animal_#2_options_tl }
       { \tl_new:c { l_ducksay_animal_#2_options_tl } }
     \IfBooleanT { #4 }
       { \keys_define:nn { ducksay } { default_animal .meta:n = { #2 } } }
+    \seq_if_in:NnF \l_ducksay_defined_animals_seq { #2 }
+      { \seq_push:Nn \l_ducksay_defined_animals_seq { #2 } }
   }
 \cs_generate_variant:Nn \ducksay_add_animal_inner:nnnn { nnVn }
 %    \end{macrocode}
 % \end{macro}^^A=<<
+%
+% \begin{macro}[internal]{\ducksay_default_or_random_animal:}
+%    \begin{macrocode}
+\cs_new_protected:Npn \ducksay_default_or_random_animal:
+  {
+    \tl_if_empty:NT \l_ducksay_animal_tl
+      {
+        \bool_if:NTF \l_ducksay_random_animal_bool
+          {
+            \keys_set:nx { ducksay }
+              { \seq_rand_item:N \l_ducksay_defined_animals_seq }
+          }
+          { \keys_set:nn { ducksay } { default_animal } }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}
 %
 %^^A=<<
 %
@@ -1389,7 +1431,7 @@ and the derived files           ducksay.pdf
 %
 % \paragraph{Internal}^^A>>=
 %
-% \begin{macro}{\ducksay_longest_line:n}^^A>>=
+% \begin{macro}[internal]{\ducksay_longest_line:n}^^A>>=
 %   Calculate the length of the longest line
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_longest_line:n #1
@@ -1406,7 +1448,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_open_bubble:}^^A>>=
+% \begin{macro}[internal]{\ducksay_open_bubble:}^^A>>=
 %   Draw the opening bracket of the bubble
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_open_bubble:
@@ -1431,7 +1473,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_close_bubble:}^^A>>=
+% \begin{macro}[internal]{\ducksay_close_bubble:}^^A>>=
 %   Draw the closing bracket of the bubble
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_close_bubble:
@@ -1457,7 +1499,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_print_msg:nn}^^A>>=
+% \begin{macro}[internal]{\ducksay_print_msg:nn}^^A>>=
 %   Print out the message
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_print_msg:nn #1 #2
@@ -1472,7 +1514,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_print:nn}^^A>>=
+% \begin{macro}[internal]{\ducksay_print:nn}^^A>>=
 %   Print out the whole thing
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_print:nn #1 #2
@@ -1512,7 +1554,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_say_and_think:nn}^^A>>=
+% \begin{macro}[internal]{\ducksay_say_and_think:nn}^^A>>=
 %   Reset some variables
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_say_and_think:nn #1 #2
@@ -1521,8 +1563,7 @@ and the derived files           ducksay.pdf
       \int_set:Nn \l_ducksay_msg_width_int  { -\c_max_int }
       \int_set:Nn \l_ducksay_msg_height_int { -\c_max_int }
       \keys_set:nn { ducksay } { #1 }
-      \tl_if_empty:NT \l_ducksay_animal_tl
-        { \keys_set:nn { ducksay } { default_animal } }
+      \ducksay_default_or_random_animal:
       \ducksay_print:nV { #2 } \l_ducksay_rel_align_tl
     \group_end:
   }
@@ -1604,6 +1645,7 @@ and the derived files           ducksay.pdf
 \bool_new:N \l_ducksay_eat_arg_box_bool
 \bool_new:N \l_ducksay_eat_arg_tab_verb_bool
 \bool_new:N \l_ducksay_mirrored_body_bool
+\bool_new:N \l_ducksay_msg_eq_body_width_bool
 %    \end{macrocode}
 %
 % \paragraph{Coffins}
@@ -1646,6 +1688,7 @@ and the derived files           ducksay.pdf
     ,wd* .dim_set:N = \l_ducksay_msg_width_dim
     ,wd* .initial:n = -\c_max_dim
     ,wd* .value_required:n = true
+    ,wd-eq-body    .bool_set:N = \l_ducksay_msg_eq_body_width_bool
     ,none          .bool_set:N = \l_ducksay_no_body_bool
     ,no-bubble     .bool_set:N = \l_ducksay_no_bubble_bool
     ,body-mirrored .bool_set:N = \l_ducksay_mirrored_body_bool
@@ -1753,7 +1796,8 @@ and the derived files           ducksay.pdf
 %
 % \paragraph{Internal}^^A>>=
 %
-% \begin{macro}{\ducksay_evaluate_message_alignment_fixed_width_common:}^^A>>=
+% \begin{macro}[internal]
+%   {\ducksay_evaluate_message_alignment_fixed_width_common:}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_evaluate_message_alignment_fixed_width_common:
   {
@@ -1768,7 +1812,8 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_evaluate_message_alignment_fixed_width_tabular:}^^A>>=
+% \begin{macro}[internal]
+%   {\ducksay_evaluate_message_alignment_fixed_width_tabular:}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_evaluate_message_alignment_fixed_width_tabular:
   {
@@ -1788,7 +1833,8 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_evaluate_message_alignment_fixed_width_vbox:}^^A>>=
+% \begin{macro}[internal]
+%   {\ducksay_evaluate_message_alignment_fixed_width_vbox:}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_evaluate_message_alignment_fixed_width_vbox:
   {
@@ -1798,18 +1844,18 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_calculate_msg_width_from_int:}^^A>>=
+% \begin{macro}[internal]{\ducksay_calculate_msg_width_from_int:}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_calculate_msg_width_from_int:
   {
     \hbox_set:Nn \l_ducksay_tmpa_box { { \l_ducksay_msg_fount_tl M } }
-    \dim_set:Nn \l_ducksay_msg_width_dim 
+    \dim_set:Nn \l_ducksay_msg_width_dim
       { \l_ducksay_msg_width_int \box_wd:N \l_ducksay_tmpa_box }
   }
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_msg_tabular_begin:}^^A>>=
+% \begin{macro}[internal]{\ducksay_msg_tabular_begin:}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_msg_tabular_begin:
   {
@@ -1823,7 +1869,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_msg_tabular_end:}^^A>>=
+% \begin{macro}[internal]{\ducksay_msg_tabular_end:}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_msg_tabular_end:
   {
@@ -1832,7 +1878,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_width_case_none_int_dim:nnn}^^A>>=
+% \begin{macro}[internal]{\ducksay_width_case_none_int_dim:nnn}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_width_case_none_int_dim:nnn #1 #2 #3
   {
@@ -1847,14 +1893,36 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_digest_options:n}^^A>>=
+% \begin{macro}[internal]{\ducksay_digest_options:n}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_digest_options:n #1
   {
     \group_begin:
     \keys_set:nn { ducksay } { #1 }
-    \tl_if_empty:NT \l_ducksay_animal_tl
-      { \keys_set:nn { ducksay } { default_animal } }
+    \ducksay_default_or_random_animal:
+    \bool_if:NF \l_ducksay_no_body_bool
+      {
+        \hcoffin_set:Nn \l_ducksay_body_coffin
+          {
+            \frenchspacing
+            \l_ducksay_body_fount_tl
+            \begin{tabular} { @{} l @{} }
+              \l_ducksay_animal_tl
+              \ducksay_make_body_bigger:
+              \relax
+            \end{tabular}
+          }
+        \bool_if:NT \l_ducksay_msg_eq_body_width_bool
+          {
+            \bool_lazy_and:nnT
+              { \int_compare_p:nNn \l_ducksay_msg_width_int < \c_zero_int }
+              { \dim_compare_p:nNn \l_ducksay_msg_width_dim < \c_zero_dim }
+              {
+                \dim_set:Nn \l_ducksay_msg_width_dim
+                  { \coffin_wd:N \l_ducksay_body_coffin }
+              }
+          }
+      }
     \bool_if:NTF \l_ducksay_eat_arg_box_bool
       {
         \ducksay_width_case_none_int_dim:nnn
@@ -1875,7 +1943,7 @@ and the derived files           ducksay.pdf
                     { l } { \tl_set:Nn \l_ducksay_msg_tabular_column_tl { l } }
                     { c } { \tl_set:Nn \l_ducksay_msg_tabular_column_tl { c } }
                     { r } { \tl_set:Nn \l_ducksay_msg_tabular_column_tl { r } }
-                    { j } 
+                    { j }
                       {
                         \msg_error:nn { ducksay } { justify~unavailable }
                         \tl_set:Nn \l_ducksay_msg_tabular_column_tl { l }
@@ -1894,7 +1962,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_set_bubble_top_kern:}^^A>>=
+% \begin{macro}[internal]{\ducksay_set_bubble_top_kern:}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_set_bubble_top_kern:
   {
@@ -1908,7 +1976,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_set_bubble_bottom_kern:}^^A>>=
+% \begin{macro}[internal]{\ducksay_set_bubble_bottom_kern:}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_set_bubble_bottom_kern:
   {
@@ -1922,7 +1990,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_make_body_bigger:}^^A>>=
+% \begin{macro}[internal]{\ducksay_make_body_bigger:}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_make_body_bigger:
   {
@@ -1932,7 +2000,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_make_body_bigger_aux:n}^^A>>=
+% \begin{macro}[internal]{\ducksay_make_body_bigger_aux:n}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_make_body_bigger_aux:n #1
   {
@@ -1941,7 +2009,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_shipout:}^^A>>=
+% \begin{macro}[internal]{\ducksay_shipout:}^^A>>=
 %    \begin{macrocode}
 \cs_new_protected:Npn \ducksay_shipout:
   {
@@ -1954,7 +2022,7 @@ and the derived files           ducksay.pdf
           {
             \fp_eval:n
               {
-                ceil 
+                ceil
                   (
                     \box_wd:N \l_ducksay_msg_box / \box_wd:N \l_ducksay_tmpa_box
                   )
@@ -2060,16 +2128,6 @@ and the derived files           ducksay.pdf
       }
     \bool_if:NF \l_ducksay_no_body_bool
       {
-        \hcoffin_set:Nn \l_ducksay_body_coffin
-          {
-            \frenchspacing
-            \l_ducksay_body_fount_tl
-            \begin{tabular} { @{} l @{} }
-              \l_ducksay_animal_tl
-              \ducksay_make_body_bigger:
-              \relax
-            \end{tabular}
-          }
         \bool_if:NT \l_ducksay_mirrored_body_bool
           {
             \coffin_scale:Nnn \l_ducksay_body_coffin
@@ -2105,7 +2163,7 @@ and the derived files           ducksay.pdf
 % and \cs{duckthink}. They all should allow almost arbitrary content and the
 % height and width are set based on the dimensions.
 %
-% \begin{macro}{\ducksay_eat_argument_tabular:w}^^A>>=
+% \begin{macro}[internal]{\ducksay_eat_argument_tabular:w}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_eat_argument_tabular:w
   {
@@ -2116,7 +2174,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_eat_argument_tabular_inner:w}^^A>>=
+% \begin{macro}[internal]{\ducksay_eat_argument_tabular_inner:w}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_eat_argument_tabular_inner:w #1
   {
@@ -2132,7 +2190,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_eat_argument_tabular_verb:w}^^A>>=
+% \begin{macro}[internal]{\ducksay_eat_argument_tabular_verb:w}^^A>>=
 %    \begin{macrocode}
 \NewDocumentCommand \ducksay_eat_argument_tabular_verb:w
   { >{ \ducksay_process_verb_newline:nnn { ~ } { ~ \par } } +v }
@@ -2149,14 +2207,14 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_eat_argument_tabular_normal:w}^^A>>=
+% \begin{macro}[internal]{\ducksay_eat_argument_tabular_normal:w}^^A>>=
 %    \begin{macrocode}
 \NewDocumentCommand \ducksay_eat_argument_tabular_normal:w { +m }
   { \ducksay_eat_argument_tabular_inner:w { #1 } }
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_eat_argument_hbox:w}^^A>>=
+% \begin{macro}[internal]{\ducksay_eat_argument_hbox:w}^^A>>=
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \ducksay_eat_argument_hbox:w
   {
@@ -2168,7 +2226,7 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}{\ducksay_eat_argument_vbox:w}^^A>>=
+% \begin{macro}[internal]{\ducksay_eat_argument_vbox:w}^^A>>=
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \ducksay_eat_argument_vbox:w
   {
@@ -2238,7 +2296,7 @@ and the derived files           ducksay.pdf
 %<*animals>
 \ProvidesFile{ducksay.animals.tex}
   [\ducksay@date\space v\ducksay@version\space ducksay animals]
-%^^A some of the below are from http://ascii.co.uk/art/kangaroo
+%^^A some of the below are from http://ascii.co.uk/art/
 \AddAnimal{duck}%>>=
 {  \
     \   __
@@ -2268,7 +2326,7 @@ and the derived files           ducksay.pdf
           ||----w |
           ||     ||}%=<<
 \AddAnimal{head-in}%>>=
-{  \  
+{  \
     \ ^__^         /
       (oo)\_______/  ________
       (__)\       )=(  ___|_ \____
@@ -2284,7 +2342,7 @@ and the derived files           ducksay.pdf
           ||     ||>>}%=<<
 \AddAnimal{tux}%>>=
 {  \
-    \  .--. 
+    \  .--.
       |o_o |
       |\_/ |
      //   \ \
@@ -2326,24 +2384,24 @@ and the derived files           ducksay.pdf
           ,/'     `\_,}%=<<
 %^^A http://chris.com/ascii/index.php?art=animals/rabbits
 \AddAnimal[tail-symbol=s,tail-count=3]{rabbit}%>>=
-{ s
-   s   / \`\         __
-    s |  \ `\      /`/ \
-      \_/`\  \-"-/` /\  \
-           |       |  \  |
-           (d     b)   \_/
-           /       \
-       ,".|.'.\_/.'.|.",
-      /   /\' _|_ '/\   \
-      |  /  '-`"`-'  \  |
-      | |             | |
-      | \    \   /    / |
-       \ \    \ /    / /
-        `"`\   :   /'"`
-            `""`""`}%=<<
+{  s
+    s   / \`\         __
+     s |  \ `\      /`/ \
+       \_/`\  \-"-/` /\  \
+            |       |  \  |
+            (d     b)   \_/
+            /       \
+        ,".|.'.\_/.'.|.",
+       /   /\' _|_ '/\   \
+       |  /  '-`"`-'  \  |
+       | |             | |
+       | \    \   /    / |
+        \ \    \ /    / /
+         `"`\   :   /'"`
+             `""`""`}%=<<
 \AddAnimal{bunny}%>>=
-{ \
-   \      /
+{  \
+    \     /
       /\ /
        ( )
      .( o ).}%=<<
@@ -2355,9 +2413,9 @@ and the derived files           ducksay.pdf
 \AddAnimal[tail-symbol=s,tail-count=3]{dragon}%>>=
 {     s                   / \  //\
        s    |\___/|      /   \//  \\
-        s   /0  0  \__  /    //  | \ \    
-           /     /  \/_/    //   |  \  \  
-           @_^_@'/   \/_   //    |   \   \ 
+        s   /0  0  \__  /    //  | \ \
+           /     /  \/_/    //   |  \  \
+           @_^_@'/   \/_   //    |   \   \
            //_^_/     \/_ //     |    \    \
         ( //) |        \///      |     \     \
       ( / /) _|_ /   )  //       |      \     _\
@@ -2394,25 +2452,25 @@ and the derived files           ducksay.pdf
         "-._.._'.__.-'_.."}%=<<
 %^^A http://www.ascii-art.de/ascii/uvw/unicorn.txt
 \AddAnimal{unicorn}%>>=
-{   \
-     \       /((((((\\\\
-     ---====((((((((((\\\\\
-          ((           \\\\\\\
-          ( (*    _/      \\\\\\\
-            \    /  \      \\\\\\_        __,,__
-             |  |   |       </    "-----""     ((\\\\
-             o_|   /        /                     \ \\\\    \\\\\\\
-                  |  ._    (                       \ \\\\\\\\\\\\\\\\
-                  | /                      /       /    \\\\\\\     \\
-          .______/\/     /                /       /         \\\
-         / __.____/    _/               _(       /\
-        / / / ________/:_       ___,,--'  \     /  \_
-       / /  \ \          """""""           \   \ \_  \
-      ( <    \ \                            >  /    \ \
-       \/      \\_                         / /       > )
-                \_|                       / /       / /
-                                        _//       _//
-                                       /_|       /_|}%=<<
+{  \
+    \     /((((((\\\\
+  ---====((((((((((\\\\\
+       ((           \\\\\\\
+       ( (*    _/      \\\\\\\
+         \    /  \      \\\\\\_        __,,__
+          |  |   |       </    "-----""     ((\\\\
+          o_|   /        /                     \ \\\\    \\\\\\\
+               |  ._    (                       \ \\\\\\\\\\\\\\\\
+               | /                      /       /    \\\\\\\     \\
+       .______/\/     /                /       /         \\\
+      / __.____/    _/               _(       /\
+     / / / ________/:_       ___,,--'  \     /  \_
+    / /  \ \          """""""           \   \ \_  \
+   ( <    \ \                            >  /    \ \
+    \/      \\_                         / /       > )
+             \_|                       / /       / /
+                                     _//       _//
+                                    /_|       /_|}%=<<
 %^^A https://asciiart.website//index.php?art=animals/other%20(water)
 \AddAnimal[tail-count=3,tail-symbol=s]{whale}%>>=
 {  s                |-.
@@ -2577,6 +2635,61 @@ and the derived files           ducksay.pdf
 {  s
     s
      s}%=<<
+%^^A head taken from https://www.asciiart.eu/animals/reptiles/snakes
+\AddAnimal[tail-symbol=s,tail-count=3]{snake}
+{  s
+    s     /^\/^\
+     s  _|__| O |
+      /'     \_/ \
+  \/ |_________/  \               \
+   \_/ \_______    \               \
+               `|   |              |\
+               /   /  _---_        | |
+              /   /  /  __ "-_    ," |
+             |   "--"  /  "-_ "--"  ,"
+              "-_____-"      "-___-"}
+%^^A http://www.ascii-art.de/ascii/c/cat.txt
+\AddAnimal{cat}
++  \
+    \  _                ___       .--.
+       \`.|\..----...-'`   `-._.-' .-'
+       /  ' `         ,       __.-'
+       )/' _/     \   `-_,   /
+       `-'" `"\_  ,_.-;_.-\_ ',
+           _.-'_./   {_.'   ; /
+          {_.-``-'         {_/+
+%^^A https://www.asciiart.eu/animals/cats
+\AddAnimal{sleepy-cat}
+{  \
+    \  |\      _,,,---,,_     _._
+       /,`.-'`'    -.   )'._,'.-,)
+      |,4-  ) )-,_. ,\ ( `-.-'
+     '---''(_/--'  `-'\_)}
+\AddAnimal{schroedinger-dead}
+{  \
+    \ _.--"""--._
+     |           |
+     |    -|-    |
+     |     |     |
+     |           |
+     |   Felix   |
+   __|___________|__ _
+    o    .   .    .
+       ~ .  o   o
+       .   ~  .}
+%^^A https://www.asciiart.eu/animals/cats
+\AddAnimal{schroedinger-alive}
+{  \
+    \ ,_     _
+      |\\__,'/
+      / _  _ |    ,--.
+     (  @  @ )   / ,-'
+      \  _T_/-._( (
+      /         `. \
+     |         _  \ |
+      \ \ ,  /      |
+       || |-_\__   /
+      ((_/`(____,-'}
 %</animals>
 %    \end{macrocode}^^A=<<
 %^^A%^^A https://www.asciiart.eu/mythology/fairies
