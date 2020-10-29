@@ -202,8 +202,8 @@ and the derived files           ducksay.pdf
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xparse,l3keys2e}
 
-\def\ducksay@version{2.5}
-\def\ducksay@date{2020-02-01}
+\def\ducksay@version{2.5a}
+\def\ducksay@date{2020-10-29}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
@@ -243,6 +243,24 @@ and the derived files           ducksay.pdf
 % \tableofcontents
 %
 % \begin{documentation}^^A>>=
+%
+% \marginpar^^A>>=
+%   {
+%     \tiny
+%     \hfill
+%     \ducksay
+%       [sheep,MSG=\footnotesize,t,body-align=c,msg-align=c,body-mirrored]
+%       {Give credit\\where credit is due!}
+%   }^^A=<<
+% \section{Acknowledgements}%
+% \begingroup
+% \scriptsize
+% \DucksayOptions{MSG=\normalsize}
+% \ducksay[sheep]{I was created by Plergux!\footnotemark}
+% \footnotetext
+%   {\url{https://chat.stackexchange.com/transcript/message/55986902\#55986902}}
+% \endgroup
+% \clearpage
 %
 % \marginpar^^A>>=
 %   {
@@ -936,14 +954,8 @@ and the derived files           ducksay.pdf
 %   {%
 %     \tiny
 %     \hfill
-%     \ducksay[snake,MSG=\footnotesize]{I'm zsse\\new one.}\\[\medskipamount]
-%     \duckthink[cat,MSG=\footnotesize,body-mirrored,body-to-msg=hc,msg-align=c]
-%       {I sneaked\\in, too.}\\[\medskipamount]
-%     \duckthink[sleepy-cat,MSG=\footnotesize,msg-align=c]
-%       {Better make a quick\\catnap, sneaking is\\tiring.}\\[\medskipamount]
-%     \rlap{\kern-1em\ducksay[schroedinger-alive,no-bubble,body-mirrored,b]{}}
-%     \ducksay[schroedinger-dead,MSG=\footnotesize,msg-align=c,body-align=r,b]
-%       {Hadn't you opened\\the documentation!}
+%     \ducksay[sheep,MSG=\footnotesize,msg-align=c]
+%       {I'm woolly,\\I'm fluffy,\\and I'm all new!}
 %   }
 % The following animals are provided by this package. I did not create them (but
 % altered some), they belong to their original creators.
@@ -970,6 +982,7 @@ and the derived files           ducksay.pdf
 %   ,hedgehog^^A
 %   ,kangaroo^^A
 %   ,dog^^A
+%   ,sheep^^A
 %   ,rabbit^^A
 %   ,snail^^A
 %   ,whale^^A
@@ -2690,6 +2703,17 @@ and the derived files           ducksay.pdf
       \ \ ,  /      |
        || |-_\__   /
       ((_/`(____,-'}
+%^^A provided by Plergux
+%^^A (https://chat.stackexchange.com/transcript/message/55986902#55986902)
+\AddAnimal{sheep}
+{  \        _,_,_,_,_,
+    \    .:(  ,)      ),
+        (__,    (,     ),
+       / o (  ,)     ,) )>
+      (___(,      (,   ,)
+           (,   ,)    ,)
+            `-_,---_,-'
+              ||   ||}
 %</animals>
 %    \end{macrocode}^^A=<<
 %^^A%^^A https://www.asciiart.eu/mythology/fairies
