@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% File: ducksay.dtx Copyright (C) 2017-2020 Jonathan P. Spratte
+% File: ducksay.dtx Copyright (C) 2017-2022 Jonathan P. Spratte
 %
 % This work  may be  distributed and/or  modified under  the conditions  of the
 % LaTeX Project Public License (LPPL),  either version 1.3c  of this license or
@@ -27,7 +27,7 @@ Released under the LaTeX Project Public License v1.3c or later
 See http://www.latex-project.org/lppl.txt
 --------------------------------------------------------------
 
-Copyright (C) 2017-2020 Jonathan P. Spratte
+Copyright (C) 2017-2022 Jonathan P. Spratte
 
 This  work may be  distributed and/or  modified under  the conditions  of the
 LaTeX Project Public License (LPPL),  either version 1.3c  of this license or
@@ -202,8 +202,8 @@ and the derived files           ducksay.pdf
 \NeedsTeXFormat{LaTeX2e}
 \RequirePackage{xparse,l3keys2e}
 
-\def\ducksay@version{2.5a}
-\def\ducksay@date{2020-10-29}
+\def\ducksay@version{2.6}
+\def\ducksay@date{2022-09-29}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
@@ -1638,6 +1638,8 @@ and the derived files           ducksay.pdf
   }
 \msg_new:nnn { ducksay } { v1-key-only }
   { The~`\l_keys_key_tl`~key~is~only~available~for~`version=1`. }
+\msg_new:nnn { ducksay } { zero-baselineskip }
+  { Current~ baselineskip~ is~ 0pt~ (fallback~ #1~ used). }
 %    \end{macrocode}
 %^^A=<<
 %
@@ -2006,18 +2008,155 @@ and the derived files           ducksay.pdf
 % \begin{macro}[internal]{\ducksay_make_body_bigger:}^^A>>=
 %    \begin{macrocode}
 \cs_new:Npn \ducksay_make_body_bigger:
+  { \prg_replicate:nn \l_ducksay_body_bigger_int \\ }
+%    \end{macrocode}
+% \end{macro}^^A=<<
+%
+% \begin{macro}[internal]{\ducksay_baselineskip:}^^A>>=
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \ducksay_baselineskip:
   {
-    \int_step_function:nN \l_ducksay_body_bigger_int
-      \ducksay_make_body_bigger_aux:n
+    \the\dimexpr
+      \ifdim \baselineskip = \c_zero_dim
+        \ifdim \normalbaselineskip = \c_zero_dim
+          \msg_expandable_error:nn { ducksay } { zero-baselineskip } { 12pt }
+          12pt
+        \else
+          \normalbaselineskip
+        \fi
+      \else
+        \baselineskip
+      \fi
+    \relax
   }
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
-% \begin{macro}[internal]{\ducksay_make_body_bigger_aux:n}^^A>>=
+% \begin{macro}[internal]{\ducksay_measure_msg:}^^A>>=
 %    \begin{macrocode}
-\cs_new:Npn \ducksay_make_body_bigger_aux:n #1
+\cs_new_protected_nopar:Npn \ducksay_measure_msg:
   {
-    \\
+    \hbox_set:Nn \l_ducksay_tmpa_box
+      { \l_ducksay_bubble_fount_tl \l_ducksay_bubble_delim_top_tl }
+    \int_set:Nn \l_ducksay_msg_width_int
+      {
+        \fp_eval:n
+          {
+            ceil
+              ( \box_wd:N \l_ducksay_msg_box / \box_wd:N \l_ducksay_tmpa_box )
+          }
+      }
+    \group_begin:
+    \l_ducksay_bubble_fount_tl
+    \exp_args:NNNx
+    \group_end:
+    \int_set:Nn \l_ducksay_msg_height_int
+      {
+        \int_max:nn
+          {
+            \fp_eval:n
+              {
+                ceil
+                  (
+                    (
+                      \box_ht:N \l_ducksay_msg_box
+                      + \box_dp:N \l_ducksay_msg_box
+                    )
+                    / ( \arraystretch * \ducksay_baselineskip: )
+                  )
+              }
+            + \l_ducksay_vpad_int
+          }
+          { \l_ducksay_msg_height_int }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}^^A=<<
+%
+% \begin{macro}[internal]{\ducksay_set_bubble_coffins:}^^A>>=
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \ducksay_set_bubble_coffins:
+  {
+    \hcoffin_set:Nn \l_ducksay_bubble_open_coffin
+      {
+        \l_ducksay_bubble_fount_tl
+        \begin{tabular}{@{}l@{}}
+          \int_compare:nNnTF { \l_ducksay_msg_height_int } = { \c_one_int }
+            {
+              \l_ducksay_bubble_delim_left_a_tl
+            }
+            {
+              \l_ducksay_bubble_delim_left_b_tl\\
+              \int_step_inline:nnn
+                { 3 } { \l_ducksay_msg_height_int }
+                {
+                  \kern-\l_ducksay_bubble_side_kern_tl
+                  \l_ducksay_bubble_delim_left_c_tl
+                  \\
+                }
+              \l_ducksay_bubble_delim_left_d_tl
+            }
+        \end{tabular}
+      }
+    \hcoffin_set:Nn \l_ducksay_bubble_close_coffin
+      {
+        \l_ducksay_bubble_fount_tl
+        \begin{tabular}{@{}r@{}}
+          \int_compare:nNnTF { \l_ducksay_msg_height_int } = { \c_one_int }
+            {
+              \l_ducksay_bubble_delim_right_a_tl
+            }
+            {
+              \l_ducksay_bubble_delim_right_b_tl \\
+              \int_step_inline:nnn
+                { 3 } { \l_ducksay_msg_height_int }
+                {
+                  \l_ducksay_bubble_delim_right_c_tl
+                  \kern-\l_ducksay_bubble_side_kern_tl
+                  \\
+                }
+              \l_ducksay_bubble_delim_right_d_tl
+            }
+        \end{tabular}
+      }
+    \hcoffin_set:Nn \l_ducksay_bubble_top_coffin
+      {
+        \l_ducksay_bubble_fount_tl
+        \int_step_inline:nn
+          { \l_ducksay_msg_width_int + \l_ducksay_hpad_int }
+          { \l_ducksay_bubble_delim_top_tl }
+      }
+  }
+%    \end{macrocode}
+% \end{macro}^^A=<<
+%
+% \begin{macro}[internal]{\ducksay_join_bubble_to_msg_coffin:}^^A>>=
+%    \begin{macrocode}
+\cs_new_protected_nopar:Npn \ducksay_join_bubble_to_msg_coffin:
+  {
+    \dim_set:Nn \l_ducksay_hpad_dim
+      {
+        (
+          \coffin_wd:N \l_ducksay_bubble_top_coffin
+          - \coffin_wd:N \l_ducksay_msg_coffin
+        ) / 2
+      }
+    \coffin_join:NnnNnnnn
+      \l_ducksay_msg_coffin         { l } { vc }
+      \l_ducksay_bubble_open_coffin { r } { vc }
+      { - \l_ducksay_hpad_dim } { \c_zero_dim }
+    \coffin_join:NnnNnnnn
+      \l_ducksay_msg_coffin          { r } { vc }
+      \l_ducksay_bubble_close_coffin { l } { vc }
+      { \l_ducksay_hpad_dim } { \c_zero_dim }
+    \coffin_join:NnnNnnnn
+      \l_ducksay_msg_coffin        { hc } { t }
+      \l_ducksay_bubble_top_coffin { hc } { b }
+      { \c_zero_dim } { \l_ducksay_bubble_top_kern_dim }
+    \coffin_join:NnnNnnnn
+      \l_ducksay_msg_coffin        { hc } { b }
+      \l_ducksay_bubble_top_coffin { hc } { t }
+      { \c_zero_dim } { \l_ducksay_bubble_bottom_kern_dim }
   }
 %    \end{macrocode}
 % \end{macro}^^A=<<
@@ -2029,115 +2168,11 @@ and the derived files           ducksay.pdf
     \hcoffin_set:Nn \l_ducksay_msg_coffin { \box_use:N \l_ducksay_msg_box }
     \bool_if:NF \l_ducksay_no_bubble_bool
       {
-        \hbox_set:Nn \l_ducksay_tmpa_box
-          { \l_ducksay_bubble_fount_tl \l_ducksay_bubble_delim_top_tl }
-        \int_set:Nn \l_ducksay_msg_width_int
-          {
-            \fp_eval:n
-              {
-                ceil
-                  (
-                    \box_wd:N \l_ducksay_msg_box / \box_wd:N \l_ducksay_tmpa_box
-                  )
-              }
-          }
-        \group_begin:
-        \l_ducksay_bubble_fount_tl
-        \exp_args:NNNx
-        \group_end:
-        \int_set:Nn \l_ducksay_msg_height_int
-          {
-            \int_max:nn
-              {
-                \fp_eval:n
-                  {
-                    ceil
-                      (
-                        (
-                          \box_ht:N \l_ducksay_msg_box
-                          + \box_dp:N \l_ducksay_msg_box
-                        )
-                        / ( \arraystretch * \baselineskip )
-                      )
-                  }
-                + \l_ducksay_vpad_int
-              }
-              { \l_ducksay_msg_height_int }
-          }
-        \hcoffin_set:Nn \l_ducksay_bubble_open_coffin
-          {
-            \l_ducksay_bubble_fount_tl
-            \begin{tabular}{@{}l@{}}
-              \int_compare:nNnTF { \l_ducksay_msg_height_int } = { \c_one_int }
-                {
-                  \l_ducksay_bubble_delim_left_a_tl
-                }
-                {
-                  \l_ducksay_bubble_delim_left_b_tl\\
-                  \int_step_inline:nnn
-                    { 3 } { \l_ducksay_msg_height_int }
-                    {
-                      \kern-\l_ducksay_bubble_side_kern_tl
-                      \l_ducksay_bubble_delim_left_c_tl
-                      \\
-                    }
-                  \l_ducksay_bubble_delim_left_d_tl
-                }
-            \end{tabular}
-          }
-        \hcoffin_set:Nn \l_ducksay_bubble_close_coffin
-          {
-            \l_ducksay_bubble_fount_tl
-            \begin{tabular}{@{}r@{}}
-              \int_compare:nNnTF { \l_ducksay_msg_height_int } = { \c_one_int }
-                {
-                  \l_ducksay_bubble_delim_right_a_tl
-                }
-                {
-                  \l_ducksay_bubble_delim_right_b_tl \\
-                  \int_step_inline:nnn
-                    { 3 } { \l_ducksay_msg_height_int }
-                    {
-                      \l_ducksay_bubble_delim_right_c_tl
-                      \kern-\l_ducksay_bubble_side_kern_tl
-                      \\
-                    }
-                  \l_ducksay_bubble_delim_right_d_tl
-                }
-            \end{tabular}
-          }
-        \hcoffin_set:Nn \l_ducksay_bubble_top_coffin
-          {
-            \l_ducksay_bubble_fount_tl
-            \int_step_inline:nn
-              { \l_ducksay_msg_width_int + \l_ducksay_hpad_int }
-              { \l_ducksay_bubble_delim_top_tl }
-          }
-        \dim_set:Nn \l_ducksay_hpad_dim
-          {
-            (
-              \coffin_wd:N \l_ducksay_bubble_top_coffin
-              - \coffin_wd:N \l_ducksay_msg_coffin
-            ) / 2
-          }
-        \coffin_join:NnnNnnnn
-          \l_ducksay_msg_coffin         { l } { vc }
-          \l_ducksay_bubble_open_coffin { r } { vc }
-          { - \l_ducksay_hpad_dim } { \c_zero_dim }
-        \coffin_join:NnnNnnnn
-          \l_ducksay_msg_coffin          { r } { vc }
-          \l_ducksay_bubble_close_coffin { l } { vc }
-          { \l_ducksay_hpad_dim } { \c_zero_dim }
+        \ducksay_measure_msg:
+        \ducksay_set_bubble_coffins:
         \ducksay_set_bubble_top_kern:
         \ducksay_set_bubble_bottom_kern:
-        \coffin_join:NnnNnnnn
-          \l_ducksay_msg_coffin        { hc } { t }
-          \l_ducksay_bubble_top_coffin { hc } { b }
-          { \c_zero_dim } { \l_ducksay_bubble_top_kern_dim }
-        \coffin_join:NnnNnnnn
-          \l_ducksay_msg_coffin        { hc } { b }
-          \l_ducksay_bubble_top_coffin { hc } { t }
-          { \c_zero_dim } { \l_ducksay_bubble_bottom_kern_dim }
+        \ducksay_join_bubble_to_msg_coffin:
       }
     \bool_if:NF \l_ducksay_no_body_bool
       {
