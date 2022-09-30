@@ -1639,7 +1639,7 @@ and the derived files           ducksay.pdf
 \msg_new:nnn { ducksay } { v1-key-only }
   { The~`\l_keys_key_tl`~key~is~only~available~for~`version=1`. }
 \msg_new:nnn { ducksay } { zero-baselineskip }
-  { Current~ baselineskip~ is~ 0pt~ (fallback~ #1~ used). }
+  { Current~ baselineskip~ is~ 0pt. }
 %    \end{macrocode}
 %^^A=<<
 %
@@ -2013,6 +2013,10 @@ and the derived files           ducksay.pdf
 % \end{macro}^^A=<<
 %
 % \begin{macro}[internal]{\ducksay_baselineskip:}^^A>>=
+%   This is an overly cautious way to get the current baselineskip. Inside of
+%   \env{tabular} the baselineskip is 0pt, so we fall back to
+%   \cs[no-index]{normalbaselineskip}, or issue an error and fall back to some
+%   arbitrary value not producing an error if that one is also 0pt.
 %    \begin{macrocode}
 \cs_new_protected_nopar:Npn \ducksay_baselineskip:
   {
