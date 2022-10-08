@@ -203,7 +203,7 @@ and the derived files           ducksay.pdf
 \RequirePackage{xparse,l3keys2e}
 
 \def\ducksay@version{2.6}
-\def\ducksay@date{2022-09-29}
+\def\ducksay@date{2022-10-08}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
@@ -954,8 +954,11 @@ and the derived files           ducksay.pdf
 %   {%
 %     \tiny
 %     \hfill
-%     \ducksay[sheep,MSG=\footnotesize,msg-align=c]
-%       {I'm woolly,\\I'm fluffy,\\and I'm all new!}
+%     \ducksay[platypus,MSG=\footnotesize,msg-align=c]
+%       {Quack?}\\
+%     \hspace*{1cm}%
+%     \ducksay[small-horse,MSG=\footnotesize,msg-align=c,body-mirrored]
+%       {Neigh, we're new!}
 %   }
 % The following animals are provided by this package. I did not create them (but
 % altered some), they belong to their original creators.
@@ -980,7 +983,9 @@ and the derived files           ducksay.pdf
 %   ,dragon^^A
 %   ,sodomized^^A
 %   ,hedgehog^^A
+%   ,platypus^^A
 %   ,kangaroo^^A
+%   ,small-horse^^A
 %   ,dog^^A
 %   ,sheep^^A
 %   ,rabbit^^A
@@ -2753,6 +2758,20 @@ and the derived files           ducksay.pdf
            (,   ,)    ,)
             `-_,---_,-'
               ||   ||}
+%^^A based on joe schmuck (http://www.ascii-art.de/ascii/pqr/platypus.txt)
+\AddAnimal[tail-symbol=s]{platypus}
+|  s          _.-^~~^^`~-,,,~~''```~-''``~'``~,
+    s ______,'  -o  :. _    .      ;     ,'`,  `.
+     (      -\.._,.;;'._,(   }    _`_-_,,    `, `,
+      ``~~~~~~'   ((/'(((____/~~'(,(,___>      `~'|
+\AddAnimal[tail-symbol=s]{small-horse}
+{  s   _,_
+    s /._ \\
+     /_/ |_\\ _ __
+         /  \\    \\
+         \ _ __ _ /||
+         | |   | | ||
+         | |   | |}
 %</animals>
 %    \end{macrocode}^^A=<<
 %^^A%^^A https://www.asciiart.eu/mythology/fairies
