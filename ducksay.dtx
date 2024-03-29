@@ -200,10 +200,10 @@ and the derived files           ducksay.pdf
 %</driver>^^A=<<
 %<*pkg>^^A>>=
 \NeedsTeXFormat{LaTeX2e}
-\RequirePackage{xparse,l3keys2e}
+\@ifundefined{NewDocumentCommand}{\RequirePackage{xparse}}{}
 
-\def\ducksay@version{2.6}
-\def\ducksay@date{2022-10-08}
+\def\ducksay@version{2.7}
+\def\ducksay@date{2024-03-29}
 
 \ProvidesExplPackage
   {ducksay}           {\ducksay@date}
@@ -320,7 +320,7 @@ and the derived files           ducksay.pdf
 %     \sinceversion{2.4}
 %     The |add-think| key was deprecated in v2.3 and was removed in v2.4 since
 %     the output symbols of the bubble tail are handled differently and more
-%     efficient now.
+%     efficiently now.
 % \end{itemize}^^A=<<
 %
 % \subsection{Shared between versions}^^A>>=
@@ -944,9 +944,9 @@ and the derived files           ducksay.pdf
 %           {We rely on you}%
 %       }%
 %   }
-% The package depends on the two packages \pkg{xparse} and \pkg{l3keys2e}
-% and all of their dependencies. Version 2 additionally depends on \pkg{array}
-% and \pkg{grabbox}.
+% The package depends on the \LaTeX\ kernel, for older versions of \LaTeX\ the
+% two packages \pkg{xparse} and \pkg{l3keys2e} and all of their dependencies are
+% loaded. Version 2 additionally depends on \pkg{array} and \pkg{grabbox}.
 %^^A=<<
 %
 % \subsection{Available Animals}\label{sec:animals}^^A>>=
@@ -954,11 +954,8 @@ and the derived files           ducksay.pdf
 %   {%
 %     \tiny
 %     \hfill
-%     \ducksay[platypus,MSG=\footnotesize,msg-align=c]
-%       {Quack?}\\
-%     \hspace*{1cm}%
-%     \ducksay[small-horse,MSG=\footnotesize,msg-align=c,body-mirrored]
-%       {Neigh, we're new!}
+%     \ducksay[turtle,MSG=\footnotesize,msg-align=c]
+%       {Slowly new animals\\are added.}%
 %   }
 % The following animals are provided by this package. I did not create them (but
 % altered some), they belong to their original creators.
@@ -984,6 +981,7 @@ and the derived files           ducksay.pdf
 %   ,sodomized^^A
 %   ,hedgehog^^A
 %   ,platypus^^A
+%   ,turtle^^A
 %   ,kangaroo^^A
 %   ,small-horse^^A
 %   ,dog^^A
@@ -1182,7 +1180,12 @@ and the derived files           ducksay.pdf
 %    \end{macrocode}
 %
 %    \begin{macrocode}
-\ProcessKeysOptions { ducksay }
+\cs_if_exist:NTF \ProcessKeyOptions
+  { \ProcessKeyOptions [ ducksay ] }
+  {
+    \RequirePackage { l3keys2e }
+    \ProcessKeysOptions { ducksay }
+  }
 %    \end{macrocode}
 %
 % Undefine the load-time-only keys
@@ -1238,19 +1241,32 @@ and the derived files           ducksay.pdf
 %
 % \begin{macro}[internal]{\ducksay_replace_verb_newline:Nn}^^A>>=
 %    \begin{macrocode}
-\cs_new_protected:Npx \ducksay_replace_verb_newline:Nn #1 #2
+\IfFormatAtLeastTF{2024-06-01}
   {
-    \tl_replace_all:Nnn #1 { \char_generate:nn { 13 } { 12 } } { #2 }
+    \cs_new_protected:Npn \ducksay_replace_verb_newline:Nn #1 #2
+      { \tl_replace_all:Nnn #1 \obeyedline {#2} }
+  }
+  {
+    \cs_new_protected:Npx \ducksay_replace_verb_newline:Nn #1 #2
+      { \tl_replace_all:Nnn #1 { \char_generate:nn { 13 } { 12 } } {#2} }
   }
 %    \end{macrocode}
 % \end{macro}^^A=<<
 %
 % \begin{macro}[internal]{\ducksay_replace_verb_newline_newline:Nn}^^A>>=
 %    \begin{macrocode}
-\cs_new_protected:Npx \ducksay_replace_verb_newline_newline:Nn #1 #2
+\IfFormatAtLeastTF{2024-06-01}
   {
-    \tl_replace_all:Nnn #1
-      { \char_generate:nn { 13 } { 12 } \char_generate:nn { 13 } { 12 } } { #2 }
+    \cs_new_protected:Npn \ducksay_replace_verb_newline_newline:Nn #1 #2
+      { \tl_replace_all:Nnn #1 { \obeyedline \obeyedline } {#2} }
+  }
+  {
+    \cs_new_protected:Npx \ducksay_replace_verb_newline_newline:Nn #1 #2
+      {
+        \tl_replace_all:Nnn #1
+          { \char_generate:nn { 13 } { 12 } \char_generate:nn { 13 } { 12 } }
+          {#2}
+      }
   }
 %    \end{macrocode}
 % \end{macro}^^A=<<
@@ -2693,7 +2709,7 @@ and the derived files           ducksay.pdf
     s
      s}%=<<
 %^^A head taken from https://www.asciiart.eu/animals/reptiles/snakes
-\AddAnimal[tail-symbol=s,tail-count=3]{snake}
+\AddAnimal[tail-symbol=s,tail-count=3]{snake}% >>=
 {  s
     s     /^\/^\
      s  _|__| O |
@@ -2704,9 +2720,9 @@ and the derived files           ducksay.pdf
                /   /  _---_        | |
               /   /  /  __ "-_    ," |
              |   "--"  /  "-_ "--"  ,"
-              "-_____-"      "-___-"}
+              "-_____-"      "-___-"}% =<<
 %^^A http://www.ascii-art.de/ascii/c/cat.txt
-\AddAnimal{cat}
+\AddAnimal{cat}% >>=
 +  \
     \  _                ___       .--.
        \`.|\..----...-'`   `-._.-' .-'
@@ -2714,15 +2730,15 @@ and the derived files           ducksay.pdf
        )/' _/     \   `-_,   /
        `-'" `"\_  ,_.-;_.-\_ ',
            _.-'_./   {_.'   ; /
-          {_.-``-'         {_/+
+          {_.-``-'         {_/+% =<<
 %^^A https://www.asciiart.eu/animals/cats
-\AddAnimal{sleepy-cat}
+\AddAnimal{sleepy-cat}% >>=
 {  \
     \  |\      _,,,---,,_     _._
        /,`.-'`'    -.   )'._,'.-,)
       |,4-  ) )-,_. ,\ ( `-.-'
-     '---''(_/--'  `-'\_)}
-\AddAnimal{schroedinger-dead}
+     '---''(_/--'  `-'\_)}% =<<
+\AddAnimal{schroedinger-dead}% >>=
 {  \
     \ _.--"""--._
      |           |
@@ -2733,9 +2749,9 @@ and the derived files           ducksay.pdf
    __|___________|__ _
     o    .   .    .
        ~ .  o   o
-       .   ~  .}
+       .   ~  .}% =<<
 %^^A https://www.asciiart.eu/animals/cats
-\AddAnimal{schroedinger-alive}
+\AddAnimal{schroedinger-alive}% >>=
 {  \
     \ ,_     _
       |\\__,'/
@@ -2746,10 +2762,10 @@ and the derived files           ducksay.pdf
      |         _  \ |
       \ \ ,  /      |
        || |-_\__   /
-      ((_/`(____,-'}
+      ((_/`(____,-'}% =<<
 %^^A provided by Plergux
 %^^A (https://chat.stackexchange.com/transcript/message/55986902#55986902)
-\AddAnimal{sheep}
+\AddAnimal{sheep}% >>=
 {  \        _,_,_,_,_,
     \    .:(  ,)      ),
         (__,    (,     ),
@@ -2757,21 +2773,31 @@ and the derived files           ducksay.pdf
       (___(,      (,   ,)
            (,   ,)    ,)
             `-_,---_,-'
-              ||   ||}
+              ||   ||}% =<<
 %^^A based on joe schmuck (http://www.ascii-art.de/ascii/pqr/platypus.txt)
-\AddAnimal[tail-symbol=s]{platypus}
+\AddAnimal[tail-symbol=s]{platypus}% >>=
 |  s          _.-^~~^^`~-,,,~~''```~-''``~'``~,
     s ______,'  -o  :. _    .      ;     ,'`,  `.
      (      -\.._,.;;'._,(   }    _`_-_,,    `, `,
-      ``~~~~~~'   ((/'(((____/~~'(,(,___>      `~'|
-\AddAnimal[tail-symbol=s]{small-horse}
+      ``~~~~~~'   ((/'(((____/~~'(,(,___>      `~'|% =<<
+\AddAnimal[tail-symbol=s]{small-horse}% >>=
 {  s   _,_
     s /._ \\
      /_/ |_\\ _ __
          /  \\    \\
          \ _ __ _ /||
          | |   | | ||
-         | |   | |}
+         | |   | |}% =<<
+%^^A based on art by Joan Stark (jgs)
+%^^A (https://www.asciiart.eu/animals/reptiles/turtles)
+\AddAnimal[tail-symbol=s]{turtle}
+{  s
+    s  __
+      /_'\ .,-;-;-,.
+       \ (/_/_|_\_\_\_
+       /\=<_><_><_><_>-'
+      /_/'-\_\====\_\'
+      ""    ""     ""}
 %</animals>
 %    \end{macrocode}^^A=<<
 %^^A%^^A https://www.asciiart.eu/mythology/fairies
