@@ -31,9 +31,10 @@ tar:
 	tar -cvzf ducksay.tar.gz ducksay/
 	rm -rf ducksay
 
-pkg: docu tar clean
+pkg: docu tar
+	${CLEAN}
 
 .PHONY: clean quick docu pkg
 
 clean:
-	${CLEAN}
+	${CLEAN} ducksay.tar.gz
