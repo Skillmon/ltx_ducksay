@@ -24,7 +24,12 @@ sty: ducksay.dtx
 	pdftex ducksay.dtx
 
 tar:
-	tar -cvzf ducksay.tar.gz ducksay.dtx ducksay.pdf README.md
+	mkdir ducksay
+	cp ducksay.dtx ducksay/ducksay.dtx
+	cp ducksay.pdf ducksay/ducksay.pdf
+	cp README.md ducksay/README.md
+	tar -cvzf ducksay.tar.gz ducksay/
+	rm -rf ducksay
 
 pkg: docu tar clean
 
