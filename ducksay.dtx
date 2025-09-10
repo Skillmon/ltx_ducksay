@@ -1652,13 +1652,8 @@ and the derived files           ducksay.pdf
     Justified~content~is~not~available~for~tabular~argument~mode~without~fixed~
     width.~`l`~column~is~used~instead.
   }
-\msg_new:nnn { ducksay } { unknown~message~alignment }
-  {
-    The~specified~message~alignment~`\exp_not:n { #1 }`~is~unknown.~
-    `l`~is~used~as~fallback.
-  }
 \msg_new:nnn { ducksay } { v1-key-only }
-  { The~`\l_keys_key_tl`~key~is~only~available~for~`version=1`. }
+  { The~`\l_keys_key_str`~key~is~only~available~for~`version=1`. }
 \msg_new:nnn { ducksay } { zero-baselineskip }
   { Current~ baselineskip~ is~ 0pt. }
 %    \end{macrocode}
