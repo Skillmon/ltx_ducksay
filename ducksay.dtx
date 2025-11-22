@@ -331,7 +331,7 @@ and the derived files           ducksay.pdf
 %     \sinceversion{2.8}
 %     The |tail-symbol| key no longer fixes the category code of its value to 12
 %     and you have to make sure that the correct category code is handed in. The
-%     |gen-tail-symbol| key might help. See \autoref{sec:addoptions}.
+%     key |gen-tail-symbol| might help. See \autoref{sec:addoptions}.
 % \end{itemize}^^A=<<
 %
 % \subsection{Shared between versions}^^A>>=
@@ -987,8 +987,8 @@ and the derived files           ducksay.pdf
 %   {%
 %     \tiny
 %     \hfill
-%     \ducksay[turtle,MSG=\footnotesize,msg-align=c]
-%       {Slowly new animals\\are added.}%
+%     \ducksay[ladybug,MSG=\footnotesize,msg-align=c]
+%       {This is a\\bug(fix) release.}%
 %   }
 % The following animals are provided by this package. I did not create them (but
 % altered some), they belong to their original creators.
@@ -1009,6 +1009,7 @@ and the derived files           ducksay.pdf
 %   ,pig^^A
 %   ,frog^^A
 %   ,snowman^^A
+%   ,ladybug^^A
 %   ,bunny^^A
 %   ,dragon^^A
 %   ,sodomized^^A
@@ -2829,6 +2830,14 @@ and the derived files           ducksay.pdf
          \ _ __ _ /||
          | |   | | ||
          | |   | |}% =<<
+\AddAnimal{ladybug}% >>=
+{  \  o   o
+    \ _\_/_
+     /__!__\
+   '| o : o |'
+   -|o  :  o|-
+   ,| o : o |,
+     \__:__/}% =<<
 %^^A based on art by Joan Stark (jgs)
 %^^A (https://www.asciiart.eu/animals/reptiles/turtles)
 \AddAnimal[tail-symbol=s]{turtle}
