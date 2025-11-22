@@ -327,6 +327,11 @@ and the derived files           ducksay.pdf
 %     The |add-think| key was deprecated in v2.3 and was removed in v2.4 since
 %     the output symbols of the bubble tail are handled differently and more
 %     efficiently now.
+%   \item
+%     \sinceversion{2.8}
+%     The |tail-symbol| key no longer fixes the category code of its value to 12
+%     and you have to make sure that the correct category code is handed in. The
+%     |gen-tail-symbol| key might help. See \autoref{sec:addoptions}.
 % \end{itemize}^^A=<<
 %
 % \subsection{Shared between versions}^^A>>=
@@ -515,10 +520,22 @@ and the derived files           ducksay.pdf
 %     sets the number of tail symbols to be replaced in \cs{AddAnimal} and
 %     \cs{AddColoredAnimal}. Initial value is 2. If the value is negative every
 %     occurrence of |tail-symbol| will be replaced.
-%   \item[tail-symbol=\meta{str}]
+%   \item[tail-symbol=\meta{tl}]
 %     the symbol used in \cs{AddAnimal} and \cs{AddColoredAnimal} to mark the
-%     bubble's tail. The argument gets \cs{detokenize}d. Initially a single
-%     backslash.
+%     bubble's tail. In \LaTeX\ versions prior to 2025-06-01 the argument gets
+%     \cs{detokenize}d, starting with the 2025-06-01 kernel release you have to
+%     make sure that whatever you give to this key has the same category codes
+%     as are produced by the |v| argument type of |ltcmd| (you can use
+%     |tail-symbol:e| to fully expand the value which might help in producing
+%     the desired token). Initially a single backslash.
+%   \item[gen-tail-symbol=\meta{character}]
+%     this is a helper for |tail-symbol|. It sets |tail-symbol| to
+%     \meta{character} which might either be the character itself or an escaped
+%     variant of it for special characters. The |tail-symbol| will then be
+%     \meta{character} but with category code~12 (other). For instance you could
+%     use |gen-tail-symbol = \%| to use a percent character or
+%     |gen-tail-symbol = \\| for a backslash both with category 12 as
+%     |tail-symbol|.
 % \end{options}
 %^^A=<<
 %
@@ -1216,13 +1233,26 @@ and the derived files           ducksay.pdf
 % Define keys meant for \cs{AddAnimal} and \cs{AddColoredAnimal} only in their
 % own regime:
 %    \begin{macrocode}
+\IfFormatAtLeastTF{2025-06-01}
+  {
+    \keys_define:nn { ducksay / add-animal }
+      { tail-symbol .tl_set:N = \l_ducksay_tail_symbol_in_tl }
+  }
+  {
+    \keys_define:nn { ducksay / add-animal }
+      {
+        tail-symbol .code:n =
+          \tl_set:Ne \l_ducksay_tail_symbol_in_tl { \tl_to_str:n {#1} }
+      }
+  }
 \keys_define:nn { ducksay / add-animal }
   {
-    ,tail-symbol .code:n    =
-      \tl_set:Nx \l_ducksay_tail_symbol_in_tl { \tl_to_str:n { #1 } }
-    ,tail-symbol .initial:o = \c_backslash_str
+     tail-symbol .initial:o = \c_backslash_str
     ,tail-count  .int_set:N = \l_ducksay_tail_symbol_count_int
     ,tail-count  .initial:n = 2
+    ,gen-tail-symbol .code:n =
+      \tl_set:Ne \l_ducksay_tail_symbol_in_tl
+        { \char_generate:nn { `#1 } { 12 } }
   }
 %    \end{macrocode}
 %
