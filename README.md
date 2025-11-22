@@ -9,7 +9,7 @@ option) any later version. The latest version of this license is in the file:
 This work is "maintained" (as per LPPL maintenance status) by
   Jonathan P. Spratte.
 
-Copyright (C) 2017-2024 by Jonathan P. Spratte
+Copyright (C) 2017-2025 by Jonathan P. Spratte
 
 The package draws ASCII art of animals saying a specified message. The following
 macros are available:
