@@ -1103,11 +1103,11 @@ and the derived files           ducksay.pdf
 % Regular expressions for \cs{AddColoredAnimal}
 %    \begin{macrocode}
 \regex_const:Nn \c_ducksay_textcolor_regex
-  { \cO(?:\\textcolor\{(.*?)\}\{(.*?)\}) }
+  { \\textcolor\{(.*?)\}\{(.*?)\} }
 \regex_const:Nn \c_ducksay_color_delim_regex
-  { \cO(?:\\bgroup\\color\{(.*?)\}(.*)\\egroup) }
+  { \\bgroup\\color\{(.*?)\}(.*)\\egroup }
 \regex_const:Nn \c_ducksay_color_regex
-  { \cO(?:\\color\{(.*?)\}) }
+  { \\color\{(.*?)\} }
 %    \end{macrocode}
 %^^A=<<
 %
