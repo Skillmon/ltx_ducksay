@@ -67,6 +67,12 @@ and the derived files           ducksay.pdf
 \csname msg_redirect_name:nnn\endcsname{l3doc}{foreign-internal}{none}
 \usepackage[version=2]{ducksay}
 \usepackage{marginnote}
+\AddColoredAnimal{colored-small-duck}
+{  \
+    \
+      \color{orange}>\color{yellow}()_
+       \color{yellow}(__)\color{blue}__ _}
+\usepackage{xcolor}
 \newcommand\sinceversion[1]
   {\marginnote{\footnotesize\textsf{v#1}\kern-\marginparsep}}
 \let\metaORIG\meta
@@ -407,7 +413,17 @@ and the derived files           ducksay.pdf
 %   The package doesn't load anything providing those colouring commands for you
 %   and it doesn't provide any coloured animals. The parsing is done using
 %   regular expressions provided by \LaTeX3. It is therefore slower than the
-%   normal \cs{AddAnimal}.
+%   normal \cs{AddAnimal}.\\[1ex]
+%   \begin{minipage}{.6\linewidth}
+%\begin{verbatim}
+% \AddAnimal{colored-small-duck}
+% {  \
+%     \
+%       \color{orange}>\color{yellow}()_
+%        \color{yellow}(__)\color{blue}__ _}
+%\end{verbatim}
+%   \end{minipage}\hfill
+%   \ducksay[colored-small-duck]{Don't I look fabulous?}
 % \end{function}^^A=<<
 %
 % \begin{function}{\AnimalOptions}^^A>>=
